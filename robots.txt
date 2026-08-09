@@ -1,0 +1,9 @@
+# Roshani Public School - robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://roshanipublicschool.com/sitemap.xml
+
+# Block access to admin/internal directories
+Disallow: /admin/
+Disallow: /api/
