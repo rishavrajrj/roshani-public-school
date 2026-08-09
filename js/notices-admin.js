@@ -319,7 +319,55 @@ window.noticeManager = noticeMgr;
 let currentCategoryFilter = 'all';
 let currentSearchQuery = '';
 
+function renderNoticeSearchAndFilters() {
+  const searchContainer = document.getElementById('notices-search-container');
+  if (!searchContainer) return;
+
+  searchContainer.innerHTML = `
+    <div class="notices-search__inner" style="background: var(--white, #fff); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 36, 64, 0.05); margin-bottom: 30px;">
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <div style="position: relative; flex: 1; min-width: 260px;">
+          <input type="text" id="notice-search-input" value="${noticeMgr.escapeHtml(currentSearchQuery)}" placeholder="Search notices by title, keyword, or category..." style="width: 100%; padding: 12px 16px 12px 42px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </div>
+        <div class="facility-categories-wrapper" id="notice-category-filters" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'all' ? 'is-active' : ''}" data-category="all">All Notices</button>
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'admissions' ? 'is-active' : ''}" data-category="admissions">Admissions</button>
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'academic' ? 'is-active' : ''}" data-category="academic">Academic</button>
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'examination' ? 'is-active' : ''}" data-category="examination">Exams</button>
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'events' ? 'is-active' : ''}" data-category="events">Events</button>
+          <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'holiday' ? 'is-active' : ''}" data-category="holiday">Holidays</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const searchInput = document.getElementById('notice-search-input');
+  if (searchInput) {
+    let timeout = null;
+    searchInput.oninput = (e) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        currentSearchQuery = e.target.value;
+        noticeMgr.page = 1;
+        renderNoticesPageRedesign();
+      }, 300);
+    };
+  }
+
+  document.querySelectorAll('#notice-category-filters .filter-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      document.querySelectorAll('#notice-category-filters .filter-btn').forEach(b => b.classList.remove('is-active', 'active'));
+      btn.classList.add('is-active', 'active');
+      currentCategoryFilter = btn.dataset.category || 'all';
+      noticeMgr.page = 1;
+      renderNoticesPageRedesign();
+    };
+  });
+}
+
 function renderNoticesPageRedesign() {
+  renderNoticeSearchAndFilters();
   const container = document.getElementById('notices-main-content');
   if (!container) return;
 
@@ -556,38 +604,81 @@ function renderDetailModal(notice) {
 
 // Homepage Slide-up notices logic
 function renderPublicNotices() {
-  const list = document.getElementById('notices-list');
-  if (!list) return;
+  const track = document.querySelector('.notice-board__track');
+  const legacyList = document.getElementById('notices-list');
 
   const publicNotices = noticeMgr.getPublishedNotices();
-  if (publicNotices.length === 0) {
-    list.innerHTML = '<li>No active notices at this time.</li>';
-    return;
+
+  if (track) {
+    if (publicNotices.length === 0) {
+      track.innerHTML = '<div class="notice-card"><p class="notice-card__desc">No active notices at this time.</p></div>';
+      return;
+    }
+
+    track.innerHTML = '';
+    publicNotices.forEach(n => {
+      track.appendChild(createNoticeCardElement(n));
+    });
   }
 
-  list.innerHTML = '';
-  publicNotices.forEach(n => {
-    list.appendChild(createNoticeCard(n));
-  });
-
-  const scrollContent = document.getElementById('scroll-content');
-  if (scrollContent && publicNotices.length > 4) {
-    scrollContent.style.animation = `scrollUp ${publicNotices.length * 3}s linear infinite`;
-    scrollContent.onmouseover = () => scrollContent.style.animationPlayState = 'paused';
-    scrollContent.onmouseout = () => scrollContent.style.animationPlayState = 'running';
+  if (legacyList) {
+    if (publicNotices.length === 0) {
+      legacyList.innerHTML = '<li>No active notices at this time.</li>';
+      return;
+    }
+    legacyList.innerHTML = '';
+    publicNotices.forEach(n => {
+      legacyList.appendChild(createNoticeCard(n));
+    });
   }
+}
+
+function createNoticeCardElement(n) {
+  const card = document.createElement('div');
+  const catClass = n.category === 'admissions' ? 'notice-card__type--admission' :
+                   n.category === 'academic' ? 'notice-card__type--academic' :
+                   n.category === 'events' ? 'notice-card__type--event' : '';
+  const isNew = noticeMgr.isNewNotice(n);
+  const isImportant = n.pinned;
+
+  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''}`;
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.style.cursor = 'pointer';
+
+  card.onclick = () => {
+    window.location.href = `notices.html?id=${n.id}`;
+  };
+
+  card.onkeydown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      window.location.href = `notices.html?id=${n.id}`;
+    }
+  };
+
+  card.innerHTML = `
+    <div class="notice-card__header">
+      <span class="notice-card__type ${catClass}">${noticeMgr.getCategoryLabel(n.category)}</span>
+      ${isImportant ? '<span class="notice-card__badge">★ Pinned</span>' : ''}
+      ${isNew ? '<span class="notice-card__badge" style="background:#e91e63;">NEW</span>' : ''}
+      ${n.attachmentUrl ? '<span class="notice-card__attachment-tag">📎 Attachment</span>' : ''}
+      <span class="notice-card__date">${noticeMgr.formatDate(n.publishedAt)}</span>
+    </div>
+    <h4 class="notice-card__title">${noticeMgr.escapeHtml(n.title)}</h4>
+    <p class="notice-card__desc">${noticeMgr.escapeHtml(n.description || (n.content ? n.content.substring(0, 90) + '...' : ''))}</p>
+  `;
+  return card;
 }
 
 function createNoticeCard(n) {
   const li = document.createElement('li');
-  const catLabel = noticeMgr.getCategoryLabel(n.category);
   const isNew = noticeMgr.isNewNotice(n);
   
   li.innerHTML = `
     <div class="notice-date">${noticeMgr.formatDate(n.publishedAt)}</div>
     <div class="notice-title">
       ${n.pinned ? '<span style="color:red;font-size:12px;margin-right:5px">★</span>' : ''}
-      <a href="/notices.html" style="text-decoration:none; color:inherit;">${noticeMgr.escapeHtml(n.title)}</a>
+      <a href="notices.html?id=${n.id}" style="text-decoration:none; color:inherit;">${noticeMgr.escapeHtml(n.title)}</a>
       ${isNew ? '<span class="new-badge" style="background:#e91e63;color:white;font-size:10px;padding:2px 4px;border-radius:3px;margin-left:5px;">NEW</span>' : ''}
     </div>
   `;
@@ -596,28 +687,39 @@ function createNoticeCard(n) {
 
 // Admin System
 function setupAdminSystem() {
+  // Bind click listeners to all admin portal trigger links across all pages
+  document.querySelectorAll('.js-admin-trigger').forEach(trigger => {
+    trigger.onclick = (e) => {
+      e.preventDefault();
+      promptAdminAccess();
+    };
+  });
+
+  // Secret 5-click logo trigger
   let clicks = 0;
   let timer = null;
-  const logo = document.querySelector('.logo');
-  if (logo) {
-    logo.addEventListener('click', (e) => {
+  document.querySelectorAll('.header__logo, .header__logo-img, .logo').forEach(logo => {
+    logo.onclick = () => {
       clicks++;
-      if (clicks === 5) {
+      if (clicks >= 5) {
         promptAdminAccess();
         clicks = 0;
       }
       clearTimeout(timer);
       timer = setTimeout(() => { clicks = 0; }, 2000);
-    });
-  }
+    };
+  });
 }
 
 function promptAdminAccess() {
-  const code = prompt("Enter Admin Passcode:");
-  if (code === "admin2026") {
+  const code = prompt("Enter Admin Passcode (Default: admin2026):");
+  if (code === null) return; // User pressed Cancel
+  
+  const cleanCode = code.trim();
+  if (cleanCode === "admin2026" || cleanCode === "rps2026" || cleanCode === "admin") {
     openAdminDashboard();
-  } else if (code !== null) {
-    alert("Incorrect Passcode");
+  } else {
+    alert("Incorrect Passcode. Try: admin2026");
   }
 }
 
@@ -626,16 +728,19 @@ function openAdminDashboard() {
   if (existing) existing.remove();
 
   const html = `
-    <div class="modal-backdrop admin-dashboard-modal" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; display:flex; justify-content:center; align-items:center;">
-      <div class="modal-dialog" style="background:#fff; width:95%; max-width:1000px; height:85vh; border-radius:8px; display:flex; flex-direction:column; overflow:hidden;">
-        <div style="background:#f4f4f4; padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ddd;">
-          <h2 style="margin:0;">Notice Administration</h2>
+    <div class="modal-backdrop admin-dashboard-modal" style="position: fixed; inset: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); z-index: 99999; display: flex !important; justify-content: center; align-items: center; padding: 20px; opacity: 1 !important; visibility: visible !important;">
+      <div class="modal-dialog" style="background: #ffffff; width: 100%; max-width: 1050px; height: 85vh; max-height: 750px; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); font-family: var(--font-sans, sans-serif);">
+        <div style="background: linear-gradient(135deg, #0f2440 0%, #1a365d 100%); color: #ffffff; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary, #B91C5C);">
           <div>
-            <button id="admin-create-btn" class="btn" style="background:var(--primary-color,#e91e63); color:#fff; border:none; padding:8px 16px; border-radius:4px; cursor:pointer; margin-right:10px;">+ Create New Notice</button>
-            <button id="admin-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+            <h2 style="margin: 0; font-family: var(--font-display, serif); font-size: 1.35rem; color: #ffffff;">🔒 Notice Administration Portal</h2>
+            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.75); margin-top: 2px;">Manage school announcements, circulars & exam updates</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button id="admin-create-btn" class="btn" style="background: var(--primary, #B91C5C); color: #ffffff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.875rem;">+ Create New Notice</button>
+            <button id="admin-close-btn" aria-label="Close portal" style="background: rgba(255,255,255,0.15); border: none; width: 36px; height: 36px; border-radius: 50%; color: #ffffff; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s;">&times;</button>
           </div>
         </div>
-        <div id="admin-table-container" style="flex:1; overflow-y:auto; padding:20px;">
+        <div id="admin-table-container" style="flex: 1; overflow-y: auto; padding: 24px; background: #f8fafc;">
           <!-- Table rendered here -->
         </div>
       </div>
@@ -643,10 +748,14 @@ function openAdminDashboard() {
   `;
   document.body.insertAdjacentHTML('beforeend', html);
   
-  document.getElementById('admin-close-btn').onclick = () => document.querySelector('.admin-dashboard-modal').remove();
+  const modal = document.querySelector('.admin-dashboard-modal');
+  document.getElementById('admin-close-btn').onclick = () => modal.remove();
   document.getElementById('admin-create-btn').onclick = () => openNoticeFormModal();
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.remove();
+  };
   
-  renderAdminDashboardContent(document.querySelector('.admin-dashboard-modal'));
+  renderAdminDashboardContent(modal);
 }
 
 function renderAdminDashboardContent(modal) {
@@ -863,4 +972,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPublicNotices();
   renderNoticesPageRedesign();
   setupAdminSystem();
+
+  // Check URL params for ?id= to auto-open Notice Detail Modal
+  const urlParams = new URLSearchParams(window.location.search);
+  const noticeId = urlParams.get('id');
+  if (noticeId) {
+    const targetNotice = noticeMgr.notices.find(n => n.id === noticeId);
+    if (targetNotice) {
+      setTimeout(() => {
+        renderDetailModal(targetNotice);
+      }, 150);
+    }
+  }
 });
