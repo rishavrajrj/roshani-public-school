@@ -1,0 +1,9 @@
+{
+  "name": "roshani-public-school",
+  "version": "1.0.0",
+  "description": "Official website for Roshani Public School",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site build complete'"
+  }
+}
