@@ -152,3 +152,4 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+package-lock.json
