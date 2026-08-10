@@ -7,25 +7,31 @@
   // Check Auth & Redirect if unauthenticated
   async function checkAuth(requiresSuperAdmin = false) {
     try {
-      if (!window.RPS_Supabase) {
-        console.warn('RPS_Supabase not loaded yet.');
-        return;
+      const isPasscodeSession = sessionStorage.getItem('rps_admin_session') === 'true' || localStorage.getItem('rps_admin_session') === 'true';
+      let session = null;
+      if (window.RPS_Supabase) {
+        session = await window.RPS_Supabase.getSession();
       }
-      const session = await window.RPS_Supabase.getSession();
-      if (!session) {
-        window.location.href = 'login.html';
+      if (!session && !isPasscodeSession) {
+        const path = window.location.pathname;
+        if (!path.includes('login.html') && !path.endsWith('/login')) {
+          window.location.href = path.includes('/admin') ? '/admin/login.html' : 'admin/login.html';
+        }
         return null;
       }
       const profile = await window.RPS_Supabase.getCurrentProfile();
       if (requiresSuperAdmin && profile && profile.role !== 'super_admin') {
         alert('Access Denied: Super Admin privileges required.');
-        window.location.href = 'index.html';
+        window.location.href = '/admin/index.html';
         return null;
       }
       return { session, profile };
     } catch (err) {
       console.error('Auth guard check error:', err);
-      window.location.href = 'login.html';
+      const isPasscodeSession = sessionStorage.getItem('rps_admin_session') === 'true' || localStorage.getItem('rps_admin_session') === 'true';
+      if (!isPasscodeSession) {
+        window.location.href = '/admin/login.html';
+      }
       return null;
     }
   }
@@ -55,10 +61,12 @@
       logoutBtn.onclick = async (e) => {
         e.preventDefault();
         if (confirm('Are you sure you want to log out of the Admin Portal?')) {
+          sessionStorage.removeItem('rps_admin_session');
+          localStorage.removeItem('rps_admin_session');
           if (window.RPS_Supabase) {
             await window.RPS_Supabase.logoutAdmin();
           }
-          window.location.href = 'login.html';
+          window.location.href = '/admin/login.html';
         }
       };
     }

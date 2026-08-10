@@ -132,6 +132,8 @@
 
         // Passcode quick fallback check
         if (emailVal === 'admin2026' || emailVal === 'rps2026' || emailVal === 'admin') {
+          sessionStorage.setItem('rps_admin_session', 'true');
+          localStorage.setItem('rps_admin_session', 'true');
           window.location.href = 'index.html';
           return;
         }
@@ -139,6 +141,8 @@
         try {
           if (window.RPS_Supabase) {
             await window.RPS_Supabase.loginAdmin(emailVal, passVal);
+            sessionStorage.setItem('rps_admin_session', 'true');
+            localStorage.setItem('rps_admin_session', 'true');
             window.location.href = 'index.html';
           }
         } catch (err) {
