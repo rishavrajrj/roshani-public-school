@@ -89,7 +89,7 @@
           <div class="nav__dropdown">
             <a href="academics.html" class="nav__dropdown-link">Curriculum</a>
             <a href="academics.html#assessment" class="nav__dropdown-link">Assessment Policy</a>
-            <a href="academics.html#calendar" class="nav__dropdown-link">Academic Calendar</a>
+            <a href="academic-calendar.html" class="nav__dropdown-link">Academic Calendar</a>
             <a href="academics.html#results" class="nav__dropdown-link">CBSE Results</a>
           </div>
         </div>
@@ -426,96 +426,188 @@
           </div>
         </div>
 
-        <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4);">
-          <!-- Campus & Infrastructure -->
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/BuildingViewFront.png" alt="Front view of the Roshani Public School main building" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/buildingView1.png" alt="Main academic building wing and classrooms" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/buildingView2.png" alt="Secondary academic building block" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/buildingView3.png" alt="Academic courtyard and central quadrangle" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/helpdesk.png" alt="School reception, helpdesk and parent counseling area" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/sitting area.png" alt="Campus outdoor sitting and green garden area" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="campus" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/hostel.png" alt="Residential hostel block and campus facilities" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+        <div class="bento-gallery-grid gallery-grid" id="gallery-bento-grid">
+
+          <!-- Block 1 (Hero 2x2 + 1x1 + 1x1 + 2x1) -->
+          <!-- 1. HERO: Campus Front (2x2) -->
+          <div class="bento-item-ref gallery-item bento-wide bento-tall fade-in is-visible" data-category="campus">
+            <img src="assets/BuildingViewFront.png" alt="Front view of the Roshani Public School main building">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Main School Building</span>
+              </div>
             </div>
           </div>
 
-          <!-- Events & Assemblies -->
-          <div class="gallery-item fade-in is-visible" data-category="events" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/teachers.png" alt="Faculty members and leadership during school ceremony" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-          <div class="gallery-item fade-in is-visible" data-category="events" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/students.png" alt="Students assembly and group celebration" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
-            </div>
-          </div>
-
-          <!-- Sports -->
-          <div class="gallery-item fade-in is-visible" data-category="sports" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/sport.png" alt="Annual sports meet and athletic track events" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+          <!-- 2. Campus Wing 1 (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="campus">
+            <img src="assets/buildingView1.png" alt="Main academic building wing and classrooms">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Academic Wing</span>
+              </div>
             </div>
           </div>
 
-          <!-- Cultural -->
-          <div class="gallery-item fade-in is-visible" data-category="cultural" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/teachers.png" alt="School staff and student cultural activity guidance" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+          <!-- 3. Campus Wing 2 (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="campus">
+            <img src="assets/buildingView2.png" alt="Secondary academic building block">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Building Block</span>
+              </div>
             </div>
           </div>
 
-          <!-- Academics -->
-          <div class="gallery-item fade-in is-visible" data-category="academics" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/smart classroom.png" alt="Interactive DigiClass smart board learning session" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+          <!-- 4. Student Assembly (2x1 wide) -->
+          <div class="bento-item-ref gallery-item bento-wide fade-in is-visible" data-category="events">
+            <img src="assets/students.png" alt="Students assembly and group celebration">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Events</span>
+                <span class="bento-caption">Student Assembly</span>
+              </div>
             </div>
           </div>
-          <div class="gallery-item fade-in is-visible" data-category="academics" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/experiment.png" alt="Students performing experiments in the science lab" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+
+          <!-- Block 2 (2x1 + 1x1 + 1x2 tall + 2x1 + 1x1) -->
+          <!-- 5. Courtyard (2x1 wide) -->
+          <div class="bento-item-ref gallery-item bento-wide fade-in is-visible" data-category="campus">
+            <img src="assets/buildingView3.png" alt="Academic courtyard and central quadrangle">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Central Courtyard</span>
+              </div>
             </div>
           </div>
-          <div class="gallery-item fade-in is-visible" data-category="academics" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/kids-class.png" alt="Interactive primary and kindergarten kids classroom learning" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+
+          <!-- 6. Helpdesk (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="campus">
+            <img src="assets/helpdesk.png" alt="School reception, helpdesk and parent counseling area">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Reception & Helpdesk</span>
+              </div>
             </div>
           </div>
-          <div class="gallery-item fade-in is-visible" data-category="academics" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/microscope.png" alt="Practical science & microbiology laboratory workstations" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+
+          <!-- 7. Sports Meet (1x2 tall) -->
+          <div class="bento-item-ref gallery-item bento-tall fade-in is-visible" data-category="sports">
+            <img src="assets/sport.png" alt="Annual sports meet and athletic track events">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Sports</span>
+                <span class="bento-caption">Annual Sports Meet</span>
+              </div>
             </div>
           </div>
-          <div class="gallery-item fade-in is-visible" data-category="academics" style="border-radius: var(--radius-md); overflow: hidden; cursor: pointer; position: relative;">
-            <div style="width:100%; aspect-ratio: 4/3; overflow:hidden;">
-              <img src="assets/computer-lab.png" alt="High-speed computer research lab and IT workstations" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;">
+
+          <!-- 8. DigiClassroom (2x1 wide) -->
+          <div class="bento-item-ref gallery-item bento-wide fade-in is-visible" data-category="academics">
+            <img src="assets/smart classroom.png" alt="Interactive DigiClass smart board learning session">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Academics</span>
+                <span class="bento-caption">Smart DigiClassroom</span>
+              </div>
             </div>
           </div>
+
+          <!-- 9. Sitting Area (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="campus">
+            <img src="assets/sitting area.png" alt="Campus outdoor sitting and green garden area">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Garden & Sitting Area</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Block 3 (2x1 + 2x2 tall/wide + 1x1 + 1x1) -->
+          <!-- 10. Faculty Ceremony (2x1 wide) -->
+          <div class="bento-item-ref gallery-item bento-wide fade-in is-visible" data-category="events">
+            <img src="assets/teachers.png" alt="Faculty members and leadership during school ceremony">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Events</span>
+                <span class="bento-caption">Faculty Ceremony</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11. Science Experiments (2x2 featured) -->
+          <div class="bento-item-ref gallery-item bento-wide bento-tall fade-in is-visible" data-category="academics">
+            <img src="assets/experiment.png" alt="Students performing experiments in the science lab">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Academics</span>
+                <span class="bento-caption">Science Lab Experiments</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12. Cultural Activities (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="cultural">
+            <img src="assets/teachers.png" alt="School staff and student cultural activity guidance">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Cultural</span>
+                <span class="bento-caption">Cultural Guidance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 13. Hostel Block (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="campus">
+            <img src="assets/hostel.png" alt="Residential hostel block and campus facilities">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Campus</span>
+                <span class="bento-caption">Hostel Block</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Block 4 (2x1 wide + 1x1 + 1x1) -->
+          <!-- 14. Kids Classroom (2x1 wide) -->
+          <div class="bento-item-ref gallery-item bento-wide fade-in is-visible" data-category="academics">
+            <img src="assets/kids-class.png" alt="Interactive primary and kindergarten kids classroom learning">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Academics</span>
+                <span class="bento-caption">Kids Learning Room</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 15. Microbiology Lab (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="academics">
+            <img src="assets/microscope.png" alt="Practical science & microbiology laboratory workstations">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Academics</span>
+                <span class="bento-caption">Microbiology Lab</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 16. Computer Lab (1x1) -->
+          <div class="bento-item-ref gallery-item fade-in is-visible" data-category="academics">
+            <img src="assets/computer-lab.png" alt="High-speed computer research lab and IT workstations">
+            <div class="bento-overlay">
+              <div class="bento-overlay__inner">
+                <span class="bento-pill">Academics</span>
+                <span class="bento-caption">Computer Research Lab</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
