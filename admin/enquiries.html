@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Enquiries — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link is-active">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">📨 Parent Contact & Admission Enquiries</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button onclick="loadEnquiries()" class="admin-btn admin-btn--outline admin-btn--sm">
+          🔄 Refresh List
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <input type="text" id="search-input" class="admin-form-input" placeholder="Search by name, phone, student or class..." style="max-width: 360px;">
+          
+          <div style="display: flex; gap: 8px;">
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn is-active" data-filter="all">All</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="unread">Unread</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="read">Read</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="contacted">Contacted</button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Parent Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Student / Class</th>
+                <th>Submitted Date</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="enquiries-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:20px;">Loading enquiries list...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- DETAIL MODAL -->
+  <div id="enquiry-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:560px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Enquiry Details</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <div id="enquiry-detail-body" style="font-size:0.9rem; line-height:1.6;">
+        <!-- Filled dynamically -->
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; border-top:1px solid var(--admin-border-color); padding-top:16px;">
+        <div style="display:flex; gap:8px;">
+          <button id="status-read-btn" class="admin-btn admin-btn--outline admin-btn--sm">Mark Read</button>
+          <button id="status-contacted-btn" class="admin-btn admin-btn--primary admin-btn--sm">Mark Contacted</button>
+        </div>
+        <button id="modal-delete-btn" class="admin-btn admin-btn--danger admin-btn--sm">Delete Enquiry</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allEnquiries = [];
+    let currentFilter = 'all';
+    let currentEnquiry = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadEnquiries();
+
+      document.getElementById('modal-close-btn').onclick = closeModal;
+      document.getElementById('search-input').oninput = renderTable;
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+          e.target.classList.add('is-active');
+          currentFilter = e.target.dataset.filter;
+          renderTable();
+        };
+      });
+    });
+
+    async function loadEnquiries() {
+      try {
+        if (window.RPS_Supabase) {
+          allEnquiries = await window.RPS_Supabase.getAllEnquiriesAdmin();
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Error loading enquiries:', err);
+        window.RPS_Admin.showToast('Failed to load enquiries', 'error');
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('enquiries-tbody');
+      const search = document.getElementById('search-input').value.toLowerCase();
+
+      let filtered = allEnquiries.filter(e => {
+        const matches = (e.full_name || '').toLowerCase().includes(search) ||
+                        (e.phone || '').toLowerCase().includes(search) ||
+                        (e.student_name || '').toLowerCase().includes(search) ||
+                        (e.class_seeking || '').toLowerCase().includes(search);
+        if (!matches) return false;
+
+        if (currentFilter === 'unread') return e.status === 'unread';
+        if (currentFilter === 'read') return e.status === 'read';
+        if (currentFilter === 'contacted') return e.status === 'contacted';
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No enquiries found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(e => `
+        <tr style="${e.status === 'unread' ? 'font-weight:700; background:#f0f9ff;' : ''}">
+          <td style="color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(e.full_name)}</td>
+          <td><a href="tel:${e.phone}" style="color:var(--admin-primary); text-decoration:none; font-weight:600;">📞 ${e.phone}</a></td>
+          <td>${e.email ? `<a href="mailto:${e.email}" style="color:var(--admin-info); text-decoration:none;">${e.email}</a>` : '—'}</td>
+          <td>${e.student_name ? `${window.RPS_Admin.escapeHtml(e.student_name)} (Class: ${e.class_seeking || 'N/A'})` : 'General Contact'}</td>
+          <td>${window.RPS_Admin.formatDate(e.created_at)}</td>
+          <td>${getStatusBadge(e.status)}</td>
+          <td style="text-align:right;">
+            <button onclick="viewEnquiry('${e.id}')" class="admin-btn admin-btn--outline admin-btn--sm">View Message</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'contacted') return '<span class="admin-badge admin-badge--success">Contacted</span>';
+      if (status === 'read') return '<span class="admin-badge admin-badge--info">Read</span>';
+      return '<span class="admin-badge admin-badge--danger">Unread</span>';
+    }
+
+    function viewEnquiry(id) {
+      currentEnquiry = allEnquiries.find(x => x.id === id);
+      if (!currentEnquiry) return;
+
+      const body = document.getElementById('enquiry-detail-body');
+      body.innerHTML = `
+        <div style="margin-bottom:12px;"><strong>Parent Name:</strong> ${window.RPS_Admin.escapeHtml(currentEnquiry.full_name)}</div>
+        <div style="margin-bottom:12px;"><strong>Phone:</strong> <a href="tel:${currentEnquiry.phone}">${currentEnquiry.phone}</a></div>
+        <div style="margin-bottom:12px;"><strong>Email:</strong> ${currentEnquiry.email ? `<a href="mailto:${currentEnquiry.email}">${currentEnquiry.email}</a>` : 'None'}</div>
+        ${currentEnquiry.student_name ? `<div style="margin-bottom:12px;"><strong>Student Name:</strong> ${window.RPS_Admin.escapeHtml(currentEnquiry.student_name)} (Class Seeking: ${currentEnquiry.class_seeking || 'N/A'})</div>` : ''}
+        <div style="margin-bottom:12px;"><strong>Submitted On:</strong> ${window.RPS_Admin.formatDate(currentEnquiry.created_at)}</div>
+        <div style="background:#f8fafc; padding:14px; border-radius:8px; border:1px solid var(--admin-border-color); margin-top:16px;">
+          <strong>Message:</strong><br>
+          ${window.RPS_Admin.escapeHtml(currentEnquiry.message)}
+        </div>
+      `;
+
+      document.getElementById('status-read-btn').onclick = () => updateStatus('read');
+      document.getElementById('status-contacted-btn').onclick = () => updateStatus('contacted');
+      document.getElementById('modal-delete-btn').onclick = deleteCurrentEnquiry;
+
+      document.getElementById('enquiry-modal').style.display = 'flex';
+
+      // Auto-mark as read if unread
+      if (currentEnquiry.status === 'unread') {
+        updateStatus('read', false);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('enquiry-modal').style.display = 'none';
+    }
+
+    async function updateStatus(newStatus, showToast = true) {
+      if (!currentEnquiry) return;
+      try {
+        await window.RPS_Supabase.updateEnquiryStatusAdmin(currentEnquiry.id, newStatus);
+        currentEnquiry.status = newStatus;
+        if (showToast) window.RPS_Admin.showToast(`Status updated to ${newStatus}`);
+        loadEnquiries();
+      } catch (err) {
+        if (showToast) window.RPS_Admin.showToast(err.message || 'Status update failed', 'error');
+      }
+    }
+
+    async function deleteCurrentEnquiry() {
+      if (!currentEnquiry || !confirm('Are you sure you want to delete this parent enquiry?')) return;
+      try {
+        await window.RPS_Supabase.deleteEnquiryAdmin(currentEnquiry.id);
+        window.RPS_Admin.showToast('Enquiry deleted');
+        closeModal();
+        loadEnquiries();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete enquiry', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

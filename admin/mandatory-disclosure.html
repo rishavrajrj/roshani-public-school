@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandatory Disclosure Documents — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link is-active">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">📜 Mandatory Disclosure Document Management</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="add-doc-btn" class="admin-btn admin-btn--primary">
+          + Add New Document PDF
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <input type="text" id="search-input" class="admin-form-input" placeholder="Search documents by title..." style="max-width: 360px;">
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Document Title</th>
+                <th>Category</th>
+                <th>Upload Date</th>
+                <th>PDF File</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="docs-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:20px;">Loading mandatory disclosure documents...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- DOCUMENT MODAL -->
+  <div id="doc-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:580px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 id="modal-heading" style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Add Document PDF</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="doc-form">
+        <input type="hidden" id="doc-id">
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-title">Document Title *</label>
+          <input type="text" id="form-title" class="admin-form-input" placeholder="e.g. CBSE Affiliation Extension Letter 2026-2029" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-category">Category</label>
+          <select id="form-category" class="admin-form-select">
+            <option value="affiliation">CBSE Affiliation / Approval</option>
+            <option value="trust">Trust / Society Registration</option>
+            <option value="noc">State NOC</option>
+            <option value="infrastructure">Building / Structural Safety</option>
+            <option value="safety">Fire Safety Clearance</option>
+            <option value="sanitation">Water & Sanitation Test</option>
+            <option value="fees">Fee Structure & Academics</option>
+            <option value="general">General Disclosure</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-desc">Short Description</label>
+          <textarea id="form-desc" class="admin-form-textarea" rows="2" placeholder="Brief document description..."></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-file">Upload PDF Document (Stored in Supabase Storage)</label>
+          <input type="file" id="form-file" accept="application/pdf,image/*" class="admin-form-input" style="padding:6px;">
+          <input type="hidden" id="form-file-url">
+        </div>
+
+        <div style="margin:16px 0;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="form-published" checked> Publish Document to Public Website
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Save Document</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allDocs = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadDocs();
+
+      document.getElementById('add-doc-btn').onclick = () => openDocModal();
+      document.getElementById('modal-close-btn').onclick = closeDocModal;
+      document.getElementById('modal-cancel-btn').onclick = closeDocModal;
+      document.getElementById('search-input').oninput = renderTable;
+      document.getElementById('doc-form').onsubmit = handleSaveDoc;
+    });
+
+    async function loadDocs() {
+      try {
+        if (window.RPS_Supabase) {
+          allDocs = await window.RPS_Supabase.getAllDocumentsAdmin();
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Error loading documents:', err);
+        window.RPS_Admin.showToast('Failed to load documents list', 'error');
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('docs-tbody');
+      const search = document.getElementById('search-input').value.toLowerCase();
+
+      let filtered = allDocs.filter(d => (d.title || '').toLowerCase().includes(search));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No documents found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(d => `
+        <tr>
+          <td style="font-weight:600; color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(d.title)}</td>
+          <td><span class="admin-badge admin-badge--info">${d.category || 'affiliation'}</span></td>
+          <td>${window.RPS_Admin.formatDate(d.created_at)}</td>
+          <td><a href="${d.file_url}" target="_blank" style="color:var(--admin-info); text-decoration:none; font-weight:600;">📄 View PDF</a></td>
+          <td>${d.published ? '<span class="admin-badge admin-badge--success">Published</span>' : '<span class="admin-badge admin-badge--warning">Draft</span>'}</td>
+          <td style="text-align:right;">
+            <button onclick="editDoc('${d.id}')" class="admin-btn admin-btn--outline admin-btn--sm">Edit</button>
+            <button onclick="deleteDoc('${d.id}')" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openDocModal(doc = null) {
+      const modal = document.getElementById('doc-modal');
+      const form = document.getElementById('doc-form');
+      form.reset();
+
+      if (doc) {
+        document.getElementById('modal-heading').textContent = 'Edit Document';
+        document.getElementById('doc-id').value = doc.id;
+        document.getElementById('form-title').value = doc.title || '';
+        document.getElementById('form-category').value = doc.category || 'affiliation';
+        document.getElementById('form-desc').value = doc.description || '';
+        document.getElementById('form-file-url').value = doc.file_url || '';
+        document.getElementById('form-published').checked = doc.published !== false;
+      } else {
+        document.getElementById('modal-heading').textContent = 'Add Document PDF';
+        document.getElementById('doc-id').value = '';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeDocModal() {
+      document.getElementById('doc-modal').style.display = 'none';
+    }
+
+    function editDoc(id) {
+      const d = allDocs.find(x => x.id === id);
+      if (d) openDocModal(d);
+    }
+
+    async function deleteDoc(id) {
+      if (!confirm('Are you sure you want to delete this document?')) return;
+      try {
+        await window.RPS_Supabase.deleteDocumentAdmin(id);
+        window.RPS_Admin.showToast('Document deleted successfully');
+        window.RPS_Admin.logActivity('Delete Document', 'documents', id);
+        loadDocs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete document', 'error');
+      }
+    }
+
+    async function handleSaveDoc(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modal-save-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const id = document.getElementById('doc-id').value;
+      const title = document.getElementById('form-title').value.trim();
+      const fileInput = document.getElementById('form-file');
+      let fileUrl = document.getElementById('form-file-url').value;
+
+      if (fileInput.files && fileInput.files[0]) {
+        try {
+          const uploadRes = await window.RPS_Supabase.uploadFile('documents', fileInput.files[0], 'documents');
+          fileUrl = uploadRes.url;
+        } catch (uploadErr) {
+          window.RPS_Admin.showToast('File upload failed: ' + uploadErr.message, 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Document';
+          return;
+        }
+      }
+
+      if (!fileUrl) {
+        alert('Please select a PDF document to upload.');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Document';
+        return;
+      }
+
+      const payload = {
+        title,
+        category: document.getElementById('form-category').value,
+        description: document.getElementById('form-desc').value.trim(),
+        file_url: fileUrl,
+        published: document.getElementById('form-published').checked,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        if (id) {
+          await window.RPS_Supabase.updateDocumentAdmin(id, payload);
+          window.RPS_Admin.showToast('Document updated successfully!');
+          window.RPS_Admin.logActivity('Update Document', 'documents', id, title);
+        } else {
+          await window.RPS_Supabase.createDocumentAdmin(payload);
+          window.RPS_Admin.showToast('Document uploaded and published successfully!');
+          window.RPS_Admin.logActivity('Create Document', 'documents', null, title);
+        }
+        closeDocModal();
+        loadDocs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to save document', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Document';
+      }
+    }
+  </script>
+</body>
+</html>

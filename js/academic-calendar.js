@@ -96,6 +96,26 @@
       console.warn('LocalStorage error, falling back to default events', e);
       currentEvents = [...DEFAULT_EVENTS];
     }
+
+    // Dynamic Supabase Sync
+    if (window.RPS_Supabase && typeof window.RPS_Supabase.getPublishedEvents === 'function') {
+      window.RPS_Supabase.getPublishedEvents().then(sbEvents => {
+        if (sbEvents && sbEvents.length > 0) {
+          const mapped = sbEvents.map(e => ({
+            id: e.id,
+            date: e.event_date,
+            title: e.title,
+            category: (e.category || 'ACADEMIC ACTIVITY').toUpperCase(),
+            isHoliday: e.category === 'holiday' || e.category === 'national' || e.category === 'festival',
+            isExam: e.category === 'exam' || e.category === 'examination',
+            desc: e.description || ''
+          }));
+          currentEvents = mapped;
+          renderGrid();
+          renderListView();
+        }
+      }).catch(err => console.warn('Supabase calendar fetch fallback:', err));
+    }
   }
 
   function saveData() {

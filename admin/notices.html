@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notice & Circular Management — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link is-active">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTAINER -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">📢 Notice & Circular Management</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="create-notice-btn" class="admin-btn admin-btn--primary">
+          + Create New Notice
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <input type="text" id="search-input" class="admin-form-input" placeholder="Search notices by title or content..." style="max-width: 360px;">
+          
+          <div style="display: flex; gap: 8px;">
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn is-active" data-filter="all">All Notices</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="published">Published</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="draft">Drafts</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="pinned">Pinned</button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Notice Title</th>
+                <th>Category</th>
+                <th>Publish Date</th>
+                <th>Attachment</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="notices-tbody">
+              <tr><td colspan="7" style="text-align:center; padding:20px;">Loading notices list...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- NOTICE FORM MODAL -->
+  <div id="notice-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:650px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 id="modal-heading" style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Create New Notice</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="notice-form">
+        <input type="hidden" id="notice-id">
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-title">Notice Title *</label>
+          <input type="text" id="form-title" class="admin-form-input" placeholder="e.g. CBSE Class X & XII Board Examination Date Sheet 2026" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-category">Category</label>
+            <select id="form-category" class="admin-form-select">
+              <option value="academic">Academic</option>
+              <option value="examination">Examination</option>
+              <option value="events">Events</option>
+              <option value="admissions">Admissions</option>
+              <option value="holiday">Holiday</option>
+              <option value="results">Results</option>
+              <option value="general" selected>General</option>
+            </select>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-date">Publish Date</label>
+            <input type="date" id="form-date" class="admin-form-input">
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-desc">Short Description (for homepage card)</label>
+          <textarea id="form-desc" class="admin-form-textarea" rows="2" placeholder="Brief summary of the notice..."></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-content">Full Notice Content *</label>
+          <textarea id="form-content" class="admin-form-textarea" rows="5" placeholder="Detailed notice announcement body..." required></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-file">Upload Document Attachment (PDF / Image)</label>
+          <input type="file" id="form-file" accept="image/*,application/pdf" class="admin-form-input" style="padding:6px;">
+          <input type="hidden" id="form-attach-url">
+          <div id="file-status" style="font-size:0.8rem; color:var(--admin-info); margin-top:4px;"></div>
+        </div>
+
+        <div style="display:flex; gap:24px; margin:16px 0;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="form-pinned"> Pin Notice to Top
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="form-published" checked> Publish Immediately
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Save Notice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allNotices = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadNotices();
+
+      // Check if URL has ?action=new
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new') {
+        openNoticeModal();
+      }
+
+      document.getElementById('create-notice-btn').onclick = () => openNoticeModal();
+      document.getElementById('modal-close-btn').onclick = closeNoticeModal;
+      document.getElementById('modal-cancel-btn').onclick = closeNoticeModal;
+      document.getElementById('search-input').oninput = renderTable;
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+          e.target.classList.add('is-active');
+          currentFilter = e.target.dataset.filter;
+          renderTable();
+        };
+      });
+
+      document.getElementById('notice-form').onsubmit = handleSaveNotice;
+    });
+
+    async function loadNotices() {
+      try {
+        if (window.RPS_Supabase) {
+          allNotices = await window.RPS_Supabase.getAllNoticesAdmin();
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Error loading notices:', err);
+        window.RPS_Admin.showToast('Failed to load notices list', 'error');
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('notices-tbody');
+      const search = document.getElementById('search-input').value.toLowerCase();
+
+      let filtered = allNotices.filter(n => {
+        const matchesSearch = (n.title || '').toLowerCase().includes(search) || (n.content || '').toLowerCase().includes(search);
+        if (!matchesSearch) return false;
+
+        if (currentFilter === 'published') return n.published === true;
+        if (currentFilter === 'draft') return n.published === false;
+        if (currentFilter === 'pinned') return n.pinned === true;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No notices found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(n => `
+        <tr>
+          <td style="font-weight:600; color:var(--admin-navy-dark); max-width:280px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            ${window.RPS_Admin.escapeHtml(n.title)}
+          </td>
+          <td><span class="admin-badge admin-badge--info">${n.category || 'general'}</span></td>
+          <td>${window.RPS_Admin.formatDate(n.published_at)}</td>
+          <td>${n.attachment_url ? `<a href="${n.attachment_url}" target="_blank" style="color:var(--admin-info); text-decoration:none; font-weight:600;">📎 PDF</a>` : '—'}</td>
+          <td>${n.pinned ? '<span class="admin-badge admin-badge--danger">Pinned</span>' : 'Normal'}</td>
+          <td>${n.published ? '<span class="admin-badge admin-badge--success">Published</span>' : '<span class="admin-badge admin-badge--warning">Draft</span>'}</td>
+          <td style="text-align:right;">
+            <button onclick="editNotice('${n.id}')" class="admin-btn admin-btn--outline admin-btn--sm">Edit</button>
+            <button onclick="deleteNotice('${n.id}')" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openNoticeModal(notice = null) {
+      const modal = document.getElementById('notice-modal');
+      const form = document.getElementById('notice-form');
+      form.reset();
+
+      if (notice) {
+        document.getElementById('modal-heading').textContent = 'Edit Notice';
+        document.getElementById('notice-id').value = notice.id;
+        document.getElementById('form-title').value = notice.title || '';
+        document.getElementById('form-category').value = notice.category || 'general';
+        document.getElementById('form-date').value = notice.published_at ? notice.published_at.split('T')[0] : '';
+        document.getElementById('form-desc').value = notice.description || '';
+        document.getElementById('form-content').value = notice.content || '';
+        document.getElementById('form-attach-url').value = notice.attachment_url || '';
+        document.getElementById('form-pinned').checked = !!notice.pinned;
+        document.getElementById('form-published').checked = notice.published !== false;
+        document.getElementById('file-status').textContent = notice.attachment_url ? `Current file: ${notice.attachment_name || 'Attachment'}` : '';
+      } else {
+        document.getElementById('modal-heading').textContent = 'Create New Notice';
+        document.getElementById('notice-id').value = '';
+        document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('file-status').textContent = '';
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeNoticeModal() {
+      document.getElementById('notice-modal').style.display = 'none';
+    }
+
+    function editNotice(id) {
+      const n = allNotices.find(x => x.id === id);
+      if (n) openNoticeModal(n);
+    }
+
+    async function deleteNotice(id) {
+      if (!confirm('Are you sure you want to permanently delete this notice?')) return;
+      try {
+        await window.RPS_Supabase.deleteNoticeAdmin(id);
+        window.RPS_Admin.showToast('Notice deleted successfully', 'success');
+        window.RPS_Admin.logActivity('Delete Notice', 'notices', id);
+        loadNotices();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete notice', 'error');
+      }
+    }
+
+    async function handleSaveNotice(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modal-save-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const id = document.getElementById('notice-id').value;
+      const title = document.getElementById('form-title').value.trim();
+      const content = document.getElementById('form-content').value.trim();
+      const fileInput = document.getElementById('form-file');
+
+      let attachmentUrl = document.getElementById('form-attach-url').value;
+      let attachmentName = attachmentUrl ? 'Attached Document' : null;
+
+      // Handle file upload to Supabase Storage if file selected
+      if (fileInput.files && fileInput.files[0]) {
+        try {
+          const uploadRes = await window.RPS_Supabase.uploadFile('notice-attachments', fileInput.files[0], 'notices');
+          attachmentUrl = uploadRes.url;
+          attachmentName = fileInput.files[0].name;
+        } catch (uploadErr) {
+          window.RPS_Admin.showToast('File upload failed: ' + uploadErr.message, 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Notice';
+          return;
+        }
+      }
+
+      const payload = {
+        title,
+        slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        category: document.getElementById('form-category').value,
+        description: document.getElementById('form-desc').value.trim(),
+        content,
+        published_at: document.getElementById('form-date').value ? new Date(document.getElementById('form-date').value).toISOString() : new Date().toISOString(),
+        attachment_url: attachmentUrl || null,
+        attachment_name: attachmentName || null,
+        pinned: document.getElementById('form-pinned').checked,
+        published: document.getElementById('form-published').checked,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        if (id) {
+          await window.RPS_Supabase.updateNoticeAdmin(id, payload);
+          window.RPS_Admin.showToast('Notice updated successfully!');
+          window.RPS_Admin.logActivity('Update Notice', 'notices', id, title);
+        } else {
+          await window.RPS_Supabase.createNoticeAdmin(payload);
+          window.RPS_Admin.showToast('Notice published successfully!');
+          window.RPS_Admin.logActivity('Create Notice', 'notices', null, title);
+        }
+        closeNoticeModal();
+        loadNotices();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to save notice', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Notice';
+      }
+    }
+  </script>
+</body>
+</html>

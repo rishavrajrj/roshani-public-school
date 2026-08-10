@@ -181,7 +181,37 @@ class NoticeManager {
     this.loadNotices();
   }
 
-  loadNotices() {
+  async loadNotices() {
+    try {
+      if (window.RPS_Supabase && typeof window.RPS_Supabase.getPublishedNotices === 'function') {
+        const sbNotices = await window.RPS_Supabase.getPublishedNotices();
+        if (sbNotices && sbNotices.length > 0) {
+          this.notices = sbNotices.map(n => ({
+            id: n.id,
+            title: n.title,
+            slug: n.slug || this.generateSlug(n.title),
+            description: n.description || '',
+            content: n.content || n.description || '',
+            category: n.category || 'general',
+            published: n.published !== false,
+            pinned: !!n.pinned,
+            publishedAt: n.published_at ? n.published_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            updatedAt: n.updated_at,
+            expiresAt: n.expires_at ? n.expires_at.split('T')[0] : null,
+            attachmentUrl: n.attachment_url || null,
+            attachmentName: n.attachment_name || null,
+            attachmentType: n.attachment_type || null,
+            createdAt: n.created_at ? n.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+          }));
+          if (typeof renderPublicNotices === 'function') renderPublicNotices();
+          if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Supabase notices fetch fallback:", e);
+    }
+
     try {
       const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
       if (stored) {
@@ -687,12 +717,13 @@ function createNoticeCard(n) {
 
 // Admin System
 function setupAdminSystem() {
-  // Bind click listeners to all admin portal trigger links across all pages
-  document.querySelectorAll('.js-admin-trigger').forEach(trigger => {
-    trigger.onclick = (e) => {
+  // Global event delegation for all admin trigger links across all pages
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('.js-admin-trigger, .js-calendar-admin-trigger, a[href="#admin"], a[title*="Admin"]');
+    if (trigger) {
       e.preventDefault();
       promptAdminAccess();
-    };
+    }
   });
 
   // Secret 5-click logo trigger
@@ -712,15 +743,83 @@ function setupAdminSystem() {
 }
 
 function promptAdminAccess() {
-  const code = prompt("Enter Admin Passcode (Default: admin2026):");
-  if (code === null) return; // User pressed Cancel
-  
-  const cleanCode = code.trim();
-  if (cleanCode === "admin2026" || cleanCode === "rps2026" || cleanCode === "admin") {
-    openAdminDashboard();
-  } else {
-    alert("Incorrect Passcode. Try: admin2026");
+  window.location.href = 'admin/index.html';
+  return;
+}
+  if (existing) existing.remove();
+
+  const html = `
+    <div class="modal-backdrop admin-login-modal is-open" style="position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(15, 23, 42, 0.85) !important; backdrop-filter: blur(8px) !important; z-index: 999999 !important; display: flex !important; justify-content: center !important; align-items: center !important; padding: 20px !important; opacity: 1 !important; visibility: visible !important; pointer-events: auto !important;">
+      <div class="modal-dialog" style="background: #ffffff; width: 100%; max-width: 440px; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); font-family: var(--font-sans, sans-serif);">
+        <div style="background: linear-gradient(135deg, #0f2440 0%, #1a365d 100%); color: #ffffff; padding: 24px; text-align: center; border-bottom: 3px solid var(--primary, #B91C5C);">
+          <div style="width: 48px; height: 48px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; font-size: 24px;">🔒</div>
+          <h3 style="margin: 0; font-family: var(--font-display, serif); font-size: 1.35rem; color: #ffffff;">Admin Portal Sign In</h3>
+          <p style="margin: 6px 0 0 0; font-size: 0.825rem; color: rgba(255,255,255,0.8);">Roshani Public School Administration</p>
+        </div>
+        <form id="admin-login-form" style="padding: 24px;">
+          <div id="login-error-msg" style="display: none; background: #fee2e2; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 0.825rem; margin-bottom: 16px;"></div>
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Admin Passcode / Email</label>
+            <input type="text" id="admin-email-input" required placeholder="admin2026 or admin@roshanipublicschool.com" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box;">
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 6px;">Password (for email login)</label>
+            <input type="password" id="admin-password-input" placeholder="••••••••" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; outline: none; box-sizing: border-box;">
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button type="button" id="close-login-btn" style="padding: 10px 18px; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 600; color: #475569; cursor: pointer;">Cancel</button>
+            <button type="submit" id="submit-login-btn" style="padding: 10px 20px; background: var(--primary, #B91C5C); border: none; border-radius: 8px; font-weight: 600; color: #ffffff; cursor: pointer;">Sign In</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+
+  // Check background session asynchronously without blocking modal display
+  if (window.RPS_Supabase && typeof window.RPS_Supabase.getSession === 'function') {
+    window.RPS_Supabase.getSession().then(session => {
+      if (session) {
+        const m = document.querySelector('.admin-login-modal');
+        if (m) m.remove();
+        openAdminDashboard();
+      }
+    }).catch(err => console.warn('Async session check:', err));
   }
+  const modal = document.querySelector('.admin-login-modal');
+  const form = document.getElementById('admin-login-form');
+  const errorMsg = document.getElementById('login-error-msg');
+  const closeBtn = document.getElementById('close-login-btn');
+
+  closeBtn.onclick = () => modal.remove();
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const emailVal = document.getElementById('admin-email-input').value.trim();
+    const passVal = document.getElementById('admin-password-input').value;
+
+    errorMsg.style.display = 'none';
+
+    if (emailVal === 'admin2026' || emailVal === 'rps2026' || emailVal === 'admin') {
+      modal.remove();
+      openAdminDashboard();
+      return;
+    }
+
+    try {
+      if (window.RPS_Supabase && typeof window.RPS_Supabase.loginAdmin === 'function') {
+        await window.RPS_Supabase.loginAdmin(emailVal, passVal);
+        modal.remove();
+        openAdminDashboard();
+        return;
+      }
+    } catch (err) {
+      errorMsg.textContent = err.message || 'Invalid login credentials';
+      errorMsg.style.display = 'block';
+    }
+  };
 }
 
 function openAdminDashboard() {
@@ -820,20 +919,20 @@ function openNoticeFormModal(noticeToEdit = null) {
   };
 
   const html = `
-    <div class="modal-backdrop notice-form-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10001; display:flex; justify-content:center; align-items:center;">
-      <div class="modal-dialog" style="background:#fff; width:100%; max-width:600px; max-height:90vh; overflow-y:auto; border-radius:8px; padding:30px; position:relative;">
-        <button class="form-close-btn" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
-        <h3 style="margin-top:0;">${isEdit ? 'Edit Notice' : 'Create New Notice'}</h3>
+    <div class="modal-backdrop notice-form-modal is-open" style="position:fixed !important; top:0 !important; left:0 !important; width:100vw !important; height:100vh !important; background:rgba(0,0,0,0.6) !important; z-index:10001 !important; display:flex !important; justify-content:center !important; align-items:center !important; opacity:1 !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="modal-dialog" style="background:#fff; width:100%; max-width:600px; max-height:90vh; overflow-y:auto; border-radius:12px; padding:28px; position:relative; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+        <button class="form-close-btn" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+        <h3 style="margin-top:0; font-family:var(--font-display, serif); border-bottom:2px solid var(--primary, #B91C5C); padding-bottom:10px;">${isEdit ? 'Edit Notice' : 'Create New Notice'}</h3>
         
-        <div style="display:flex; flex-direction:column; gap:15px;">
+        <div style="display:flex; flex-direction:column; gap:15px; margin-top:15px;">
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:500;">Title *</label>
-            <input type="text" id="fn-title" value="${noticeMgr.escapeHtml(d.title)}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" required>
+            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Title *</label>
+            <input type="text" id="fn-title" value="${noticeMgr.escapeHtml(d.title)}" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;" required>
           </div>
           
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:500;">Category</label>
-            <select id="fn-cat" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Category</label>
+            <select id="fn-cat" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
               <option value="academic" ${d.category==='academic'?'selected':''}>Academic</option>
               <option value="examination" ${d.category==='examination'?'selected':''}>Examination</option>
               <option value="events" ${d.category==='events'?'selected':''}>Events</option>
@@ -845,43 +944,45 @@ function openNoticeFormModal(noticeToEdit = null) {
           </div>
           
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:500;">Short Description</label>
-            <textarea id="fn-desc" rows="2" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">${noticeMgr.escapeHtml(d.description)}</textarea>
+            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Short Description</label>
+            <textarea id="fn-desc" rows="2" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">${noticeMgr.escapeHtml(d.description)}</textarea>
           </div>
           
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:500;">Full Content *</label>
-            <textarea id="fn-content" rows="5" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;" required>${noticeMgr.escapeHtml(d.content)}</textarea>
+            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Full Content *</label>
+            <textarea id="fn-content" rows="5" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;" required>${noticeMgr.escapeHtml(d.content)}</textarea>
           </div>
           
           <div style="display:flex; gap:15px;">
             <div style="flex:1;">
-              <label style="display:block; margin-bottom:5px; font-weight:500;">Publish Date</label>
-              <input type="date" id="fn-pub" value="${d.publishedAt}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+              <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Publish Date</label>
+              <input type="date" id="fn-pub" value="${d.publishedAt}" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
             </div>
             <div style="flex:1;">
-              <label style="display:block; margin-bottom:5px; font-weight:500;">Expiry Date (Optional)</label>
-              <input type="date" id="fn-exp" value="${d.expiresAt || ''}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+              <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Expiry Date (Optional)</label>
+              <input type="date" id="fn-exp" value="${d.expiresAt || ''}" style="width:100%; padding:9px 12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
             </div>
           </div>
           
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:500;">Attachment URL (PDF/Image)</label>
-            <input type="text" id="fn-attach" value="${d.attachmentUrl || ''}" placeholder="https://..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Upload Document / Image Attachment (Supabase Storage)</label>
+            <input type="file" id="fn-file-input" accept="image/*,application/pdf" style="width:100%; padding:6px; font-size:0.85rem;">
+            <input type="hidden" id="fn-attach" value="${d.attachmentUrl || ''}">
+            ${d.attachmentUrl ? `<div style="font-size:0.8rem; color:#0284c7; margin-top:4px;">Current Attachment: <a href="${d.attachmentUrl}" target="_blank">View Document</a></div>` : ''}
           </div>
           
           <div style="display:flex; gap:20px; margin-top:10px;">
-            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9rem;">
               <input type="checkbox" id="fn-pin" ${d.pinned ? 'checked' : ''}> Pin this notice
             </label>
-            <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.9rem;">
               <input type="checkbox" id="fn-pub-chk" ${d.published ? 'checked' : ''}> Publish immediately
             </label>
           </div>
           
           <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-            <button class="btn btn-outline" id="fn-cancel">Cancel</button>
-            <button class="btn" id="fn-save" style="background:var(--primary-color,#e91e63); color:#fff; border:none;">Save Notice</button>
+            <button class="btn btn-outline" id="fn-cancel" style="padding:10px 18px; border-radius:6px;">Cancel</button>
+            <button class="btn" id="fn-save" style="background:var(--primary, #B91C5C); color:#fff; border:none; padding:10px 22px; border-radius:6px; font-weight:600;">Save Notice</button>
           </div>
         </div>
       </div>
@@ -895,7 +996,8 @@ function openNoticeFormModal(noticeToEdit = null) {
   modal.querySelector('.form-close-btn').onclick = closeFn;
   modal.querySelector('#fn-cancel').onclick = closeFn;
   
-  modal.querySelector('#fn-save').onclick = () => {
+  modal.querySelector('#fn-save').onclick = async () => {
+    const saveBtn = document.getElementById('fn-save');
     const title = document.getElementById('fn-title').value.trim();
     const content = document.getElementById('fn-content').value.trim();
     if(!title || !content) {
@@ -903,21 +1005,72 @@ function openNoticeFormModal(noticeToEdit = null) {
       return;
     }
     
-    const newNotice = {
-      id: isEdit ? d.id : 'n-' + Date.now(),
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    let attachmentUrl = document.getElementById('fn-attach').value.trim() || null;
+    let attachmentName = attachmentUrl ? 'Attached Document' : null;
+    const fileInput = document.getElementById('fn-file-input');
+
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      try {
+        if (window.RPS_Supabase && typeof window.RPS_Supabase.uploadFile === 'function') {
+          const uploadRes = await window.RPS_Supabase.uploadFile('notice-attachments', file, 'notices');
+          attachmentUrl = uploadRes.url;
+          attachmentName = file.name;
+        }
+      } catch (uploadErr) {
+        console.error('File upload failed:', uploadErr);
+        alert('File upload failed: ' + uploadErr.message);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Notice';
+        return;
+      }
+    }
+
+    const payload = {
       title,
       slug: isEdit ? d.slug : noticeMgr.generateSlug(title),
       category: document.getElementById('fn-cat').value,
       description: document.getElementById('fn-desc').value.trim(),
       content,
-      publishedAt: document.getElementById('fn-pub').value || new Date().toISOString().split('T')[0],
-      expiresAt: document.getElementById('fn-exp').value || null,
-      attachmentUrl: document.getElementById('fn-attach').value.trim() || null,
-      attachmentName: document.getElementById('fn-attach').value.trim() ? 'Attached File' : null,
+      published_at: document.getElementById('fn-pub').value ? new Date(document.getElementById('fn-pub').value).toISOString() : new Date().toISOString(),
+      expires_at: document.getElementById('fn-exp').value ? new Date(document.getElementById('fn-exp').value).toISOString() : null,
+      attachment_url: attachmentUrl,
+      attachment_name: attachmentName,
       pinned: document.getElementById('fn-pin').checked,
       published: document.getElementById('fn-pub-chk').checked,
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      if (window.RPS_Supabase && typeof window.RPS_Supabase.createNoticeAdmin === 'function') {
+        if (isEdit) {
+          await window.RPS_Supabase.updateNoticeAdmin(d.id, payload);
+        } else {
+          await window.RPS_Supabase.createNoticeAdmin(payload);
+        }
+      }
+    } catch (err) {
+      console.warn('Supabase notice save warning (local sync):', err);
+    }
+
+    const newNotice = {
+      id: isEdit ? d.id : 'n-' + Date.now(),
+      title: payload.title,
+      slug: payload.slug,
+      category: payload.category,
+      description: payload.description,
+      content: payload.content,
+      publishedAt: payload.published_at.split('T')[0],
+      expiresAt: payload.expires_at ? payload.expires_at.split('T')[0] : null,
+      attachmentUrl: payload.attachment_url,
+      attachmentName: payload.attachment_name,
+      pinned: payload.pinned,
+      published: payload.published,
       createdAt: isEdit ? d.createdAt : new Date().toISOString().split('T')[0],
-      updatedAt: isEdit ? new Date().toISOString().split('T')[0] : null
+      updatedAt: new Date().toISOString().split('T')[0]
     };
     
     if (isEdit) {
@@ -929,7 +1082,8 @@ function openNoticeFormModal(noticeToEdit = null) {
     
     noticeMgr.saveNotices(noticeMgr.notices);
     closeFn();
-    renderAdminDashboardContent(document.querySelector('.admin-dashboard-modal'));
+    const adminModal = document.querySelector('.admin-dashboard-modal');
+    if (adminModal) renderAdminDashboardContent(adminModal);
     renderNoticesPageRedesign();
     renderPublicNotices();
   };
@@ -940,16 +1094,16 @@ function showDeleteConfirmation(noticeId) {
   if (existing) existing.remove();
 
   const html = `
-    <div class="modal-backdrop delete-confirm-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:10005; display:flex; justify-content:center; align-items:center;">
-      <div class="modal-dialog" style="background:#fff; width:350px; border-radius:8px; padding:30px; text-align:center;">
+    <div class="modal-backdrop delete-confirm-modal is-open" style="position:fixed !important; top:0 !important; left:0 !important; width:100vw !important; height:100vh !important; background:rgba(0,0,0,0.5) !important; z-index:10005 !important; display:flex !important; justify-content:center !important; align-items:center !important; opacity:1 !important; visibility:visible !important; pointer-events:auto !important;">
+      <div class="modal-dialog" style="background:#fff; width:350px; border-radius:12px; padding:30px; text-align:center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
         <div style="color:#d32f2f; margin-bottom:15px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
         </div>
-        <h3 style="margin:0 0 10px 0;">Delete this notice?</h3>
-        <p style="color:#666; margin:0 0 20px 0;">This action cannot be undone.</p>
+        <h3 style="margin:0 0 10px 0; font-family:var(--font-display, serif);">Delete this notice?</h3>
+        <p style="color:#666; margin:0 0 20px 0; font-size:0.9rem;">This action cannot be undone.</p>
         <div style="display:flex; justify-content:center; gap:15px;">
-          <button id="del-cancel" class="btn btn-outline" style="padding:8px 16px;">Cancel</button>
-          <button id="del-confirm" class="btn" style="padding:8px 16px; background:#d32f2f; color:#fff; border:none;">Delete Notice</button>
+          <button id="del-cancel" class="btn btn-outline" style="padding:8px 18px; border-radius:6px;">Cancel</button>
+          <button id="del-confirm" class="btn" style="padding:8px 18px; background:#d32f2f; color:#fff; border:none; border-radius:6px; font-weight:600;">Delete Notice</button>
         </div>
       </div>
     </div>
@@ -958,25 +1112,44 @@ function showDeleteConfirmation(noticeId) {
   
   const modal = document.querySelector('.delete-confirm-modal');
   modal.querySelector('#del-cancel').onclick = () => modal.remove();
-  modal.querySelector('#del-confirm').onclick = () => {
+  modal.querySelector('#del-confirm').onclick = async () => {
+    try {
+      if (window.RPS_Supabase && typeof window.RPS_Supabase.deleteNoticeAdmin === 'function') {
+        await window.RPS_Supabase.deleteNoticeAdmin(noticeId);
+      }
+    } catch (err) {
+      console.warn('Supabase delete notice warning:', err);
+    }
     noticeMgr.notices = noticeMgr.notices.filter(n => n.id !== noticeId);
     noticeMgr.saveNotices(noticeMgr.notices);
     modal.remove();
-    renderAdminDashboardContent(document.querySelector('.admin-dashboard-modal'));
+    const adminModal = document.querySelector('.admin-dashboard-modal');
+    if (adminModal) renderAdminDashboardContent(adminModal);
     renderNoticesPageRedesign();
     renderPublicNotices();
   };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+window.promptAdminAccess = promptAdminAccess;
+window.openAdminDashboard = openAdminDashboard;
+
+// Immediate event listener for js-admin-trigger across all pages
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('.js-admin-trigger, .js-calendar-admin-trigger, a[href="#admin"], a[title*="Admin"]');
+  if (trigger) {
+    e.preventDefault();
+    promptAdminAccess();
+  }
+});
+
+function initNoticesAdmin() {
   renderPublicNotices();
   renderNoticesPageRedesign();
   setupAdminSystem();
 
-  // Check URL params for ?id= to auto-open Notice Detail Modal
   const urlParams = new URLSearchParams(window.location.search);
   const noticeId = urlParams.get('id');
-  if (noticeId) {
+  if (noticeId && noticeMgr && noticeMgr.notices) {
     const targetNotice = noticeMgr.notices.find(n => n.id === noticeId);
     if (targetNotice) {
       setTimeout(() => {
@@ -984,4 +1157,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 150);
     }
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initNoticesAdmin);
+} else {
+  initNoticesAdmin();
+}

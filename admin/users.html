@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin User & Role Management — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link is-active">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">👥 Admin User & Role Management</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="create-user-btn" class="admin-btn admin-btn--primary">
+          + Add New Administrator
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div class="admin-panel__header">
+          <h2 class="admin-panel__title">Authorized Administrators</h2>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Admin Name</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:20px;">Loading admin users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ADD USER MODAL -->
+  <div id="user-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:520px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Add New Admin User</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="user-form">
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-name">Full Name *</label>
+          <input type="text" id="form-name" class="admin-form-input" placeholder="e.g. Arun Kumar" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-email">Admin Email *</label>
+          <input type="email" id="form-email" class="admin-form-input" placeholder="admin@roshanipublicschool.com" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-role">Assigned Role</label>
+          <select id="form-role" class="admin-form-select">
+            <option value="content_admin">Content Admin (Notices, Events, Gallery, Docs)</option>
+            <option value="super_admin">Super Admin (Full Administrative & User Access)</option>
+          </select>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Register Admin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allProfiles = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Require Super Admin access
+      await window.RPS_Admin.checkAuth(true);
+      loadProfiles();
+
+      document.getElementById('create-user-btn').onclick = openModal;
+      document.getElementById('modal-close-btn').onclick = closeModal;
+      document.getElementById('modal-cancel-btn').onclick = closeModal;
+      document.getElementById('user-form').onsubmit = handleAddUser;
+    });
+
+    async function loadProfiles() {
+      try {
+        if (window.RPS_Supabase) {
+          allProfiles = await window.RPS_Supabase.getAdminProfiles();
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Error loading profiles:', err);
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('users-tbody');
+      if (!allProfiles || allProfiles.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td style="font-weight:600; color:var(--admin-navy-dark);">Primary Super Admin</td>
+            <td>admin@roshanipublicschool.com</td>
+            <td><span class="admin-badge admin-badge--purple">Super Admin</span></td>
+            <td><span class="admin-badge admin-badge--success">Active</span></td>
+            <td>2026-08-10</td>
+            <td style="text-align:right;">—</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = allProfiles.map(p => `
+        <tr>
+          <td style="font-weight:600; color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(p.name)}</td>
+          <td>${window.RPS_Admin.escapeHtml(p.email)}</td>
+          <td>${p.role === 'super_admin' ? '<span class="admin-badge admin-badge--purple">Super Admin</span>' : '<span class="admin-badge admin-badge--info">Content Admin</span>'}</td>
+          <td>${p.is_active !== false ? '<span class="admin-badge admin-badge--success">Active</span>' : '<span class="admin-badge admin-badge--danger">Disabled</span>'}</td>
+          <td>${window.RPS_Admin.formatDate(p.created_at)}</td>
+          <td style="text-align:right;">
+            <button onclick="toggleRole('${p.id}', '${p.role}')" class="admin-btn admin-btn--outline admin-btn--sm">Change Role</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openModal() {
+      document.getElementById('user-form').reset();
+      document.getElementById('user-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('user-modal').style.display = 'none';
+    }
+
+    async function toggleRole(id, currentRole) {
+      const newRole = currentRole === 'super_admin' ? 'content_admin' : 'super_admin';
+      if (!confirm(`Change admin role to ${newRole}?`)) return;
+      try {
+        await window.RPS_Supabase.updateProfileAdmin(id, { role: newRole });
+        window.RPS_Admin.showToast(`Admin role updated to ${newRole}`);
+        window.RPS_Admin.logActivity('Change Admin Role', 'profiles', id, newRole);
+        loadProfiles();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update role', 'error');
+      }
+    }
+
+    async function handleAddUser(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modal-save-btn');
+      saveBtn.disabled = true;
+
+      const name = document.getElementById('form-name').value.trim();
+      const email = document.getElementById('form-email').value.trim();
+      const role = document.getElementById('form-role').value;
+
+      try {
+        await window.RPS_Supabase.createAdminProfile({
+          name,
+          email,
+          role,
+          is_active: true,
+          created_at: new Date().toISOString()
+        });
+        window.RPS_Admin.showToast('Admin user registered successfully!');
+        window.RPS_Admin.logActivity('Add Admin User', 'profiles', null, email);
+        closeModal();
+        loadProfiles();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to register admin', 'error');
+      } finally {
+        saveBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

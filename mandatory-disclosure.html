@@ -184,6 +184,7 @@
       <div class="mobile-nav__sub" id="mob-academics">
         <a href="academics.html" class="mobile-nav__sub-link">Curriculum</a>
         <a href="academics.html#assessment" class="mobile-nav__sub-link">Assessment Policy</a>
+        <a href="academic-calendar.html" class="mobile-nav__sub-link">Academic Calendar</a>
         <a href="academics.html#results" class="mobile-nav__sub-link">CBSE Results</a>
       </div>
       <a href="facilities.html" class="mobile-nav__link">Facilities</a>
@@ -993,6 +994,7 @@
         <div class="footer__bottom-links">
           <a href="mandatory-disclosure.html">Mandatory Disclosure</a>
           <a href="contact.html">Contact Us</a>
+          <a href="admin/index.html" class="js-admin-trigger">🔒 Admin Portal</a>
           <a href="sitemap.xml">Sitemap</a>
         </div>
       </div>
@@ -1005,10 +1007,53 @@
   </button>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/forms.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (window.RPS_Supabase && typeof window.RPS_Supabase.getPublishedDocuments === 'function') {
+        try {
+          const docs = await window.RPS_Supabase.getPublishedDocuments();
+          if (docs && docs.length > 0) {
+            const grid = document.querySelector('.docs-grid');
+            if (grid) {
+              grid.innerHTML = docs.map(d => `
+                <div class="doc-card">
+                  <div>
+                    <div class="doc-card__header">
+                      <div class="doc-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      </div>
+                      <div>
+                        <span class="doc-card__badge">${d.category || 'Official'}</span>
+                        <h3 class="doc-card__title">${d.title}</h3>
+                      </div>
+                    </div>
+                    <p class="doc-card__desc">${d.description || 'Official Roshani Public School mandatory disclosure document.'}</p>
+                  </div>
+                  <div class="doc-card__actions">
+                    <a href="${d.file_url}" target="_blank" class="btn btn--primary btn--sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                      View Document
+                    </a>
+                    <a href="${d.file_url}" download class="btn btn--outline btn--sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Download PDF
+                    </a>
+                  </div>
+                </div>
+              `).join('');
+            }
+          }
+        } catch (err) {
+          console.warn('Dynamic documents fetch error:', err);
+        }
+      }
+    });
+
     function openDocModal(docName) {
       document.getElementById('modalDocName').textContent = docName;
       document.getElementById('docModal').classList.add('is-open');

@@ -33,6 +33,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const dots = dotsContainer ? dotsContainer.querySelectorAll('.hero-carousel__dot') : [];
 
+  const titleEl = document.getElementById('hero-carousel-title');
+  let typeTimer = null;
+
+  const slideTitles = [
+    { main: "Shaping Bright Futures", sub: "Since 2001" },
+    { main: "Excellence in Education", sub: "Since 2001" },
+    { main: "Empowering Young Minds", sub: "Since 2001" },
+    { main: "Dedicated Educator Faculty", sub: "Since 2001" },
+    { main: "Next-Gen Digital Learning", sub: "Since 2001" },
+    { main: "Fostering Innovation & Discovery", sub: "Since 2001" },
+    { main: "Building Character & Leadership", sub: "Since 2001" },
+    { main: "Nurturing Holistic Growth", sub: "Since 2001" }
+  ];
+
+  function updateTypewriterTitle(index) {
+    if (!titleEl) return;
+
+    if (typeTimer) {
+      clearTimeout(typeTimer);
+      typeTimer = null;
+    }
+
+    const data = slideTitles[index] || slideTitles[0];
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      titleEl.innerHTML = `${data.main}<br><span class="hero-carousel__subtitle">${data.sub}</span>`;
+      return;
+    }
+
+    const fullText = data.main;
+    let charIdx = 0;
+
+    titleEl.innerHTML = `<span class="typewriter-text"></span><span class="typewriter-cursor" aria-hidden="true"></span><br><span class="hero-carousel__subtitle" style="opacity: 0;">${data.sub}</span>`;
+
+    const textSpan = titleEl.querySelector('.typewriter-text');
+    const subSpan = titleEl.querySelector('.hero-carousel__subtitle');
+
+    function typeChar() {
+      if (charIdx < fullText.length) {
+        textSpan.textContent += fullText.charAt(charIdx);
+        charIdx++;
+        typeTimer = setTimeout(typeChar, 35);
+      } else {
+        if (subSpan) subSpan.style.opacity = '1';
+        typeTimer = setTimeout(() => {
+          const cursor = titleEl.querySelector('.typewriter-cursor');
+          if (cursor) cursor.remove();
+        }, 1500);
+      }
+    }
+
+    typeChar();
+  }
+
   function goToSlide(index) {
     if (index < 0) {
       index = slides.length - 1;
@@ -59,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     currentIndex = index;
+    updateTypewriterTitle(index);
   }
 
   function nextSlide() {

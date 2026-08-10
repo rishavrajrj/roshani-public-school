@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Gallery Management — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <style>
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .gallery-card {
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--admin-border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+    }
+    .gallery-card__img-box {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      background: #f1f5f9;
+      position: relative;
+    }
+    .gallery-card__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .gallery-card__body {
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .gallery-card__title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--admin-navy-dark);
+      margin-bottom: 4px;
+    }
+    .gallery-card__cat {
+      font-size: 0.75rem;
+      color: var(--admin-primary);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .gallery-card__actions {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link is-active">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">🖼️ School Gallery Management</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="upload-photo-btn" class="admin-btn admin-btn--primary">
+          📸 Upload New Photos
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn is-active" data-cat="all">All Photos</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="campus">Campus</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="events">Events</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="annual">Annual Function</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="sports">Sports</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="cultural">Cultural</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="classroom">Classrooms</button>
+          </div>
+        </div>
+
+        <div id="gallery-grid-container" class="gallery-grid">
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Loading gallery photos...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- UPLOAD GALLERY MODAL -->
+  <div id="gallery-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:540px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">📸 Upload Photos to Supabase Storage</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="gallery-form">
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-title">Photo Title / Subject *</label>
+          <input type="text" id="form-title" class="admin-form-input" placeholder="e.g. Science Laboratory Experiment Session" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-category">Category / Album</label>
+          <select id="form-category" class="admin-form-select">
+            <option value="campus">Campus & Infrastructure</option>
+            <option value="events">Academic & Special Events</option>
+            <option value="annual">Annual Function</option>
+            <option value="sports">Sports & Athletics</option>
+            <option value="cultural">Cultural Activities</option>
+            <option value="classroom">Classroom & Labs</option>
+          </select>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-file">Select Image File (Stored in Supabase `school-gallery` Bucket) *</label>
+          <input type="file" id="form-file" accept="image/*" class="admin-form-input" style="padding:6px;" required>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-caption">Caption / Description</label>
+          <textarea id="form-caption" class="admin-form-textarea" rows="2" placeholder="Optional description for gallery lightbox..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Upload & Publish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allGallery = [];
+    let currentCat = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadGallery();
+
+      document.getElementById('upload-photo-btn').onclick = openModal;
+      document.getElementById('modal-close-btn').onclick = closeModal;
+      document.getElementById('modal-cancel-btn').onclick = closeModal;
+
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('is-active'));
+          e.target.classList.add('is-active');
+          currentCat = e.target.dataset.cat;
+          renderGrid();
+        };
+      });
+
+      document.getElementById('gallery-form').onsubmit = handleUpload;
+    });
+
+    async function loadGallery() {
+      try {
+        if (window.RPS_Supabase) {
+          allGallery = await window.RPS_Supabase.getAllGalleryAdmin();
+          renderGrid();
+        }
+      } catch (err) {
+        console.error('Error loading gallery:', err);
+        window.RPS_Admin.showToast('Failed to load gallery items', 'error');
+      }
+    }
+
+    function renderGrid() {
+      const container = document.getElementById('gallery-grid-container');
+      let filtered = allGallery.filter(g => {
+        if (currentCat === 'all') return true;
+        return g.category === currentCat;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No gallery photos found in this category.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(g => `
+        <div class="gallery-card">
+          <div class="gallery-card__img-box">
+            <img src="${g.image_url}" alt="${window.RPS_Admin.escapeHtml(g.title)}" class="gallery-card__img">
+          </div>
+          <div class="gallery-card__body">
+            <div class="gallery-card__cat">${g.category || 'campus'}</div>
+            <div class="gallery-card__title">${window.RPS_Admin.escapeHtml(g.title)}</div>
+            <div class="gallery-card__actions">
+              <button onclick="deleteGalleryItem('${g.id}')" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openModal() {
+      document.getElementById('gallery-form').reset();
+      document.getElementById('gallery-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('gallery-modal').style.display = 'none';
+    }
+
+    async function deleteGalleryItem(id) {
+      if (!confirm('Are you sure you want to delete this photo from the gallery?')) return;
+      try {
+        await window.RPS_Supabase.deleteGalleryItemAdmin(id);
+        window.RPS_Admin.showToast('Photo deleted from gallery');
+        window.RPS_Admin.logActivity('Delete Photo', 'gallery', id);
+        loadGallery();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete photo', 'error');
+      }
+    }
+
+    async function handleUpload(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modal-save-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Uploading to Supabase Storage...';
+
+      const fileInput = document.getElementById('form-file');
+      if (!fileInput.files || !fileInput.files[0]) {
+        alert('Please select an image file to upload.');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Upload & Publish';
+        return;
+      }
+
+      try {
+        const uploadRes = await window.RPS_Supabase.uploadFile('school-gallery', fileInput.files[0], 'gallery');
+        const payload = {
+          title: document.getElementById('form-title').value.trim(),
+          category: document.getElementById('form-category').value,
+          caption: document.getElementById('form-caption').value.trim(),
+          image_url: uploadRes.url,
+          storage_path: uploadRes.path,
+          published: true,
+          created_at: new Date().toISOString()
+        };
+
+        await window.RPS_Supabase.createGalleryItemAdmin(payload);
+        window.RPS_Admin.showToast('Photo uploaded and published successfully!');
+        window.RPS_Admin.logActivity('Upload Photo', 'gallery', null, payload.title);
+        closeModal();
+        loadGallery();
+      } catch (err) {
+        window.RPS_Admin.showToast('Upload failed: ' + err.message, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Upload & Publish';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Settings — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link is-active">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">⚙️ Website Settings & Branding</h1>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div style="max-width: 700px;">
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">Website Meta & Branding</h2>
+          </div>
+          <form id="settings-form">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="setting-title">Website Title</label>
+              <input type="text" id="setting-title" class="admin-form-input" value="Roshani Public School — Turkauliya, Motihari">
+            </div>
+
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="setting-copyright">Footer Copyright Text</label>
+              <input type="text" id="setting-copyright" class="admin-form-input" value="© 2026 Roshani Public School. All Rights Reserved.">
+            </div>
+
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="setting-storage">Supabase Project Endpoint</label>
+              <input type="text" class="admin-form-input" value="https://kgbdnafhlkchkawsucbl.supabase.co" disabled style="background:#f1f5f9;">
+            </div>
+
+            <button type="submit" class="admin-btn admin-btn--primary">Save Website Settings</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth(true);
+
+      document.getElementById('settings-form').onsubmit = (e) => {
+        e.preventDefault();
+        window.RPS_Admin.showToast('Website Settings saved successfully!');
+        window.RPS_Admin.logActivity('Update Settings', 'site_settings', null, 'Website Title & Copyright');
+      };
+    });
+  </script>
+</body>
+</html>

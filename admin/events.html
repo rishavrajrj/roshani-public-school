@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Events & Calendar — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link is-active">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">📅 Academic Events & Calendar Management</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="create-event-btn" class="admin-btn admin-btn--primary">
+          + Add New Event
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div class="admin-panel">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <input type="text" id="search-input" class="admin-form-input" placeholder="Search events..." style="max-width: 360px;">
+          
+          <div style="display: flex; gap: 8px;">
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn is-active" data-filter="all">All Events</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="upcoming">Upcoming</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm filter-btn" data-filter="past">Past</button>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Event Title</th>
+                <th>Category</th>
+                <th>Event Date</th>
+                <th>Time & Location</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="events-tbody">
+              <tr><td colspan="6" style="text-align:center; padding:20px;">Loading events list...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- EVENT FORM MODAL -->
+  <div id="event-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog" style="background:#fff; width:100%; max-width:620px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
+        <h3 id="modal-heading" style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Add New Event</h3>
+        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      </div>
+
+      <form id="event-form">
+        <input type="hidden" id="event-id">
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-title">Event Title *</label>
+          <input type="text" id="form-title" class="admin-form-input" placeholder="e.g. Annual Sports Day & Prize Distribution 2026" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-date">Event Date *</label>
+            <input type="date" id="form-date" class="admin-form-input" required>
+          </div>
+
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-category">Category</label>
+            <select id="form-category" class="admin-form-select">
+              <option value="academic">Academic</option>
+              <option value="examination">Examination</option>
+              <option value="sports">Sports</option>
+              <option value="cultural">Cultural</option>
+              <option value="holiday">Holiday</option>
+              <option value="general" selected>General</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-start">Start Time</label>
+            <input type="time" id="form-start" class="admin-form-input">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-end">End Time</label>
+            <input type="time" id="form-end" class="admin-form-input">
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="form-location">Location</label>
+            <input type="text" id="form-location" class="admin-form-input" placeholder="School Ground / Auditorium">
+          </div>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-desc">Event Description</label>
+          <textarea id="form-desc" class="admin-form-textarea" rows="4" placeholder="Details about the event, chief guests, instructions..."></textarea>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label" for="form-image">Cover Image Upload</label>
+          <input type="file" id="form-image" accept="image/*" class="admin-form-input" style="padding:6px;">
+          <input type="hidden" id="form-image-url">
+        </div>
+
+        <div style="display:flex; gap:24px; margin:16px 0;">
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="form-featured"> Mark as Featured Event
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:0.9rem; cursor:pointer;">
+            <input type="checkbox" id="form-published" checked> Publish Event
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
+          <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let allEvents = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadEvents();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('action') === 'new') {
+        openEventModal();
+      }
+
+      document.getElementById('create-event-btn').onclick = () => openEventModal();
+      document.getElementById('modal-close-btn').onclick = closeEventModal;
+      document.getElementById('modal-cancel-btn').onclick = closeEventModal;
+      document.getElementById('search-input').oninput = renderTable;
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = (e) => {
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
+          e.target.classList.add('is-active');
+          currentFilter = e.target.dataset.filter;
+          renderTable();
+        };
+      });
+
+      document.getElementById('event-form').onsubmit = handleSaveEvent;
+    });
+
+    async function loadEvents() {
+      try {
+        if (window.RPS_Supabase) {
+          allEvents = await window.RPS_Supabase.getAllEventsAdmin();
+          renderTable();
+        }
+      } catch (err) {
+        console.error('Error loading events:', err);
+        window.RPS_Admin.showToast('Failed to load events list', 'error');
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('events-tbody');
+      const search = document.getElementById('search-input').value.toLowerCase();
+      const today = new Date().toISOString().split('T')[0];
+
+      let filtered = allEvents.filter(e => {
+        const matchesSearch = (e.title || '').toLowerCase().includes(search) || (e.location || '').toLowerCase().includes(search);
+        if (!matchesSearch) return false;
+
+        if (currentFilter === 'upcoming') return e.event_date >= today;
+        if (currentFilter === 'past') return e.event_date < today;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No events found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(e => `
+        <tr>
+          <td style="font-weight:600; color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(e.title)}</td>
+          <td><span class="admin-badge admin-badge--info">${e.category || 'general'}</span></td>
+          <td>${window.RPS_Admin.formatDate(e.event_date)}</td>
+          <td>${e.start_time ? e.start_time.substring(0,5) : 'All Day'} | ${e.location || 'School Campus'}</td>
+          <td>${e.published ? '<span class="admin-badge admin-badge--success">Published</span>' : '<span class="admin-badge admin-badge--warning">Draft</span>'}</td>
+          <td style="text-align:right;">
+            <button onclick="editEvent('${e.id}')" class="admin-btn admin-btn--outline admin-btn--sm">Edit</button>
+            <button onclick="deleteEvent('${e.id}')" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openEventModal(event = null) {
+      const modal = document.getElementById('event-modal');
+      const form = document.getElementById('event-form');
+      form.reset();
+
+      if (event) {
+        document.getElementById('modal-heading').textContent = 'Edit Event';
+        document.getElementById('event-id').value = event.id;
+        document.getElementById('form-title').value = event.title || '';
+        document.getElementById('form-date').value = event.event_date || '';
+        document.getElementById('form-category').value = event.category || 'general';
+        document.getElementById('form-start').value = event.start_time || '';
+        document.getElementById('form-end').value = event.end_time || '';
+        document.getElementById('form-location').value = event.location || '';
+        document.getElementById('form-desc').value = event.description || '';
+        document.getElementById('form-image-url').value = event.image_url || '';
+        document.getElementById('form-featured').checked = !!event.featured;
+        document.getElementById('form-published').checked = event.published !== false;
+      } else {
+        document.getElementById('modal-heading').textContent = 'Add New Event';
+        document.getElementById('event-id').value = '';
+        document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeEventModal() {
+      document.getElementById('event-modal').style.display = 'none';
+    }
+
+    function editEvent(id) {
+      const e = allEvents.find(x => x.id === id);
+      if (e) openEventModal(e);
+    }
+
+    async function deleteEvent(id) {
+      if (!confirm('Are you sure you want to delete this event?')) return;
+      try {
+        await window.RPS_Supabase.deleteEventAdmin(id);
+        window.RPS_Admin.showToast('Event deleted successfully', 'success');
+        window.RPS_Admin.logActivity('Delete Event', 'events', id);
+        loadEvents();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete event', 'error');
+      }
+    }
+
+    async function handleSaveEvent(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modal-save-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const id = document.getElementById('event-id').value;
+      const title = document.getElementById('form-title').value.trim();
+      const event_date = document.getElementById('form-date').value;
+      const fileInput = document.getElementById('form-image');
+
+      let imageUrl = document.getElementById('form-image-url').value;
+
+      if (fileInput.files && fileInput.files[0]) {
+        try {
+          const uploadRes = await window.RPS_Supabase.uploadFile('event-images', fileInput.files[0], 'events');
+          imageUrl = uploadRes.url;
+        } catch (uploadErr) {
+          window.RPS_Admin.showToast('Image upload failed: ' + uploadErr.message, 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Event';
+          return;
+        }
+      }
+
+      const payload = {
+        title,
+        description: document.getElementById('form-desc').value.trim(),
+        event_date,
+        start_time: document.getElementById('form-start').value || null,
+        end_time: document.getElementById('form-end').value || null,
+        location: document.getElementById('form-location').value.trim() || 'School Campus',
+        category: document.getElementById('form-category').value,
+        image_url: imageUrl || null,
+        featured: document.getElementById('form-featured').checked,
+        published: document.getElementById('form-published').checked,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        if (id) {
+          await window.RPS_Supabase.updateEventAdmin(id, payload);
+          window.RPS_Admin.showToast('Event updated successfully!');
+          window.RPS_Admin.logActivity('Update Event', 'events', id, title);
+        } else {
+          await window.RPS_Supabase.createEventAdmin(payload);
+          window.RPS_Admin.showToast('Event created successfully!');
+          window.RPS_Admin.logActivity('Create Event', 'events', null, title);
+        }
+        closeEventModal();
+        loadEvents();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to save event', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Event';
+      }
+    }
+  </script>
+</body>
+</html>

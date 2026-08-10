@@ -1679,13 +1679,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding-bottom: 4px;
   scrollbar-width: none;
 }
 
 .facility-categories-wrapper::-webkit-scrollbar {
   display: none;
+}
+
+#gallery-filter-btns {
+  justify-content: center;
+  width: 100%;
 }
 
 .facility-cat-btn {
@@ -2193,8 +2199,27 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .facility-categories-wrapper {
+    justify-content: center;
+    width: 100%;
+    gap: 6px 8px;
+  }
   .facility-search-box {
     min-width: 100%;
+  }
+  .facility-cat-btn {
+    padding: 8px 14px;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .facility-categories-wrapper {
+    gap: 6px;
+  }
+  .facility-cat-btn {
+    padding: 7px 12px;
+    font-size: 0.775rem;
   }
 }
 

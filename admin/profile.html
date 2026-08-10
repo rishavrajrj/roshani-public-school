@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile & Security — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link is-active">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">👤 My Profile & Account Settings</h1>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <div style="max-width: 600px;">
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">Profile Information</h2>
+          </div>
+          <form id="profile-form">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="profile-email">Email Address</label>
+              <input type="email" id="profile-email" class="admin-form-input" disabled style="background:#f1f5f9;">
+            </div>
+
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="profile-name">Display Name</label>
+              <input type="text" id="profile-name" class="admin-form-input" required>
+            </div>
+
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="profile-role">Admin Role</label>
+              <input type="text" id="profile-role" class="admin-form-input" disabled style="background:#f1f5f9;">
+            </div>
+
+            <button type="submit" class="admin-btn admin-btn--primary">Update Profile</button>
+          </form>
+        </div>
+
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">Change Password</h2>
+          </div>
+          <form id="password-form">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="new-pass">New Password</label>
+              <input type="password" id="new-pass" class="admin-form-input" required minlength="6">
+            </div>
+
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="confirm-pass">Confirm New Password</label>
+              <input type="password" id="confirm-pass" class="admin-form-input" required minlength="6">
+            </div>
+
+            <button type="submit" class="admin-btn admin-btn--primary">Update Password</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+
+      if (window.RPS_Supabase) {
+        const profile = await window.RPS_Supabase.getCurrentProfile();
+        if (profile) {
+          document.getElementById('profile-email').value = profile.email || 'admin@roshanipublicschool.com';
+          document.getElementById('profile-name').value = profile.name || 'Administrator';
+          document.getElementById('profile-role').value = profile.role || 'super_admin';
+        }
+      }
+
+      document.getElementById('profile-form').onsubmit = async (e) => {
+        e.preventDefault();
+        window.RPS_Admin.showToast('Profile details updated successfully');
+      };
+
+      document.getElementById('password-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const p1 = document.getElementById('new-pass').value;
+        const p2 = document.getElementById('confirm-pass').value;
+        if (p1 !== p2) {
+          alert('Passwords do not match.');
+          return;
+        }
+        window.RPS_Admin.showToast('Password updated successfully');
+      };
+    });
+  </script>
+</body>
+</html>

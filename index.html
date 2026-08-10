@@ -203,6 +203,7 @@
       <div class="mobile-nav__sub" id="mob-academics">
         <a href="academics.html" class="mobile-nav__sub-link">Curriculum</a>
         <a href="academics.html#assessment" class="mobile-nav__sub-link">Assessment Policy</a>
+        <a href="academic-calendar.html" class="mobile-nav__sub-link">Academic Calendar</a>
         <a href="academics.html#results" class="mobile-nav__sub-link">CBSE Results</a>
       </div>
       <a href="facilities.html" class="mobile-nav__link">Facilities</a>
@@ -287,18 +288,15 @@
               </div>
             </div>
 
-            <div class="hero-carousel__overlay" aria-hidden="true"></div>
-
             <div class="hero-carousel__content">
-              <h1 class="hero-carousel__title">
-                Shaping <span class="highlight">Bright Futures</span><br>Since 2001
+              <h1 class="hero-carousel__title" id="hero-carousel-title">
+                Shaping Bright Futures<br><span class="hero-carousel__subtitle">Since 2001</span>
               </h1>
               <div class="hero-carousel__actions">
                 <a href="admissions.html#enquiry" class="btn btn--primary btn--lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
                   Apply for Admission
                 </a>
-                <a href="about.html" class="btn btn--outline-white btn--lg">Explore Our School</a>
               </div>
             </div>
 
@@ -333,7 +331,6 @@
                 View All Notices
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </a>
-              <a href="#" class="js-admin-trigger" style="display:inline-block;margin-left:12px;font-size:0.75rem;color:#94a3b8;" title="Admin Notice Portal">🔒 Admin Login</a>
             </div>
           </div>
 
@@ -921,7 +918,7 @@
         <div class="footer__bottom-links">
           <a href="mandatory-disclosure.html">Mandatory Disclosure</a>
           <a href="contact.html">Contact Us</a>
-          <a href="#" class="js-admin-trigger">🔒 Admin Notice Portal</a>
+          <a href="admin/index.html" class="js-admin-trigger">🔒 Admin Portal</a>
           <a href="sitemap.xml">Sitemap</a>
         </div>
       </div>
@@ -934,6 +931,8 @@
   </button>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/hero-carousel.js"></script>
   <script src="js/notices-admin.js"></script>

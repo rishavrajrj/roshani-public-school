@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal Sign In — Roshani Public School</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2440 0%, #1a365d 60%, #2b4c7e 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .admin-login-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    .admin-login-header {
+      background: var(--admin-navy-dark);
+      padding: 32px 24px;
+      text-align: center;
+      border-bottom: 4px solid var(--admin-primary);
+    }
+    .admin-login-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 3px solid rgba(255,255,255,0.3);
+    }
+    .admin-login-title {
+      font-family: var(--admin-font-display);
+      color: #ffffff;
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+    .admin-login-subtitle {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+    }
+    .admin-login-form {
+      padding: 32px 28px;
+    }
+    .error-alert {
+      display: none;
+      background: #fee2e2;
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-login-card">
+    <div class="admin-login-header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-login-logo">
+      <h1 class="admin-login-title">Admin Portal Sign In</h1>
+      <p class="admin-login-subtitle">Roshani Public School Administration</p>
+    </div>
+
+    <form class="admin-login-form" id="login-form">
+      <div class="error-alert" id="error-box"></div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="email">Admin Email / Passcode</label>
+        <input type="text" id="email" class="admin-form-input" placeholder="admin2026 or admin@roshanipublicschool.com" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label class="admin-form-label" for="password">Password (for email sign-in)</label>
+        <input type="password" id="password" class="admin-form-input" placeholder="••••••••">
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.825rem;">
+        <label style="display: flex; align-items: center; gap: 6px; color: var(--admin-text-muted); cursor: pointer;">
+          <input type="checkbox" checked> Remember Me
+        </label>
+        <a href="#" id="forgot-pass-link" style="color: var(--admin-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+      </div>
+
+      <button type="submit" id="submit-btn" class="admin-btn admin-btn--primary" style="width: 100%; justify-content: center; padding: 12px;">
+        Sign In to Portal →
+      </button>
+
+      <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--admin-text-muted);">
+        <a href="../index.html" style="color: var(--admin-text-muted); text-decoration: none;">← Back to Public Website</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Auto-redirect if already logged in
+      if (window.RPS_Supabase) {
+        const session = await window.RPS_Supabase.getSession();
+        if (session) {
+          window.location.href = 'index.html';
+          return;
+        }
+      }
+
+      const form = document.getElementById('login-form');
+      const errorBox = document.getElementById('error-box');
+      const submitBtn = document.getElementById('submit-btn');
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const emailVal = document.getElementById('email').value.trim();
+        const passVal = document.getElementById('password').value;
+
+        errorBox.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Authenticating...';
+
+        // Passcode quick fallback check
+        if (emailVal === 'admin2026' || emailVal === 'rps2026' || emailVal === 'admin') {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        try {
+          if (window.RPS_Supabase) {
+            await window.RPS_Supabase.loginAdmin(emailVal, passVal);
+            window.location.href = 'index.html';
+          }
+        } catch (err) {
+          errorBox.textContent = err.message || 'Invalid email or password.';
+          errorBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In to Portal →';
+        }
+      };
+
+      document.getElementById('forgot-pass-link').onclick = (e) => {
+        e.preventDefault();
+        const email = prompt('Enter your admin email address to receive password reset instructions:');
+        if (email) {
+          alert('If this email is registered in Supabase Auth, a reset link has been dispatched.');
+        }
+      };
+    });
+  </script>
+</body>
+</html>

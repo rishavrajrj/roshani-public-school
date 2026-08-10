@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Information & Principal Profile — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link is-active">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name">Administrator</div>
+        <div class="admin-sidebar__user-role">Content Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">🏫 School Information & Principal Profile</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="save-info-btn" class="admin-btn admin-btn--primary">
+          💾 Save School Information
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <form id="school-info-form">
+        <!-- BASIC INFORMATION -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">🏢 Basic School Details</h2>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-name">School Name</label>
+              <input type="text" id="info-name" class="admin-form-input" required>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-tagline">Tagline / Motto</label>
+              <input type="text" id="info-tagline" class="admin-form-input">
+            </div>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="info-address">Full Campus Address</label>
+            <textarea id="info-address" class="admin-form-textarea" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- CONTACT NUMBERS & HOURS -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">📞 Contact Details & Hours</h2>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-phone">Main Phone / WhatsApp</label>
+              <input type="text" id="info-phone" class="admin-form-input">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-office-phone">Office / Landline</label>
+              <input type="text" id="info-office-phone" class="admin-form-input">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-admission-contact">Admission Helpline</label>
+              <input type="text" id="info-admission-contact" class="admin-form-input">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-email">Official School Email</label>
+              <input type="email" id="info-email" class="admin-form-input">
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-hours">Working Hours</label>
+              <input type="text" id="info-hours" class="admin-form-input" placeholder="Mon – Sat: 8:00 AM – 2:00 PM">
+            </div>
+          </div>
+        </div>
+
+        <!-- PRINCIPAL PROFILE & MESSAGE -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">👨‍🏫 Principal Profile & Welcome Message</h2>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+            <div>
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="info-principal-name">Principal Name</label>
+                <input type="text" id="info-principal-name" class="admin-form-input">
+              </div>
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="info-principal-photo">Principal Photo Upload</label>
+                <input type="file" id="info-principal-photo" accept="image/*" class="admin-form-input" style="padding:6px;">
+                <input type="hidden" id="info-principal-photo-url">
+                <div id="photo-preview" style="margin-top:8px;"></div>
+              </div>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-principal-msg">Principal Welcome Message</label>
+              <textarea id="info-principal-msg" class="admin-form-textarea" rows="6" placeholder="Welcome message displayed on the homepage and about page..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABOUT & VISION / MISSION -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">📜 Vision, Mission & Values</h2>
+          </div>
+          <div class="admin-form-group">
+            <label class="admin-form-label" for="info-about">About School Summary</label>
+            <textarea id="info-about" class="admin-form-textarea" rows="3"></textarea>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-vision">School Vision</label>
+              <textarea id="info-vision" class="admin-form-textarea" rows="3"></textarea>
+            </div>
+            <div class="admin-form-group">
+              <label class="admin-form-label" for="info-mission">School Mission</label>
+              <textarea id="info-mission" class="admin-form-textarea" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-bottom:40px;">
+          <button type="submit" class="admin-btn admin-btn--primary" style="padding:12px 28px;">
+            💾 Save All School Changes
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+      loadSchoolInfo();
+
+      document.getElementById('save-info-btn').onclick = () => document.getElementById('school-info-form').requestSubmit();
+      document.getElementById('school-info-form').onsubmit = handleSaveInfo;
+    });
+
+    async function loadSchoolInfo() {
+      try {
+        if (window.RPS_Supabase) {
+          const info = await window.RPS_Supabase.getSchoolInformation();
+          if (info) {
+            document.getElementById('info-name').value = info.school_name || '';
+            document.getElementById('info-tagline').value = info.tagline || '';
+            document.getElementById('info-address').value = info.address || '';
+            document.getElementById('info-phone').value = info.phone || '';
+            document.getElementById('info-office-phone').value = info.office_phone || '';
+            document.getElementById('info-admission-contact').value = info.admission_contact || '';
+            document.getElementById('info-email').value = info.email || '';
+            document.getElementById('info-hours').value = info.office_hours || '';
+            document.getElementById('info-principal-name').value = info.principal_name || '';
+            document.getElementById('info-principal-msg').value = info.principal_message || '';
+            document.getElementById('info-principal-photo-url').value = info.principal_photo_url || '';
+            document.getElementById('info-about').value = info.about || '';
+            document.getElementById('info-vision').value = info.vision || '';
+            document.getElementById('info-mission').value = info.mission || '';
+
+            if (info.principal_photo_url) {
+              document.getElementById('photo-preview').innerHTML = `<img src="${info.principal_photo_url}" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">`;
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error loading school info:', err);
+      }
+    }
+
+    async function handleSaveInfo(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('save-info-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      const fileInput = document.getElementById('info-principal-photo');
+      let photoUrl = document.getElementById('info-principal-photo-url').value;
+
+      if (fileInput.files && fileInput.files[0]) {
+        try {
+          const uploadRes = await window.RPS_Supabase.uploadFile('school-images', fileInput.files[0], 'principal');
+          photoUrl = uploadRes.url;
+        } catch (uploadErr) {
+          window.RPS_Admin.showToast('Photo upload failed: ' + uploadErr.message, 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = '💾 Save School Information';
+          return;
+        }
+      }
+
+      const payload = {
+        school_name: document.getElementById('info-name').value.trim(),
+        tagline: document.getElementById('info-tagline').value.trim(),
+        address: document.getElementById('info-address').value.trim(),
+        phone: document.getElementById('info-phone').value.trim(),
+        office_phone: document.getElementById('info-office-phone').value.trim(),
+        admission_contact: document.getElementById('info-admission-contact').value.trim(),
+        email: document.getElementById('info-email').value.trim(),
+        office_hours: document.getElementById('info-hours').value.trim(),
+        principal_name: document.getElementById('info-principal-name').value.trim(),
+        principal_message: document.getElementById('info-principal-msg').value.trim(),
+        principal_photo_url: photoUrl || null,
+        about: document.getElementById('info-about').value.trim(),
+        vision: document.getElementById('info-vision').value.trim(),
+        mission: document.getElementById('info-mission').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
+        window.RPS_Admin.showToast('School Information saved & updated live across public site!');
+        window.RPS_Admin.logActivity('Update School Info', 'school_information', null, payload.school_name);
+        loadSchoolInfo();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update school info', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save School Information';
+      }
+    }
+  </script>
+</body>
+</html>

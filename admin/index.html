@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Roshani Public School</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.png" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link is-active">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+        <span class="admin-sidebar__badge" id="unread-badge" style="display:none;">0</span>
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar" id="user-avatar-initial">A</div>
+      <div>
+        <div class="admin-sidebar__user-name" id="user-display-name">Administrator</div>
+        <div class="admin-sidebar__user-role" id="user-display-role">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTAINER -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">Dashboard Overview</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <a href="../index.html" target="_blank" class="admin-btn admin-btn--outline admin-btn--sm">
+          <span>🌐</span> View Public Website
+        </a>
+      </div>
+    </header>
+
+    <section class="admin-content">
+      <!-- STAT CARDS GRID -->
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon admin-stat-icon--primary">📢</div>
+          <div>
+            <div class="admin-stat-number" id="stat-notices-count">...</div>
+            <div class="admin-stat-label">Published Notices</div>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon admin-stat-icon--navy">📅</div>
+          <div>
+            <div class="admin-stat-number" id="stat-events-count">...</div>
+            <div class="admin-stat-label">Academic Events</div>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon admin-stat-icon--success">🖼️</div>
+          <div>
+            <div class="admin-stat-number" id="stat-gallery-count">...</div>
+            <div class="admin-stat-label">Gallery Photos</div>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon admin-stat-icon--warning">📄</div>
+          <div>
+            <div class="admin-stat-number" id="stat-docs-count">...</div>
+            <div class="admin-stat-label">Disclosure Documents</div>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon admin-stat-icon--primary">📨</div>
+          <div>
+            <div class="admin-stat-number" id="stat-enquiries-count">...</div>
+            <div class="admin-stat-label">Total Parent Enquiries</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS & RECENT ACTIVITY -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+        <!-- QUICK ACTIONS PANEL -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">⚡ Quick Actions</h2>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <a href="notices.html?action=new" class="admin-btn admin-btn--primary" style="justify-content: center;">
+              + Add Notice
+            </a>
+            <a href="events.html?action=new" class="admin-btn admin-btn--secondary" style="justify-content: center;">
+              + Add Event
+            </a>
+            <a href="gallery.html" class="admin-btn admin-btn--outline" style="justify-content: center;">
+              📸 Upload Photo
+            </a>
+            <a href="mandatory-disclosure.html" class="admin-btn admin-btn--outline" style="justify-content: center;">
+              📄 Upload Document
+            </a>
+            <a href="enquiries.html" class="admin-btn admin-btn--secondary" style="grid-column: span 2; justify-content: center;">
+              📨 View Parent Enquiries
+            </a>
+          </div>
+        </div>
+
+        <!-- RECENT ACTIVITY LOG PANEL -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">📜 Recent CMS Activity</h2>
+          </div>
+          <div id="activity-list" style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+            <div style="color: var(--admin-text-muted);">Loading activity log...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT NOTICES SUMMARY TABLE -->
+      <div class="admin-panel" style="margin-top: 24px;">
+        <div class="admin-panel__header">
+          <h2 class="admin-panel__title">📢 Recent Notices Overview</h2>
+          <a href="notices.html" class="admin-btn admin-btn--outline admin-btn--sm">Manage All Notices →</a>
+        </div>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Published Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dashboard-notices-tbody">
+              <tr><td colspan="5" style="text-align:center; padding:20px;">Loading notices...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await window.RPS_Admin.checkAuth();
+
+      // Fetch user profile info
+      if (window.RPS_Supabase) {
+        const profile = await window.RPS_Supabase.getCurrentProfile();
+        if (profile) {
+          document.getElementById('user-display-name').textContent = profile.name || 'Administrator';
+          document.getElementById('user-display-role').textContent = profile.role === 'super_admin' ? 'Super Admin' : 'Content Admin';
+          document.getElementById('user-avatar-initial').textContent = (profile.name || 'A').charAt(0).toUpperCase();
+        }
+
+        // Fetch counts
+        try {
+          const [notices, events, gallery, docs, enquiries] = await Promise.all([
+            window.RPS_Supabase.getAllNoticesAdmin(),
+            window.RPS_Supabase.getAllEventsAdmin(),
+            window.RPS_Supabase.getAllGalleryAdmin(),
+            window.RPS_Supabase.getAllDocumentsAdmin(),
+            window.RPS_Supabase.getAllEnquiriesAdmin()
+          ]);
+
+          document.getElementById('stat-notices-count').textContent = notices ? notices.length : 0;
+          document.getElementById('stat-events-count').textContent = events ? events.length : 0;
+          document.getElementById('stat-gallery-count').textContent = gallery ? gallery.length : 0;
+          document.getElementById('stat-docs-count').textContent = docs ? docs.length : 0;
+          document.getElementById('stat-enquiries-count').textContent = enquiries ? enquiries.length : 0;
+
+          const unreadEnquiries = (enquiries || []).filter(e => e.status === 'unread').length;
+          if (unreadEnquiries > 0) {
+            const badge = document.getElementById('unread-badge');
+            badge.textContent = unreadEnquiries;
+            badge.style.display = 'inline-block';
+          }
+
+          // Render recent notices
+          const recentNotices = (notices || []).slice(0, 5);
+          const tbody = document.getElementById('dashboard-notices-tbody');
+          if (recentNotices.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No notices available.</td></tr>';
+          } else {
+            tbody.innerHTML = recentNotices.map(n => `
+              <tr>
+                <td style="font-weight:600; color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(n.title)}</td>
+                <td><span class="admin-badge admin-badge--info">${n.category || 'general'}</span></td>
+                <td>${window.RPS_Admin.formatDate(n.published_at)}</td>
+                <td>${n.pinned ? '<span class="admin-badge admin-badge--danger">Pinned</span>' : 'Normal'}</td>
+                <td>${n.published ? '<span class="admin-badge admin-badge--success">Published</span>' : '<span class="admin-badge admin-badge--warning">Draft</span>'}</td>
+              </tr>
+            `).join('');
+          }
+
+          // Render Activity Log
+          const logs = await window.RPS_Supabase.getActivityLogsAdmin(6);
+          const activityContainer = document.getElementById('activity-list');
+          if (!logs || logs.length === 0) {
+            activityContainer.innerHTML = `
+              <div style="padding:10px 0;">✨ Admin portal ready. Recent content changes will appear here.</div>
+            `;
+          } else {
+            activityContainer.innerHTML = logs.map(l => `
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:8px;">
+                <div>
+                  <strong style="color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(l.action)}</strong>
+                  <span style="color:var(--admin-text-muted);"> (${l.resource_type})</span>
+                </div>
+                <div style="font-size:0.75rem; color:var(--admin-text-muted);">${window.RPS_Admin.formatDate(l.created_at)}</div>
+              </div>
+            `).join('');
+          }
+        } catch (err) {
+          console.error('Error fetching dashboard stats:', err);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

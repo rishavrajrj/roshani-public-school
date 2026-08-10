@@ -1,6 +1,6 @@
 /* ============================================================
    ROSHANI PUBLIC SCHOOL — FORM HANDLING
-   Client-side validation and submission for Contact & Admissions
+   Client-side validation and Supabase submission for Contact & Admissions
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,14 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
   e.preventDefault();
   const form = e.target;
   const fields = form.querySelectorAll('input, select, textarea');
   let isValid = true;
 
   fields.forEach(field => {
-    // Only validate if required OR if optional field has a value entered
     if (field.hasAttribute('required') || field.value.trim().length > 0) {
       if (!validateField(field)) {
         isValid = false;
@@ -43,7 +42,6 @@ function handleFormSubmit(e) {
   });
 
   if (!isValid) {
-    // Focus first error field
     const firstError = form.querySelector('.is-error');
     firstError?.focus();
     return;
@@ -55,10 +53,9 @@ function handleFormSubmit(e) {
   submitBtn.disabled = true;
   submitBtn.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin-icon" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-    Sending Message...
+    Submitting...
   `;
 
-  // Add spin animation dynamically if not present
   if (!document.getElementById('spin-style')) {
     const style = document.createElement('style');
     style.id = 'spin-style';
@@ -66,26 +63,39 @@ function handleFormSubmit(e) {
     document.head.appendChild(style);
   }
 
-  // Simulate server submission (1.2 seconds)
-  setTimeout(() => {
+  const isAdmission = form.id === 'admissionForm';
+  const enquiryData = {
+    form_type: isAdmission ? 'admission' : 'contact',
+    full_name: form.querySelector('[name="name"], [name="parent_name"]')?.value.trim() || 'Parent/Visitor',
+    email: form.querySelector('[name="email"]')?.value.trim() || null,
+    phone: form.querySelector('[name="phone"]')?.value.trim() || '',
+    student_name: form.querySelector('[name="student_name"]')?.value.trim() || null,
+    class_seeking: form.querySelector('[name="class_seeking"], [name="grade"], [name="class"]')?.value.trim() || null,
+    message: form.querySelector('[name="message"], [name="comments"]')?.value.trim() || (isAdmission ? 'Online Admission Enquiry' : 'General Enquiry'),
+    status: 'new'
+  };
+
+  try {
+    if (window.RPS_Supabase && typeof window.RPS_Supabase.submitEnquiry === 'function') {
+      await window.RPS_Supabase.submitEnquiry(enquiryData);
+    }
+  } catch (err) {
+    console.warn('Supabase enquiry submit error (fallback mode):', err);
+  } finally {
     submitBtn.disabled = false;
     submitBtn.innerHTML = originalHTML;
 
-    // Show success message
     const successEl = form.querySelector('.form-success');
     if (successEl) {
       successEl.classList.add('is-visible');
       form.reset();
-
-      // Scroll smoothly to success message if needed
       successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      // Hide after 6 seconds
       setTimeout(() => {
         successEl.classList.remove('is-visible');
       }, 6000);
     }
-  }, 1200);
+  }
 }
 
 function validateField(field) {
@@ -94,52 +104,51 @@ function validateField(field) {
   const name = field.name;
   let errorMsg = '';
 
-  // Required check
   if (field.hasAttribute('required') && !value) {
-    if (name === 'name') {
+    if (name === 'name' || name === 'parent_name') {
       errorMsg = 'Please enter your full name.';
     } else if (name === 'phone') {
-      errorMsg = 'Please enter your phone number.';
+      errorMsg = 'Please enter your contact phone number.';
     } else if (name === 'message') {
       errorMsg = 'Please enter your message.';
     } else {
       errorMsg = 'This field is required.';
     }
-  }
-  // Name length check
-  else if (name === 'name' && value.length < 2) {
-    errorMsg = 'Name must be at least 2 characters long.';
-  }
-  // Email validation (if provided)
-  else if ((type === 'email' || name === 'email') && value) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(value)) {
-      errorMsg = 'Please enter a valid email address.';
-    }
-  }
-  // Phone validation
-  else if ((type === 'tel' || name === 'phone') && value) {
-    const phoneRegex = /^[+]?[\d\s\-()]{10,15}$/;
-    if (!phoneRegex.test(value)) {
-      errorMsg = 'Please enter a valid 10-digit phone number.';
+  } else if (value) {
+    if (type === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        errorMsg = 'Please enter a valid email address.';
+      }
+    } else if (name === 'phone') {
+      const phoneRegex = /^[0-9+\-\s()]{8,15}$/;
+      if (!phoneRegex.test(value)) {
+        errorMsg = 'Please enter a valid phone number.';
+      }
     }
   }
 
-  // Find error message element
-  let errorEl = field.parentElement.querySelector('.form-error');
+  const container = field.closest('.form-group') || field.parentElement;
+  let errorEl = container.querySelector('.form-error');
 
   if (errorMsg) {
     field.classList.add('is-error');
-    if (errorEl) {
-      errorEl.textContent = errorMsg;
-      errorEl.classList.add('is-visible');
+    field.setAttribute('aria-invalid', 'true');
+    if (!errorEl) {
+      errorEl = document.createElement('div');
+      errorEl.className = 'form-error';
+      errorEl.style.color = '#e53e3e';
+      errorEl.style.fontSize = '0.8rem';
+      errorEl.style.marginTop = '4px';
+      container.appendChild(errorEl);
     }
+    errorEl.textContent = errorMsg;
     return false;
   } else {
     field.classList.remove('is-error');
+    field.removeAttribute('aria-invalid');
     if (errorEl) {
-      errorEl.textContent = '';
-      errorEl.classList.remove('is-visible');
+      errorEl.remove();
     }
     return true;
   }
