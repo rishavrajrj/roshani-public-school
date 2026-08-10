@@ -2,18 +2,6 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/login", "destination": "/admin/login.html" },
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/", "destination": "/admin/index.html" },
-    { "source": "/admin/login", "destination": "/admin/login.html" },
-    { "source": "/admin/notices", "destination": "/admin/notices.html" },
-    { "source": "/admin/events", "destination": "/admin/events.html" },
-    { "source": "/admin/gallery", "destination": "/admin/gallery.html" },
-    { "source": "/admin/mandatory-disclosure", "destination": "/admin/mandatory-disclosure.html" },
-    { "source": "/admin/school-information", "destination": "/admin/school-information.html" },
-    { "source": "/admin/enquiries", "destination": "/admin/enquiries.html" },
-    { "source": "/admin/users", "destination": "/admin/users.html" },
-    { "source": "/admin/profile", "destination": "/admin/profile.html" },
-    { "source": "/admin/settings", "destination": "/admin/settings.html" }
+    { "source": "/login", "destination": "/admin/login" }
   ]
 }

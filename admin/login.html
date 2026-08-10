@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal Sign In — Roshani Public School</title>
-  <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="/css/admin.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@
 
   <div class="admin-login-card">
     <div class="admin-login-header">
-      <img src="../assets/logo.png" alt="RPS Logo" class="admin-login-logo">
+      <img src="/assets/logo.png" alt="RPS Logo" class="admin-login-logo">
       <h1 class="admin-login-title">Admin Portal Sign In</h1>
       <p class="admin-login-subtitle">Roshani Public School Administration</p>
     </div>
@@ -98,21 +98,27 @@
       </button>
 
       <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--admin-text-muted);">
-        <a href="../index.html" style="color: var(--admin-text-muted); text-decoration: none;">← Back to Public Website</a>
+        <a href="/index.html" style="color: var(--admin-text-muted); text-decoration: none;">← Back to Public Website</a>
       </div>
     </form>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/supabase-client.js"></script>
-  <script src="../js/admin-app.js"></script>
+  <script src="/js/supabase-client.js"></script>
+  <script src="/js/admin-app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // Auto-redirect if already logged in
+      const isPasscodeSession = sessionStorage.getItem('rps_admin_session') === 'true' || localStorage.getItem('rps_admin_session') === 'true';
+      if (isPasscodeSession) {
+        window.location.href = '/admin/index.html';
+        return;
+      }
+
       if (window.RPS_Supabase) {
         const session = await window.RPS_Supabase.getSession();
         if (session) {
-          window.location.href = 'index.html';
+          window.location.href = '/admin/index.html';
           return;
         }
       }
@@ -134,7 +140,7 @@
         if (emailVal === 'admin2026' || emailVal === 'rps2026' || emailVal === 'admin') {
           sessionStorage.setItem('rps_admin_session', 'true');
           localStorage.setItem('rps_admin_session', 'true');
-          window.location.href = 'index.html';
+          window.location.href = '/admin/index.html';
           return;
         }
 
@@ -143,7 +149,7 @@
             await window.RPS_Supabase.loginAdmin(emailVal, passVal);
             sessionStorage.setItem('rps_admin_session', 'true');
             localStorage.setItem('rps_admin_session', 'true');
-            window.location.href = 'index.html';
+            window.location.href = '/admin/index.html';
           }
         } catch (err) {
           errorBox.textContent = err.message || 'Invalid email or password.';

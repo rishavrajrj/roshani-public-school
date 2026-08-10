@@ -14,8 +14,8 @@
       }
       if (!session && !isPasscodeSession) {
         const path = window.location.pathname;
-        if (!path.includes('login.html') && !path.endsWith('/login')) {
-          window.location.href = path.includes('/admin') ? '/admin/login.html' : 'admin/login.html';
+        if (!path.includes('login')) {
+          window.location.href = '/admin/login.html';
         }
         return null;
       }
@@ -29,7 +29,7 @@
     } catch (err) {
       console.error('Auth guard check error:', err);
       const isPasscodeSession = sessionStorage.getItem('rps_admin_session') === 'true' || localStorage.getItem('rps_admin_session') === 'true';
-      if (!isPasscodeSession) {
+      if (!isPasscodeSession && !window.location.pathname.includes('login')) {
         window.location.href = '/admin/login.html';
       }
       return null;
@@ -44,11 +44,14 @@
       toggleBtn.onclick = () => sidebar.classList.toggle('is-open');
     }
 
-    // Highlight current page
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    // Highlight current page dynamically
+    const path = window.location.pathname;
     document.querySelectorAll('.admin-sidebar__link').forEach(link => {
       const href = link.getAttribute('href');
-      if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+      if (!href || href === '#') return;
+      const cleanHref = href.split('/').pop().replace('.html', '');
+      const cleanPath = path.split('/').pop().replace('.html', '') || 'index';
+      if (cleanHref === cleanPath || (cleanPath === '' && cleanHref === 'index')) {
         link.classList.add('is-active');
       } else {
         link.classList.remove('is-active');
