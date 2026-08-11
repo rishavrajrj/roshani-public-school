@@ -1,0 +1,297 @@
+/* ============================================================
+   ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER SYSTEM
+   Premium modern loading page overlay & animation
+   ============================================================ */
+
+/* Lock body scrolling during load */
+body.rps-loading {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
+/* Base Preloader Overlay */
+#rps-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  background-color: #0B1526;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(185, 28, 92, 0.18) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(217, 119, 6, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(26, 54, 93, 0.4) 0%, transparent 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s ease;
+  will-change: opacity, transform, filter;
+}
+
+/* Exit Loaded State */
+#rps-loader.is-loaded {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.04);
+  filter: blur(6px);
+}
+
+/* Preloader Card Container */
+.rps-loader__card {
+  position: relative;
+  width: 90%;
+  max-width: 440px;
+  background: rgba(15, 36, 64, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 28px;
+  padding: 44px 32px 40px;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 40px rgba(185, 28, 92, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Background Shimmer Line */
+.rps-loader__card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #B91C5C, #D97706, #B91C5C);
+  background-size: 200% 100%;
+  animation: rpsShimmer 3s linear infinite;
+}
+
+@keyframes rpsShimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* Visual Spinner & Logo Wrapper */
+.rps-loader__visual {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* SVG Spinner Rings */
+.rps-loader__rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.rps-loader__ring-outer {
+  transform-origin: center;
+  animation: rpsSpinClockwise 3s linear infinite;
+}
+
+.rps-loader__ring-inner {
+  transform-origin: center;
+  animation: rpsSpinCounter 2s linear infinite;
+}
+
+@keyframes rpsSpinClockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes rpsSpinCounter {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Logo Frame */
+.rps-loader__logo-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px rgba(217, 119, 6, 0.3),
+              inset 0 0 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 2;
+  animation: rpsPulseGlow 2.5s ease-in-out infinite alternate;
+}
+
+.rps-loader__logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+
+@keyframes rpsPulseGlow {
+  0% {
+    box-shadow: 0 0 15px rgba(185, 28, 92, 0.3), 0 0 30px rgba(217, 119, 6, 0.2);
+    transform: scale(0.98);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(185, 28, 92, 0.6), 0 0 45px rgba(217, 119, 6, 0.4);
+    transform: scale(1.03);
+  }
+}
+
+/* School Title & Subtitle */
+.rps-loader__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.rps-loader__subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.725rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #D97706;
+  margin-bottom: 20px;
+}
+
+/* Quote Rotator Ticker */
+.rps-loader__quote-wrap {
+  min-height: 24px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rps-loader__quote {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #CBD5E1;
+  font-style: italic;
+  opacity: 1;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: translateY(0);
+}
+
+.rps-loader__quote.is-changing {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* Progress Track & Bar */
+.rps-loader__progress-box {
+  width: 100%;
+}
+
+.rps-loader__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  color: #94A3B8;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.rps-loader__status-text {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rps-loader__percent {
+  font-weight: 700;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+}
+
+.rps-loader__bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.rps-loader__bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #B91C5C 0%, #D97706 100%);
+  border-radius: 99px;
+  transition: width 0.18s linear;
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.6);
+  position: relative;
+}
+
+.rps-loader__bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #FFFFFF;
+  opacity: 0.8;
+}
+
+/* Reduced Motion support */
+@media (prefers-reduced-motion: reduce) {
+  #rps-loader {
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  .rps-loader__ring-outer,
+  .rps-loader__ring-inner,
+  .rps-loader__logo-box,
+  .rps-loader__card::before {
+    animation: none !important;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .rps-loader__card {
+    padding: 32px 24px 32px;
+    border-radius: 20px;
+  }
+  .rps-loader__visual {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 18px;
+  }
+  .rps-loader__logo-box {
+    width: 64px;
+    height: 64px;
+  }
+  .rps-loader__title {
+    font-size: 1.25rem;
+  }
+  .rps-loader__subtitle {
+    font-size: 0.675rem;
+  }
+}
