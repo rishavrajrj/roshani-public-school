@@ -1,13 +1,13 @@
 /**
  * ROSHANI PUBLIC SCHOOL — ADMISSION ANNOUNCEMENT POPUP COMPONENT
- * Displays a first-visit announcement modal using assets/admission.png.
+ * Displays a landing announcement modal using assets/admission-2026-27.png.
  * Features: LocalStorage campaign tracking, accessibility dialog, focus trap, scroll lock, ESC & backdrop dismissal.
  */
 
 class AdmissionPopup {
   constructor(options = {}) {
-    this.storageKey = options.storageKey || 'roshni_admission_popup_2026_2027';
-    this.imageSrc = options.imageSrc || 'assets/admission.png';
+    this.storageKey = options.storageKey || 'roshni_admission_popup_2026_2027_v3';
+    this.imageSrc = options.imageSrc || 'assets/admission-2026-27.png';
     this.isOpen = false;
     this.previousActiveElement = null;
 
@@ -27,7 +27,7 @@ class AdmissionPopup {
     // Trigger popup display after a short delay for smooth page entrance
     setTimeout(() => {
       this.open();
-    }, 400);
+    }, 350);
   }
 
   isDismissed() {
@@ -62,6 +62,12 @@ class AdmissionPopup {
           <div class="admission-popup__image-wrapper">
             <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" />
           </div>
+          <div class="admission-popup__cta">
+            <a href="admissions.html#enquiry" class="btn btn--primary admission-popup__apply-btn" id="admission-popup-apply-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+              Apply for Admission
+            </a>
+          </div>
         </div>
       </div>
     `;
@@ -72,10 +78,16 @@ class AdmissionPopup {
     this.overlayEl = document.getElementById('admission-popup-overlay');
     this.modalEl = document.getElementById('admission-popup-modal');
     this.closeBtnEl = document.getElementById('admission-popup-close');
+    this.applyBtnEl = document.getElementById('admission-popup-apply-btn');
 
     // Event Listeners
     this.closeBtnEl.addEventListener('click', () => this.close());
     this.overlayEl.addEventListener('click', () => this.close());
+    if (this.applyBtnEl) {
+      this.applyBtnEl.addEventListener('click', () => {
+        this.close();
+      });
+    }
   }
 
   open() {
@@ -92,7 +104,9 @@ class AdmissionPopup {
 
     // Focus management
     setTimeout(() => {
-      if (this.closeBtnEl) {
+      if (this.applyBtnEl) {
+        this.applyBtnEl.focus();
+      } else if (this.closeBtnEl) {
         this.closeBtnEl.focus();
       }
     }, 50);
@@ -171,3 +185,4 @@ if (document.readyState === 'loading') {
   window.admissionPopup = new AdmissionPopup();
   window.admissionPopup.init();
 }
+
