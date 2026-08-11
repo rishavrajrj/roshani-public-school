@@ -240,14 +240,25 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  animation: logoCoinSpin 5s linear infinite;
   border-radius: 50%;
   transition: animation-duration 0.3s ease;
 }
 
-.header__logo:hover .logo-coin__inner,
-.logo-coin:hover .logo-coin__inner {
+/* Only the navbar logo should rotate */
+header.header .logo-coin__inner,
+.header .logo-coin__inner {
+  animation: logoCoinSpin 5s linear infinite;
+}
+
+header.header .header__logo:hover .logo-coin__inner,
+.header .header__logo:hover .logo-coin__inner {
   animation-duration: 2s; /* Smoothly speeds up spin on hover */
+}
+
+/* Disable rotation for logo in footer, admin sidebar, or other components */
+.footer .logo-coin__inner,
+.admin-sidebar .logo-coin__inner {
+  animation: none !important;
 }
 
 .logo-coin__front,

@@ -175,14 +175,16 @@ const DEFAULT_NOTICES = [
 
 class NoticeManager {
   constructor() {
-    // Initialize immediately with default notices so home page never shows a blank box
+    // Initialize with default notices so data is always available
     this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
     this.page = 1;
     this.perPage = 8;
-    this.loadNotices();
+    // NOTE: Do NOT call loadNotices() or any render function here.
+    // The global `noticeMgr` variable is not yet assigned (TDZ),
+    // and render functions reference it, causing a silent crash.
   }
 
-  async loadNotices() {
+  async init() {
     // Load from localStorage if present
     try {
       const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
@@ -201,11 +203,10 @@ class NoticeManager {
       console.warn("LocalStorage notices read error:", e);
     }
 
-    // Trigger immediate render
-    if (typeof renderPublicNotices === 'function') renderPublicNotices();
-    if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
+    // Render immediately with default/cached data
+    this._triggerRender();
 
-    // Fetch dynamic notices from Supabase database
+    // Then fetch live data from Supabase and re-render
     try {
       if (window.RPS_Supabase && typeof window.RPS_Supabase.getPublishedNotices === 'function') {
         const sbNotices = await window.RPS_Supabase.getPublishedNotices();
@@ -227,13 +228,21 @@ class NoticeManager {
             attachmentType: n.attachment_type || null,
             createdAt: n.created_at ? n.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
           }));
-          if (typeof renderPublicNotices === 'function') renderPublicNotices();
-          if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
+          this._triggerRender();
         }
       }
     } catch (e) {
       console.warn("Supabase notices fetch fallback:", e);
     }
+  }
+
+  _triggerRender() {
+    try {
+      if (typeof renderPublicNotices === 'function') renderPublicNotices();
+    } catch (e) { console.warn('renderPublicNotices error:', e); }
+    try {
+      if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
+    } catch (e) { console.warn('renderNoticesPageRedesign error:', e); }
   }
 
   migrateNotice(n) {
@@ -272,13 +281,15 @@ class NoticeManager {
   }
 
   getPublishedNotices() {
-    if (!Array.isArray(this.notices)) return [];
+    if (!Array.isArray(this.notices) || this.notices.length === 0) {
+      this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
+    }
     return this.notices
       .filter(n => n && n.published !== false)
       .sort((a, b) => {
         if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
-        const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        const dateA = a.publishedAt ? new Date(String(a.publishedAt).replace(' ', 'T')).getTime() : 0;
+        const dateB = b.publishedAt ? new Date(String(b.publishedAt).replace(' ', 'T')).getTime() : 0;
         return dateB - dateA;
       });
   }
@@ -310,17 +321,32 @@ class NoticeManager {
   }
 
   isNewNotice(notice) {
-    const publishDate = new Date(notice.publishedAt);
-    const today = new Date();
-    const diffTime = Math.abs(today - publishDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 7;
+    if (!notice || !notice.publishedAt) return false;
+    try {
+      const cleanStr = String(notice.publishedAt).replace(' ', 'T');
+      const publishDate = new Date(cleanStr);
+      if (isNaN(publishDate.getTime())) return false;
+      const today = new Date();
+      const diffTime = Math.abs(today - publishDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 7;
+    } catch (e) {
+      return false;
+    }
   }
 
   formatDate(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    try {
+      const cleanStr = String(dateStr).replace(' ', 'T');
+      const date = new Date(cleanStr);
+      if (isNaN(date.getTime())) {
+        return String(dateStr).split(' ')[0].split('T')[0];
+      }
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch (e) {
+      return String(dateStr).split(' ')[0].split('T')[0];
+    }
   }
 
   escapeHtml(str) {
@@ -354,6 +380,9 @@ window.noticeManager = noticeMgr;
 
 let currentCategoryFilter = 'all';
 let currentSearchQuery = '';
+
+// Now that noticeMgr and filter state are assigned, it's safe for render functions to reference them
+noticeMgr.init();
 
 function renderNoticeSearchAndFilters() {
   const searchContainer = document.getElementById('notices-search-container');
