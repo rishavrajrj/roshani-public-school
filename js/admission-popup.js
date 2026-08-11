@@ -16,7 +16,12 @@ class AdmissionPopup {
   }
 
   init() {
-    // Check if user has already dismissed the popup for this campaign
+    // Only display when user lands on the home page
+    if (!this.isHomePage()) {
+      return;
+    }
+
+    // Check if user has already dismissed or seen the popup
     if (this.isDismissed()) {
       return;
     }
@@ -28,6 +33,13 @@ class AdmissionPopup {
     setTimeout(() => {
       this.open();
     }, 350);
+  }
+
+  isHomePage() {
+    const path = window.location.pathname.toLowerCase();
+    const cleanPath = path.replace(/\/$/, '');
+    const page = cleanPath.split('/').pop();
+    return page === '' || page === 'index.html';
   }
 
   isDismissed() {
@@ -95,6 +107,7 @@ class AdmissionPopup {
 
     this.isOpen = true;
     this.previousActiveElement = document.activeElement;
+    this.markAsDismissed();
 
     // Lock body scrolling
     document.body.style.overflow = 'hidden';

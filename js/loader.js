@@ -1,6 +1,8 @@
 /* ============================================================
    ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER CONTROLLER
    Tracks complete element download & resource completion
+   Guarantees progress bar starts cleanly at 0% and finishes at 100%
+   Intercepts same-page clicks to prevent browser reload and bypass preloader completely
    ============================================================ */
 
 (function () {
@@ -17,10 +19,11 @@
   ];
 
   let currentProgress = 0;
-  let targetProgress = 10;
+  let targetProgress = 0;
   let progressInterval = null;
   let quoteInterval = null;
   let isFinished = false;
+  let isExiting = false;
 
   let totalResources = 0;
   let loadedResources = 0;
@@ -66,7 +69,7 @@
         
         <div class="rps-loader__progress-box">
           <div class="rps-loader__meta">
-            <span class="rps-loader__status-text" id="rps-loader-status">Downloading elements...</span>
+            <span class="rps-loader__status-text" id="rps-loader-status">Loading...</span>
             <span class="rps-loader__percent" id="rps-loader-percent">0%</span>
           </div>
           <div class="rps-loader__bar-track">
@@ -77,17 +80,7 @@
     </div>
   `;
 
-  function initLoader() {
-    // Add loading lock class to body immediately
-    if (document.body) {
-      document.body.classList.add('rps-loading');
-    } else {
-      document.addEventListener('DOMContentLoaded', () => {
-        if (document.body) document.body.classList.add('rps-loading');
-      });
-    }
-
-    // Ensure Loader HTML element exists
+  function ensureLoaderElement() {
     let loaderEl = document.getElementById('rps-loader');
     if (!loaderEl) {
       const wrapper = document.createElement('div');
@@ -97,24 +90,73 @@
         document.body.insertBefore(loaderEl, document.body.firstChild);
       } else {
         document.addEventListener('DOMContentLoaded', () => {
-          if (document.body) document.body.insertBefore(loaderEl, document.body.firstChild);
+          if (document.body && !document.getElementById('rps-loader')) {
+            document.body.insertBefore(loaderEl, document.body.firstChild);
+          }
         });
       }
     }
+    return loaderEl;
+  }
+
+  function resetProgressBarToZero() {
+    const percentEl = document.getElementById('rps-loader-percent');
+    const barEl = document.getElementById('rps-loader-bar');
+    const statusEl = document.getElementById('rps-loader-status');
+
+    if (percentEl) percentEl.textContent = '0%';
+    if (statusEl) statusEl.textContent = 'Loading...';
+    if (barEl) {
+      barEl.style.transition = 'none';
+      barEl.style.width = '0%';
+      void barEl.offsetWidth; // Force reflow
+      barEl.style.transition = 'width 0.18s linear';
+    }
+  }
+
+  function loadLazyIframes() {
+    const lazyIframes = document.querySelectorAll('iframe[data-src]');
+    lazyIframes.forEach(iframe => {
+      if (iframe.dataset.src && (!iframe.src || iframe.src === 'about:blank')) {
+        iframe.src = iframe.dataset.src;
+      }
+    });
+  }
+
+  function initLoader() {
+    isFinished = false;
+    isExiting = false;
+    currentProgress = 0;
+    targetProgress = 0;
+
+    // Lock body scrolling immediately
+    if (document.body) {
+      document.body.classList.add('rps-loading');
+    } else {
+      document.addEventListener('DOMContentLoaded', () => {
+        if (document.body) document.body.classList.add('rps-loading');
+      });
+    }
+
+    ensureLoaderElement();
+    resetProgressBarToZero();
 
     startQuoteRotator();
     startProgressAnimation();
+    setupLinkClickListener();
 
     // Track resource downloads after DOM starts parsing
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         trackResourceDownloads();
+        loadLazyIframes();
       });
     } else {
       trackResourceDownloads();
+      loadLazyIframes();
     }
 
-    // Track Google Fonts download state
+    // Track Google Fonts load state
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         fontsLoaded = true;
@@ -127,7 +169,7 @@
       fontsLoaded = true;
     }
 
-    // Window Load listener — fires when all images, frames, scripts, and stylesheets finish downloading
+    // Track Window Load event (all critical images, scripts, stylesheets loaded)
     if (document.readyState === 'complete') {
       windowLoaded = true;
       checkCompletion();
@@ -138,37 +180,45 @@
       });
     }
 
-    // Safety fallback (10s max limit to prevent permanent block if external asset hangs)
+    // Safety fallback: ensure loading completes after 2.5s maximum even if an external asset hangs
     setTimeout(() => {
       if (!isFinished) {
         windowLoaded = true;
         fontsLoaded = true;
         finishLoading();
       }
-    }, 10000);
+    }, 2500);
   }
 
   function trackResourceDownloads() {
     const images = Array.from(document.querySelectorAll('img'));
     const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
-    const scripts = Array.from(document.querySelectorAll('script[src]'));
 
-    const allResources = [...images, ...styles, ...scripts];
-    totalResources = allResources.length;
+    totalResources = images.length + styles.length;
 
     if (totalResources === 0) {
-      setTargetProgress(50, 'Loading Page...');
+      setTargetProgress(90, 'Loading...');
+      checkCompletion();
       return;
     }
 
     loadedResources = 0;
 
-    allResources.forEach(res => {
-      if (res.tagName === 'IMG' && res.complete) {
+    images.forEach(img => {
+      if (img.complete && img.naturalWidth !== 0) {
         loadedResources++;
       } else {
-        res.addEventListener('load', onResourceLoaded, { once: true });
-        res.addEventListener('error', onResourceLoaded, { once: true });
+        img.addEventListener('load', onResourceLoaded, { once: true });
+        img.addEventListener('error', onResourceLoaded, { once: true });
+      }
+    });
+
+    styles.forEach(style => {
+      if (style.sheet) {
+        loadedResources++;
+      } else {
+        style.addEventListener('load', onResourceLoaded, { once: true });
+        style.addEventListener('error', onResourceLoaded, { once: true });
       }
     });
 
@@ -183,16 +233,19 @@
 
   function updateCalculatedProgress() {
     if (totalResources === 0) return;
-    const percent = Math.min(95, Math.round((loadedResources / totalResources) * 90));
-    setTargetProgress(percent, `Downloading elements (${loadedResources}/${totalResources})...`);
+    const ratio = loadedResources / totalResources;
+    const calculated = Math.min(92, Math.round(ratio * 90));
+    setTargetProgress(calculated, 'Loading...');
   }
 
   function checkCompletion() {
-    if (windowLoaded && fontsLoaded && (totalResources === 0 || loadedResources >= totalResources)) {
+    const resourcesDone = (totalResources === 0 || loadedResources >= totalResources);
+    if (windowLoaded && fontsLoaded && resourcesDone) {
+      finishLoading();
+    } else if (resourcesDone && totalResources > 0 && windowLoaded) {
       finishLoading();
     } else if (windowLoaded && fontsLoaded) {
-      setTargetProgress(95, 'Finalizing display...');
-      setTimeout(finishLoading, 200);
+      finishLoading();
     }
   }
 
@@ -201,6 +254,8 @@
     const quoteEl = document.getElementById('rps-loader-quote');
     if (!quoteEl) return;
 
+    if (quoteInterval) clearInterval(quoteInterval);
+
     quoteInterval = setInterval(() => {
       if (isFinished) {
         clearInterval(quoteInterval);
@@ -208,9 +263,10 @@
       }
       quoteEl.classList.add('is-changing');
       setTimeout(() => {
+        const nextQuote = SCHOOl_MOTTO_QUOTES[(quoteIndex + 1) % SCHOOl_MOTTO_QUOTES.length];
         quoteIndex = (quoteIndex + 1) % SCHOOl_MOTTO_QUOTES.length;
-        quoteEl.textContent = SCHOOl_MOTTO_QUOTES[quoteIndex];
-        quoteEl.classList.remove('is-changing');
+        if (quoteEl) quoteEl.textContent = nextQuote;
+        if (quoteEl) quoteEl.classList.remove('is-changing');
       }, 350);
     }, 1800);
   }
@@ -220,44 +276,61 @@
       targetProgress = val;
     }
     const statusEl = document.getElementById('rps-loader-status');
-    if (statusEl && statusText) {
+    if (statusEl && statusText && !isExiting) {
       statusEl.textContent = statusText;
     }
   }
 
   function startProgressAnimation() {
-    const percentEl = document.getElementById('rps-loader-percent');
-    const barEl = document.getElementById('rps-loader-bar');
-    const statusEl = document.getElementById('rps-loader-status');
+    if (progressInterval) clearInterval(progressInterval);
 
-    // Smoothly step currentProgress towards targetProgress
     progressInterval = setInterval(() => {
+      const percentEl = document.getElementById('rps-loader-percent');
+      const barEl = document.getElementById('rps-loader-bar');
+      const statusEl = document.getElementById('rps-loader-status');
+
       if (currentProgress < targetProgress) {
-        const diff = targetProgress - currentProgress;
-        const step = Math.max(1, Math.ceil(diff * 0.15));
+        let diff = targetProgress - currentProgress;
+        let step = Math.max(1, Math.ceil(diff * 0.15));
+
+        if (targetProgress >= 100) {
+          step = Math.max(3, Math.ceil(diff * 0.25));
+        }
+
         currentProgress = Math.min(100, currentProgress + step);
 
         if (percentEl) percentEl.textContent = `${currentProgress}%`;
         if (barEl) barEl.style.width = `${currentProgress}%`;
+      }
 
-        if (currentProgress >= 100 && targetProgress >= 100) {
-          clearInterval(progressInterval);
+      // Check if progress bar has reached 100% (the end of the progress bar)
+      if (currentProgress >= 100 && targetProgress >= 100) {
+        if (!isExiting) {
+          isExiting = true;
+          if (percentEl) percentEl.textContent = '100%';
+          if (barEl) barEl.style.width = '100%';
           if (statusEl) statusEl.textContent = 'Welcome!';
-          completeExitAnimation();
+
+          // Wait 300ms at 100% so user clearly sees full 100% progress
+          setTimeout(() => {
+            completeExitAnimation();
+          }, 300);
         }
       }
-    }, 25);
+    }, 16);
   }
 
   function finishLoading() {
     if (isFinished) return;
-    setTargetProgress(100, 'Ready');
+    setTargetProgress(100, 'Loading...');
   }
 
   function completeExitAnimation() {
     if (isFinished) return;
     isFinished = true;
-    clearInterval(quoteInterval);
+    if (progressInterval) clearInterval(progressInterval);
+    if (quoteInterval) clearInterval(quoteInterval);
+    loadLazyIframes();
 
     const loaderEl = document.getElementById('rps-loader');
     if (loaderEl) {
@@ -271,15 +344,131 @@
     }, 600);
   }
 
+  function showTransitionTo(targetUrl) {
+    const loaderEl = ensureLoaderElement();
+    if (!loaderEl) {
+      window.location.href = targetUrl;
+      return;
+    }
+
+    isFinished = false;
+    isExiting = false;
+    currentProgress = 0;
+    targetProgress = 0;
+
+    resetProgressBarToZero();
+
+    loaderEl.classList.remove('is-loaded');
+    if (document.body) {
+      document.body.classList.add('rps-loading');
+    }
+
+    setTimeout(() => {
+      window.location.href = targetUrl;
+    }, 50);
+  }
+
+  function checkIsSamePage(link) {
+    if (!link) return false;
+
+    // 1. Compare full absolute URLs without hash
+    const currentHrefNoHash = window.location.href.split('#')[0];
+    const linkHrefNoHash = link.href ? link.href.split('#')[0] : '';
+
+    if (currentHrefNoHash && linkHrefNoHash && currentHrefNoHash === linkHrefNoHash) {
+      return true;
+    }
+
+    // 2. Compare normalized file names if same origin
+    if (link.origin === window.location.origin) {
+      function normalizePath(p) {
+        if (!p) return 'index.html';
+        p = p.replace(/\/+$/, '');
+        const parts = p.split('/');
+        const lastPart = parts[parts.length - 1];
+        if (!lastPart || lastPart === '' || lastPart === 'index.html') {
+          return 'index.html';
+        }
+        return lastPart.toLowerCase();
+      }
+
+      const currentFile = normalizePath(window.location.pathname);
+      const targetFile = normalizePath(link.pathname);
+
+      if (currentFile === targetFile && link.search === window.location.search) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function setupLinkClickListener() {
+    document.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+
+      const link = e.target.closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href');
+      if (!href) return;
+
+      // Ignore javascript:, mailto:, tel:
+      if (href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+      // Ignore external tabs, downloads, dropdown triggers
+      if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || link.hasAttribute('data-dropdown')) return;
+
+      // Ignore direct file downloads
+      if (/\.(pdf|png|jpg|jpeg|gif|svg|doc|docx|xls|xlsx|zip|rar)$/i.test(link.pathname)) return;
+
+      // Ignore external domains
+      if (link.origin !== window.location.origin) return;
+
+      // IF CLICKING A LINK ON THE SAME PAGE (e.g. Home when on Home, About when on About, About#principal):
+      if (checkIsSamePage(link)) {
+        e.preventDefault(); // Stop browser from triggering full HTTP page reload!
+
+        if (link.hash && link.hash !== '#') {
+          const targetEl = document.querySelector(link.hash);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth' });
+            try { history.pushState(null, '', link.hash); } catch (err) {}
+            return;
+          }
+        }
+
+        // If no hash or hash section, smooth scroll to top of current page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      e.preventDefault();
+      showTransitionTo(link.href);
+    });
+
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) {
+        isFinished = true;
+        const loaderEl = document.getElementById('rps-loader');
+        if (loaderEl) loaderEl.classList.add('is-loaded');
+        if (document.body) document.body.classList.remove('rps-loading');
+        loadLazyIframes();
+      }
+    });
+  }
+
   // Public API
   window.RPS_Loader = {
     show: function () {
       isFinished = false;
+      isExiting = false;
       windowLoaded = false;
       fontsLoaded = false;
       currentProgress = 0;
-      targetProgress = 10;
-      const loaderEl = document.getElementById('rps-loader');
+      targetProgress = 0;
+      const loaderEl = ensureLoaderElement();
+      resetProgressBarToZero();
       if (loaderEl) {
         loaderEl.classList.remove('is-loaded');
       }
@@ -289,18 +478,20 @@
       startProgressAnimation();
       startQuoteRotator();
       trackResourceDownloads();
-      setTimeout(finishLoading, 2000);
+      setTimeout(finishLoading, 800);
     },
     hide: function () {
       finishLoading();
     },
+    navigateTo: function (url) {
+      showTransitionTo(url);
+    },
     simulate: function (durationMs) {
       this.show();
-      setTimeout(finishLoading, durationMs || 2000);
+      setTimeout(finishLoading, durationMs || 800);
     }
   };
 
-  // Run initialization immediately
   initLoader();
 
 })();

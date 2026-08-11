@@ -25,7 +25,50 @@
   <link rel="stylesheet" href="css/loader.css">
   <script src="js/loader.js"></script>
 </head>
-<body>
+<body class="rps-loading">
+
+  <!-- ==================== PRELOADER ==================== -->
+  <div id="rps-loader" role="dialog" aria-modal="true" aria-label="Loading Roshani Public School">
+    <div class="rps-loader__card">
+      <div class="rps-loader__visual">
+        <svg class="rps-loader__rings" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rpsRingGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#B91C5C" />
+              <stop offset="100%" stop-color="#D97706" />
+            </linearGradient>
+            <linearGradient id="rpsRingGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#D97706" />
+              <stop offset="100%" stop-color="#1A365D" />
+            </linearGradient>
+          </defs>
+          <circle class="rps-loader__ring-outer" cx="60" cy="60" r="54" fill="none" stroke="url(#rpsRingGrad1)" stroke-width="3" stroke-dasharray="240 80" stroke-linecap="round" />
+          <circle class="rps-loader__ring-inner" cx="60" cy="60" r="44" fill="none" stroke="url(#rpsRingGrad2)" stroke-width="2.5" stroke-dasharray="140 60" stroke-linecap="round" />
+        </svg>
+        <div class="rps-loader__logo-box">
+          <img src="assets/logo.png" alt="Roshani Public School Emblem" class="rps-loader__logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span style="display:none; font-family:'Playfair Display', serif; font-weight:800; color:#B91C5C; font-size:1.5rem;">RPS</span>
+        </div>
+      </div>
+      
+      <h2 class="rps-loader__title">Roshani Public School</h2>
+      <div class="rps-loader__subtitle">Turkauliya, East Champaran</div>
+      
+      <div class="rps-loader__quote-wrap">
+        <div class="rps-loader__quote" id="rps-loader-quote">Shaping Bright Futures • CBSE Affil. 330943</div>
+      </div>
+      
+      <div class="rps-loader__progress-box">
+        <div class="rps-loader__meta">
+          <span class="rps-loader__status-text" id="rps-loader-status">Loading...</span>
+          <span class="rps-loader__percent" id="rps-loader-percent">0%</span>
+        </div>
+        <div class="rps-loader__bar-track">
+          <div class="rps-loader__bar-fill" id="rps-loader-bar"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== HEADER ==================== -->
   <header class="header" id="header">
@@ -304,7 +347,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/navigation.js"></script>
-  <script src="js/admission-popup.js?v=1.0"></script>
   <script src="js/animations.js"></script>
   <script src="js/notices-admin.js"></script>
 </body>
