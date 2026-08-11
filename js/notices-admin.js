@@ -175,17 +175,41 @@ const DEFAULT_NOTICES = [
 
 class NoticeManager {
   constructor() {
-    this.notices = [];
+    // Initialize immediately with default notices so home page never shows a blank box
+    this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
     this.page = 1;
     this.perPage = 8;
     this.loadNotices();
   }
 
   async loadNotices() {
+    // Load from localStorage if present
+    try {
+      const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
+      if (stored) {
+        let parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (typeof parsed[0].type !== 'undefined') {
+            this.notices = parsed.map(n => this.migrateNotice(n));
+            this.saveNotices(this.notices);
+          } else {
+            this.notices = parsed;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("LocalStorage notices read error:", e);
+    }
+
+    // Trigger immediate render
+    if (typeof renderPublicNotices === 'function') renderPublicNotices();
+    if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
+
+    // Fetch dynamic notices from Supabase database
     try {
       if (window.RPS_Supabase && typeof window.RPS_Supabase.getPublishedNotices === 'function') {
         const sbNotices = await window.RPS_Supabase.getPublishedNotices();
-        if (sbNotices && sbNotices.length > 0) {
+        if (Array.isArray(sbNotices) && sbNotices.length > 0) {
           this.notices = sbNotices.map(n => ({
             id: n.id,
             title: n.title,
@@ -205,34 +229,11 @@ class NoticeManager {
           }));
           if (typeof renderPublicNotices === 'function') renderPublicNotices();
           if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
-          return;
         }
       }
     } catch (e) {
       console.warn("Supabase notices fetch fallback:", e);
     }
-
-    try {
-      const stored = localStorage.getItem(NOTICE_STORAGE_KEY);
-      if (stored) {
-        let parsed = JSON.parse(stored);
-        if (parsed.length > 0 && typeof parsed[0].type !== 'undefined') {
-            this.notices = parsed.map(n => this.migrateNotice(n));
-            this.saveNotices(this.notices);
-        } else {
-            this.notices = parsed;
-        }
-      } else {
-        this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
-        this.saveNotices(this.notices);
-      }
-    } catch (e) {
-      console.error("Failed to load notices:", e);
-      this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
-    }
-
-    if (typeof renderPublicNotices === 'function') renderPublicNotices();
-    if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
   }
 
   migrateNotice(n) {
