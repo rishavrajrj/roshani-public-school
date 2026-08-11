@@ -4,6 +4,8 @@
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initGalleryHeroSlider();
+
   const bentoGrid = document.getElementById('gallery-bento-grid');
 
   // Attempt dynamic load from Supabase
@@ -21,6 +23,135 @@ document.addEventListener('DOMContentLoaded', () => {
     initGalleryFiltersAndLightbox();
   }
 });
+
+/* ============================================================
+   GALLERY HERO AUTOMATED SLIDESHOW
+   ============================================================ */
+function initGalleryHeroSlider() {
+  const slider = document.getElementById('gallery-hero');
+  if (!slider) return;
+
+  const slides = slider.querySelectorAll('.gh-slide');
+  const dotsContainer = document.getElementById('gh-dots');
+  const prevBtn = document.getElementById('gh-prev');
+  const nextBtn = document.getElementById('gh-next');
+
+  if (!slides || slides.length === 0) return;
+
+  let currentIndex = 0;
+  let autoplayTimer = null;
+  const AUTOPLAY_DELAY = 4500;
+
+  // Render Dots
+  if (dotsContainer) {
+    dotsContainer.innerHTML = '';
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('button');
+      dot.className = `gh-dot ${idx === 0 ? 'is-active' : ''}`;
+      dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
+      dot.onclick = () => {
+        goToSlide(idx);
+        restartAutoplay();
+      };
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  const dots = dotsContainer ? dotsContainer.querySelectorAll('.gh-dot') : [];
+
+  function goToSlide(index) {
+    currentIndex = (index + slides.length) % slides.length;
+
+    slides.forEach((slide, idx) => {
+      const isActive = idx === currentIndex;
+      slide.classList.toggle('is-active', isActive);
+      slide.setAttribute('aria-hidden', !isActive);
+    });
+
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('is-active', idx === currentIndex);
+    });
+  }
+
+  function nextSlide() {
+    goToSlide(currentIndex + 1);
+  }
+
+  function prevSlide() {
+    goToSlide(currentIndex - 1);
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayTimer = setInterval(nextSlide, AUTOPLAY_DELAY);
+  }
+
+  function stopAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+  }
+
+  function restartAutoplay() {
+    stopAutoplay();
+    startAutoplay();
+  }
+
+  if (prevBtn) {
+    prevBtn.onclick = () => {
+      prevSlide();
+      restartAutoplay();
+    };
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      nextSlide();
+      restartAutoplay();
+    };
+  }
+
+  // Hover & Focus Pause
+  slider.addEventListener('mouseenter', stopAutoplay);
+  slider.addEventListener('mouseleave', startAutoplay);
+  slider.addEventListener('focusin', stopAutoplay);
+  slider.addEventListener('focusout', startAutoplay);
+
+  // Touch Swipe Support
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  slider.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  slider.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    if (Math.abs(touchEndX - touchStartX) > 40) {
+      if (touchEndX - touchStartX < 0) {
+        nextSlide();
+      } else {
+        prevSlide();
+      }
+      restartAutoplay();
+    }
+  }, { passive: true });
+
+  // Keyboard navigation
+  slider.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      prevSlide();
+      restartAutoplay();
+    } else if (e.key === 'ArrowRight') {
+      nextSlide();
+      restartAutoplay();
+    }
+  });
+
+  // Start Autoplay
+  startAutoplay();
+}
 
 function renderDynamicGallery(container, images) {
   container.innerHTML = '';

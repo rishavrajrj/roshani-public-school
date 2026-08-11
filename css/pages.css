@@ -793,14 +793,14 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  width: 50%;
   background: linear-gradient(
     90deg,
-    rgba(15, 47, 87, 0.94) 0%,
-    rgba(15, 47, 87, 0.82) 45%,
-    rgba(15, 47, 87, 0.35) 75%,
-    rgba(15, 47, 87, 0.08) 100%
+    rgba(8, 16, 28, 0.85) 0%,
+    rgba(15, 36, 64, 0.45) 45%,
+    rgba(15, 36, 64, 0.10) 70%,
+    transparent 100%
   );
+  pointer-events: none;
 }
 
 .about-hero-ref__content {
@@ -809,6 +809,25 @@
   padding: 0 3.5rem;
   max-width: 680px;
   color: var(--white);
+}
+
+.about-hero-ref__content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2rem;
+  right: -2rem;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 16, 28, 0.85) 0%,
+    rgba(15, 36, 64, 0.45) 45%,
+    rgba(15, 36, 64, 0.10) 70%,
+    transparent 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50% / 20px;
 }
 
 .about-hero-ref__page-name,
@@ -2519,22 +2538,19 @@
 .gh-slide[data-slide="5"] .gh-slide__bg img { object-position: center center; }
 .gh-slide[data-slide="6"] .gh-slide__bg img { object-position: center center; }
 
-/* Left Dark Navy Gradient Overlay — lighter so background image shows through */
+/* Left Dark Navy Gradient Overlay — ultra-low intensity for maximum gallery image clarity */
 .gh-slide__overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 65%;
-  height: 100%;
+  inset: 0;
   z-index: 2;
   background: linear-gradient(
     90deg,
-    rgba(15, 47, 87, 0.82) 0%,
-    rgba(15, 47, 87, 0.68) 30%,
-    rgba(15, 47, 87, 0.35) 55%,
-    rgba(15, 47, 87, 0.08) 80%,
-    rgba(15, 47, 87, 0) 100%
+    rgba(8, 16, 28, 0.35) 0%,
+    rgba(15, 36, 64, 0.18) 35%,
+    rgba(15, 36, 64, 0.04) 60%,
+    transparent 100%
   );
+  pointer-events: none;
 }
 
 /* Foreground Content Wrapper */
@@ -2547,9 +2563,28 @@
 }
 
 .gh-content {
+  position: relative;
   max-width: 520px;
   color: #FFFFFF;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.gh-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2rem;
+  right: -2rem;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 16, 28, 0.30) 0%,
+    rgba(15, 36, 64, 0.12) 35%,
+    transparent 70%
+  );
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50% / 20px;
 }
 
 /* Badge Pill */
@@ -2745,11 +2780,10 @@
     width: 100%;
     background: linear-gradient(
       180deg,
-      rgba(15, 47, 87, 0) 0%,
-      rgba(15, 47, 87, 0.15) 25%,
-      rgba(15, 47, 87, 0.6) 50%,
-      rgba(15, 47, 87, 0.88) 75%,
-      rgba(15, 47, 87, 0.95) 100%
+      transparent 0%,
+      rgba(8, 16, 28, 0.10) 30%,
+      rgba(8, 16, 28, 0.35) 70%,
+      rgba(8, 16, 28, 0.45) 100%
     );
   }
   .gh-slide__content-wrapper {

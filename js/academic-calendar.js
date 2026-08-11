@@ -142,9 +142,14 @@
       el.textContent = `SESSION ${currentSessionYear}`;
     });
 
-    const heroTitle = document.querySelector('.calendar-hero__title');
+    const heroTitle = document.querySelector('.calendar-hero__title, .about-hero-ref__title');
     if (heroTitle) {
-      heroTitle.textContent = `Academic Calendar ${currentSessionYear}`;
+      const subSpan = heroTitle.querySelector('span');
+      if (subSpan) {
+        subSpan.textContent = `Session ${currentSessionYear}`;
+      } else {
+        heroTitle.textContent = `Academic Calendar ${currentSessionYear}`;
+      }
     }
 
     const adminLabel = document.getElementById('admin-current-session-label');
