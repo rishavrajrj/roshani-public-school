@@ -389,13 +389,13 @@ function renderNoticeSearchAndFilters() {
   if (!searchContainer) return;
 
   searchContainer.innerHTML = `
-    <div class="notices-search__inner" style="background: var(--white, #fff); border: 1px solid var(--border, #e2e8f0); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(15, 36, 64, 0.05); margin-bottom: 30px;">
-      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 260px;">
-          <input type="text" id="notice-search-input" value="${noticeMgr.escapeHtml(currentSearchQuery)}" placeholder="Search notices by title, keyword, or category..." style="width: 100%; padding: 12px 16px 12px 42px; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    <div class="notices-search__inner">
+      <div class="notices-search__row">
+        <div class="notices-search__input-wrap">
+          <input type="text" id="notice-search-input" value="${noticeMgr.escapeHtml(currentSearchQuery)}" placeholder="Search notices by title, keyword, or category...">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="notices-search__icon"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         </div>
-        <div class="facility-categories-wrapper" id="notice-category-filters" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="facility-categories-wrapper notices-filter-scroll" id="notice-category-filters">
           <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'all' ? 'is-active' : ''}" data-category="all">All Notices</button>
           <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'admissions' ? 'is-active' : ''}" data-category="admissions">Admissions</button>
           <button class="facility-cat-btn filter-btn ${currentCategoryFilter === 'academic' ? 'is-active' : ''}" data-category="academic">Academic</button>
@@ -448,31 +448,31 @@ function renderNoticesPageRedesign() {
     html += renderPinnedSection(pinnedNotices);
   }
 
-  html += `<div class="notices-layout" style="display: grid; grid-template-columns: 1fr 300px; gap: 30px; margin-top: 40px;">`;
+  html += `<div class="notices-layout">`;
   
   html += `<div class="notices-main-list">
-    <h3 style="margin-bottom: 20px; font-size: 1.5rem;">${currentSearchQuery ? 'Search Results' : 'All Notices'}</h3>`;
+    <h3 class="notices-list__title-heading">${currentSearchQuery ? 'Search Results' : 'All Notices'}</h3>`;
   
   if (pagedNotices.length === 0) {
     html += renderEmptyState('No notices found matching your criteria.');
   } else {
-    html += `<div class="notices-list-container" style="display: flex; flex-direction: column; gap: 20px;">`;
+    html += `<div class="notices-list-container">`;
     pagedNotices.forEach(n => {
       html += renderNoticeCard(n);
     });
     html += `</div>`;
     
     if (hasMore) {
-      html += `<div style="text-align: center; margin-top: 30px;">
-        <button id="load-more-btn" class="btn btn-outline" style="padding: 10px 20px;">Load More Notices</button>
+      html += `<div class="notices-load-more-wrap">
+        <button id="load-more-btn" class="btn btn-outline">Load More Notices</button>
       </div>`;
     }
   }
   html += `</div>`;
 
   html += `<aside class="notices-sidebar">
-    <div style="background: var(--light-bg, #f8f9fa); padding: 20px; border-radius: 8px;">
-      <h4 style="margin-bottom: 15px; border-bottom: 2px solid var(--primary-color, #e91e63); padding-bottom: 10px; display: inline-block;">Recent Updates</h4>
+    <div class="notices-sidebar__card-wrapper">
+      <h4 class="notices-sidebar__title-heading">Recent Updates</h4>
       ${renderSidebar(noticeMgr.getRecentNotices(5))}
     </div>
   </aside>`;
@@ -519,31 +519,31 @@ function renderNoticesPageRedesign() {
 }
 
 function renderPinnedSection(notices) {
-  let html = `<div class="pinned-notices-section" style="margin-bottom: 40px;">
-    <h3 style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--primary-color, #e91e63);">
+  let html = `<div class="pinned-notices-section">
+    <h3 class="notices-pinned__title">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3H8C7.4 3 7 3.4 7 4V11L5 13V15H11V21L12 22L13 21V15H19V13L17 11V4C17 3.4 16.6 3 16 3Z"/></svg>
       Important Updates
     </h3>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">`;
+    <div class="pinned-notices-grid">`;
   
   notices.forEach(n => {
     html += `
-      <div class="notice-list-card" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); position: relative; border-left: 4px solid var(--primary-color, #e91e63);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-          <div style="display: flex; gap: 8px;">
-            <span class="notice-cat-badge notice-cat-badge--${n.category}" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; background: #f0f0f0; display: inline-flex; align-items: center; gap: 4px;">
-              <span style="width: 14px; height: 14px;">${noticeMgr.getCategoryIcon(n.category)}</span>
+      <div class="notice-pinned-card">
+        <div class="notice-pinned-card__header">
+          <div class="notice-pinned-card__badges">
+            <span class="notice-cat-badge notice-cat-badge--${n.category}">
+              <span class="notice-cat-icon">${noticeMgr.getCategoryIcon(n.category)}</span>
               ${noticeMgr.getCategoryLabel(n.category)}
             </span>
-            <span class="notice-badge--pinned" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; background: #ffebee; color: #c62828; font-weight: bold;">PINNED</span>
+            <span class="notice-badge--pinned">PINNED</span>
           </div>
-          <span style="font-size: 0.85rem; color: #757575;">${noticeMgr.formatDate(n.publishedAt)}</span>
+          <span class="notice-pinned-card__date">${noticeMgr.formatDate(n.publishedAt)}</span>
         </div>
-        <h4 style="margin: 0 0 10px 0; font-size: 1.1rem; line-height: 1.4;"><a href="#" class="notice-detail-trigger" data-id="${n.id}" style="color: inherit; text-decoration: none;">${noticeMgr.escapeHtml(n.title)}</a></h4>
-        <p style="margin: 0 0 15px 0; font-size: 0.9rem; color: #616161; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${noticeMgr.escapeHtml(n.description)}</p>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <a href="#" class="notice-detail-trigger" data-id="${n.id}" style="color: var(--primary-color, #e91e63); font-weight: 500; font-size: 0.9rem; text-decoration: none;">View Details →</a>
-          ${n.attachmentUrl ? `<span title="Has Attachment"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></span>` : ''}
+        <h4 class="notice-pinned-card__title"><a href="#" class="notice-detail-trigger" data-id="${n.id}">${noticeMgr.escapeHtml(n.title)}</a></h4>
+        <p class="notice-pinned-card__desc">${noticeMgr.escapeHtml(n.description)}</p>
+        <div class="notice-pinned-card__footer">
+          <a href="#" class="notice-detail-trigger notice-pinned-card__link" data-id="${n.id}">View Details →</a>
+          ${n.attachmentUrl ? `<span class="notice-pinned-card__attachment" title="Has Attachment"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></span>` : ''}
         </div>
       </div>
     `;
@@ -555,50 +555,50 @@ function renderPinnedSection(notices) {
 function renderNoticeCard(n) {
   const isNew = noticeMgr.isNewNotice(n);
   return `
-    <div class="notice-list-card" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; background: #fff; display: flex; flex-direction: column; gap: 10px; border-left: 4px solid var(--secondary-color, #ff9800);">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <span class="notice-cat-badge notice-cat-badge--${n.category}" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; background: #f0f0f0; display: inline-flex; align-items: center; gap: 4px;">
-            <span style="width: 14px; height: 14px;">${noticeMgr.getCategoryIcon(n.category)}</span>
+    <div class="notice-list-card">
+      <div class="notice-list-card__header">
+        <div class="notice-list-card__badges">
+          <span class="notice-cat-badge notice-cat-badge--${n.category}">
+            <span class="notice-cat-icon">${noticeMgr.getCategoryIcon(n.category)}</span>
             ${noticeMgr.getCategoryLabel(n.category)}
           </span>
-          ${isNew ? `<span class="notice-badge--new" style="font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; background: #e8f5e9; color: #2e7d32; font-weight: bold;">NEW</span>` : ''}
+          ${isNew ? `<span class="notice-badge--new">NEW</span>` : ''}
         </div>
-        <span style="font-size: 0.85rem; color: #757575;">${noticeMgr.formatDate(n.publishedAt)}</span>
+        <span class="notice-list-card__date">${noticeMgr.formatDate(n.publishedAt)}</span>
       </div>
-      <h4 class="notice-list-card__title" style="margin: 0; font-size: 1.1rem;"><a href="#" class="notice-detail-trigger" data-id="${n.id}" style="color: inherit; text-decoration: none;">${noticeMgr.escapeHtml(n.title)}</a></h4>
-      <p style="margin: 0; font-size: 0.95rem; color: #424242; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${noticeMgr.escapeHtml(n.description)}</p>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px;">
-        <a href="#" class="notice-detail-trigger" data-id="${n.id}" style="color: var(--primary-color, #e91e63); font-weight: 500; font-size: 0.9rem; text-decoration: none;">View Details →</a>
-        ${n.attachmentUrl ? `<span title="Has Attachment"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></span>` : ''}
+      <h4 class="notice-list-card__title"><a href="#" class="notice-detail-trigger" data-id="${n.id}">${noticeMgr.escapeHtml(n.title)}</a></h4>
+      <p class="notice-list-card__desc">${noticeMgr.escapeHtml(n.description)}</p>
+      <div class="notice-list-card__footer">
+        <a href="#" class="notice-detail-trigger notice-list-card__link" data-id="${n.id}">View Details →</a>
+        ${n.attachmentUrl ? `<span class="notice-list-card__attachment" title="Has Attachment"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg> Attachment</span>` : ''}
       </div>
     </div>
   `;
 }
 
 function renderSidebar(notices) {
-  if (notices.length === 0) return '<p>No recent notices.</p>';
-  return `<ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 15px;">` + notices.map(n => `
-    <li style="border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-      <div style="display: flex; gap: 8px; margin-bottom: 5px;">
-        <span class="notice-cat-badge notice-cat-badge--${n.category}" style="font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: #e0e0e0; display: inline-flex; align-items: center; gap: 4px;">
+  if (notices.length === 0) return '<p class="notices-sidebar__empty">No recent notices.</p>';
+  return `<ul class="notices-sidebar__list">` + notices.map(n => `
+    <li class="notices-sidebar__item">
+      <div class="notices-sidebar__item-cat-wrap">
+        <span class="notice-cat-badge notice-cat-badge--${n.category}">
           ${noticeMgr.getCategoryLabel(n.category)}
         </span>
       </div>
-      <a href="#" class="notice-detail-trigger" data-id="${n.id}" style="text-decoration: none; color: #333; font-size: 0.95rem; font-weight: 500; display: block; margin-bottom: 4px;">${noticeMgr.escapeHtml(n.title)}</a>
-      <div style="font-size: 0.8rem; color: #777;">${noticeMgr.formatDate(n.publishedAt)}</div>
+      <a href="#" class="notice-detail-trigger notices-sidebar__item-title" data-id="${n.id}">${noticeMgr.escapeHtml(n.title)}</a>
+      <div class="notices-sidebar__item-date">${noticeMgr.formatDate(n.publishedAt)}</div>
     </li>
   `).join('') + `</ul>`;
 }
 
 function renderEmptyState(message) {
   return `
-    <div style="text-align: center; padding: 50px 20px; background: #fafafa; border-radius: 8px; border: 1px dashed #ccc;">
-      <div style="width: 48px; height: 48px; margin: 0 auto 15px auto; color: #9e9e9e;">
+    <div class="notices-empty">
+      <div class="notices-empty__icon">
         ${noticeMgr.getCategoryIcon('general')}
       </div>
-      <h4 style="margin: 0 0 10px 0; color: #616161;">No Notices Found</h4>
-      <p style="margin: 0; color: #757575;">${message}</p>
+      <h4 class="notices-empty__title">No Notices Found</h4>
+      <p class="notices-empty__desc">${message}</p>
     </div>
   `;
 }
@@ -615,42 +615,42 @@ function renderDetailModal(notice) {
   const content = (notice.content || notice.description).replace(/\n/g, '<br>');
 
   const html = `
-    <div class="modal-backdrop notice-detail-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-      <div class="modal-dialog" style="background: #fff; width: 100%; max-width: 700px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative;">
-        <button class="close-modal-btn" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+    <div class="modal-backdrop notice-detail-modal">
+      <div class="modal-dialog">
+        <button class="close-modal-btn" aria-label="Close">&times;</button>
         
-        <div style="padding: 30px;">
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
-            <span style="font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #f0f0f0; display: inline-flex; align-items: center; gap: 4px;">
-              <span style="width: 14px; height: 14px;">${noticeMgr.getCategoryIcon(notice.category)}</span>
+        <div class="notice-detail__inner">
+          <div class="notice-detail__header">
+            <span class="notice-cat-badge notice-cat-badge--${notice.category}">
+              <span class="notice-cat-icon">${noticeMgr.getCategoryIcon(notice.category)}</span>
               ${noticeMgr.getCategoryLabel(notice.category)}
             </span>
-            <span style="font-size: 0.9rem; color: #757575;">${noticeMgr.formatDate(notice.publishedAt)}</span>
+            <span class="notice-detail__date-tag">${noticeMgr.formatDate(notice.publishedAt)}</span>
           </div>
           
-          <h2 style="margin: 0 0 15px 0; font-size: 1.5rem; color: #333; line-height: 1.3;">${noticeMgr.escapeHtml(notice.title)}</h2>
+          <h2 class="notice-detail__title">${noticeMgr.escapeHtml(notice.title)}</h2>
           
-          <div style="font-size: 0.85rem; color: #888; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+          <div class="notice-detail__meta">
             Published: ${noticeMgr.formatDate(notice.publishedAt)}
             ${notice.updatedAt ? ` | Updated: ${noticeMgr.formatDate(notice.updatedAt)}` : ''}
           </div>
           
-          <div style="font-size: 1rem; line-height: 1.6; color: #444; margin-bottom: 30px;">
+          <div class="notice-detail__body">
             ${content}
           </div>
           
           ${notice.attachmentUrl ? `
-            <div style="margin-bottom: 30px; padding: 15px; background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #666;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span style="font-size: 0.95rem; font-weight: 500;">${noticeMgr.escapeHtml(notice.attachmentName || 'Attached Document')}</span>
+            <div class="notice-detail__attachment-card">
+              <div class="notice-detail__attachment-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span class="notice-detail__attachment-name">${noticeMgr.escapeHtml(notice.attachmentName || 'Attached Document')}</span>
               </div>
-              <a href="${notice.attachmentUrl}" target="_blank" download class="btn" style="padding: 6px 12px; font-size: 0.85rem; background: var(--primary-color, #e91e63); color: #fff; text-decoration: none; border-radius: 4px;">Download</a>
+              <a href="${notice.attachmentUrl}" target="_blank" download class="btn btn--primary btn--sm">Download</a>
             </div>
           ` : ''}
           
-          <div style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-outline close-modal-btn-bottom" style="padding: 10px 20px;">← Back to All Notices</button>
+          <div class="notice-detail__footer">
+            <button class="btn btn-outline close-modal-btn-bottom">← Back to All Notices</button>
           </div>
         </div>
       </div>
