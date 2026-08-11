@@ -1,6 +1,6 @@
 /* ============================================================
    ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER CONTROLLER
-   Dynamic progress calculator & loading transition manager
+   Tracks complete element download & resource completion
    ============================================================ */
 
 (function () {
@@ -17,10 +17,15 @@
   ];
 
   let currentProgress = 0;
-  let targetProgress = 15;
+  let targetProgress = 10;
   let progressInterval = null;
   let quoteInterval = null;
   let isFinished = false;
+
+  let totalResources = 0;
+  let loadedResources = 0;
+  let windowLoaded = false;
+  let fontsLoaded = false;
 
   // HTML Template for fallback auto-injection
   const LOADER_HTML_TEMPLATE = `
@@ -61,7 +66,7 @@
         
         <div class="rps-loader__progress-box">
           <div class="rps-loader__meta">
-            <span class="rps-loader__status-text" id="rps-loader-status">Initializing...</span>
+            <span class="rps-loader__status-text" id="rps-loader-status">Downloading elements...</span>
             <span class="rps-loader__percent" id="rps-loader-percent">0%</span>
           </div>
           <div class="rps-loader__bar-track">
@@ -78,7 +83,7 @@
       document.body.classList.add('rps-loading');
     } else {
       document.addEventListener('DOMContentLoaded', () => {
-        document.body.classList.add('rps-loading');
+        if (document.body) document.body.classList.add('rps-loading');
       });
     }
 
@@ -92,7 +97,7 @@
         document.body.insertBefore(loaderEl, document.body.firstChild);
       } else {
         document.addEventListener('DOMContentLoaded', () => {
-          document.body.insertBefore(loaderEl, document.body.firstChild);
+          if (document.body) document.body.insertBefore(loaderEl, document.body.firstChild);
         });
       }
     }
@@ -100,28 +105,95 @@
     startQuoteRotator();
     startProgressAnimation();
 
-    // DOMContentLoaded event listener
+    // Track resource downloads after DOM starts parsing
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        setTargetProgress(75, 'Loading Assets...');
+        trackResourceDownloads();
       });
     } else {
-      setTargetProgress(75, 'Loading Assets...');
+      trackResourceDownloads();
     }
 
-    // Window Load event listener
-    if (document.readyState === 'complete') {
-      finishLoading();
+    // Track Google Fonts download state
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        fontsLoaded = true;
+        checkCompletion();
+      }).catch(() => {
+        fontsLoaded = true;
+        checkCompletion();
+      });
     } else {
-      window.addEventListener('load', finishLoading);
+      fontsLoaded = true;
     }
 
-    // Safety fallback timeout (Max 2.2 seconds to ensure fast UX)
+    // Window Load listener — fires when all images, frames, scripts, and stylesheets finish downloading
+    if (document.readyState === 'complete') {
+      windowLoaded = true;
+      checkCompletion();
+    } else {
+      window.addEventListener('load', () => {
+        windowLoaded = true;
+        checkCompletion();
+      });
+    }
+
+    // Safety fallback (10s max limit to prevent permanent block if external asset hangs)
     setTimeout(() => {
       if (!isFinished) {
+        windowLoaded = true;
+        fontsLoaded = true;
         finishLoading();
       }
-    }, 2200);
+    }, 10000);
+  }
+
+  function trackResourceDownloads() {
+    const images = Array.from(document.querySelectorAll('img'));
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+    const scripts = Array.from(document.querySelectorAll('script[src]'));
+
+    const allResources = [...images, ...styles, ...scripts];
+    totalResources = allResources.length;
+
+    if (totalResources === 0) {
+      setTargetProgress(50, 'Loading Page...');
+      return;
+    }
+
+    loadedResources = 0;
+
+    allResources.forEach(res => {
+      if (res.tagName === 'IMG' && res.complete) {
+        loadedResources++;
+      } else {
+        res.addEventListener('load', onResourceLoaded, { once: true });
+        res.addEventListener('error', onResourceLoaded, { once: true });
+      }
+    });
+
+    updateCalculatedProgress();
+  }
+
+  function onResourceLoaded() {
+    loadedResources++;
+    updateCalculatedProgress();
+    checkCompletion();
+  }
+
+  function updateCalculatedProgress() {
+    if (totalResources === 0) return;
+    const percent = Math.min(95, Math.round((loadedResources / totalResources) * 90));
+    setTargetProgress(percent, `Downloading elements (${loadedResources}/${totalResources})...`);
+  }
+
+  function checkCompletion() {
+    if (windowLoaded && fontsLoaded && (totalResources === 0 || loadedResources >= totalResources)) {
+      finishLoading();
+    } else if (windowLoaded && fontsLoaded) {
+      setTargetProgress(95, 'Finalizing display...');
+      setTimeout(finishLoading, 200);
+    }
   }
 
   function startQuoteRotator() {
@@ -161,7 +233,6 @@
     // Smoothly step currentProgress towards targetProgress
     progressInterval = setInterval(() => {
       if (currentProgress < targetProgress) {
-        // Dynamic step based on distance
         const diff = targetProgress - currentProgress;
         const step = Math.max(1, Math.ceil(diff * 0.15));
         currentProgress = Math.min(100, currentProgress + step);
@@ -190,7 +261,6 @@
 
     const loaderEl = document.getElementById('rps-loader');
     if (loaderEl) {
-      // Add loaded class for CSS transition
       loaderEl.classList.add('is-loaded');
     }
 
@@ -205,8 +275,10 @@
   window.RPS_Loader = {
     show: function () {
       isFinished = false;
+      windowLoaded = false;
+      fontsLoaded = false;
       currentProgress = 0;
-      targetProgress = 15;
+      targetProgress = 10;
       const loaderEl = document.getElementById('rps-loader');
       if (loaderEl) {
         loaderEl.classList.remove('is-loaded');
@@ -216,14 +288,15 @@
       }
       startProgressAnimation();
       startQuoteRotator();
-      setTimeout(finishLoading, 1500);
+      trackResourceDownloads();
+      setTimeout(finishLoading, 2000);
     },
     hide: function () {
       finishLoading();
     },
     simulate: function (durationMs) {
       this.show();
-      setTimeout(finishLoading, durationMs || 1500);
+      setTimeout(finishLoading, durationMs || 2000);
     }
   };
 
