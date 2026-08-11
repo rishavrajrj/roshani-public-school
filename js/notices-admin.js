@@ -220,13 +220,13 @@ class NoticeManager {
             category: n.category || 'general',
             published: n.published !== false,
             pinned: !!n.pinned,
-            publishedAt: n.published_at ? n.published_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            publishedAt: n.published_at ? String(n.published_at).split(/[T ]/)[0] : new Date().toISOString().split('T')[0],
             updatedAt: n.updated_at,
-            expiresAt: n.expires_at ? n.expires_at.split('T')[0] : null,
+            expiresAt: n.expires_at ? String(n.expires_at).split(/[T ]/)[0] : null,
             attachmentUrl: n.attachment_url || null,
             attachmentName: n.attachment_name || null,
             attachmentType: n.attachment_type || null,
-            createdAt: n.created_at ? n.created_at.split('T')[0] : new Date().toISOString().split('T')[0]
+            createdAt: n.created_at ? String(n.created_at).split(/[T ]/)[0] : new Date().toISOString().split('T')[0]
           }));
           this._triggerRender();
         }
