@@ -667,6 +667,64 @@ function renderDetailModal(notice) {
   };
 }
 
+let noticeTickerInterval = null;
+
+function initNoticeTicker() {
+  const windowEl = document.querySelector('.notice-board__window');
+  const track = document.querySelector('.notice-board__track');
+  if (!windowEl || !track) return;
+
+  if (noticeTickerInterval) {
+    clearInterval(noticeTickerInterval);
+    noticeTickerInterval = null;
+  }
+
+  const cards = Array.from(track.children);
+  if (cards.length <= 1) return; // Need at least 2 cards to slide
+
+  // Duplicate cards into track to create seamless looping loop
+  const originalCount = cards.length;
+  for (let i = 0; i < originalCount; i++) {
+    const clone = cards[i].cloneNode(true);
+    const noticeId = cards[i].dataset.id;
+    if (noticeId) {
+      clone.onclick = () => { window.location.href = `notices.html?id=${noticeId}`; };
+    }
+    track.appendChild(clone);
+  }
+
+  let currentIndex = 0;
+  let isPaused = false;
+
+  function stepTicker() {
+    if (isPaused) return;
+
+    currentIndex++;
+    const allCards = track.querySelectorAll('.notice-card');
+    if (currentIndex > originalCount) {
+      track.style.transition = 'none';
+      track.style.transform = 'translateY(0px)';
+      currentIndex = 1;
+      // Force reflow for seamless reset
+      void track.offsetHeight;
+    }
+
+    const targetCard = allCards[currentIndex];
+    if (targetCard) {
+      const offsetTop = targetCard.offsetTop - allCards[0].offsetTop;
+      track.style.transition = 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)';
+      track.style.transform = `translateY(-${offsetTop}px)`;
+    }
+  }
+
+  noticeTickerInterval = setInterval(stepTicker, 3200);
+
+  windowEl.onmouseenter = () => { isPaused = true; };
+  windowEl.onmouseleave = () => { isPaused = false; };
+  windowEl.onfocusin = () => { isPaused = true; };
+  windowEl.onfocusout = () => { isPaused = false; };
+}
+
 // Homepage Slide-up notices logic
 function renderPublicNotices() {
   const track = document.querySelector('.notice-board__track');
@@ -683,6 +741,7 @@ function renderPublicNotices() {
       publicNotices.forEach(n => {
         track.appendChild(createNoticeCardElement(n));
       });
+      initNoticeTicker();
     }
   }
 
@@ -736,6 +795,7 @@ function createHomeNoticeCard(n) {
 
 function createNoticeCardElement(n) {
   const card = document.createElement('div');
+  card.dataset.id = n.id;
   const catClass = n.category === 'admissions' ? 'notice-card__type--admission' :
                    n.category === 'academic' ? 'notice-card__type--academic' :
                    n.category === 'events' ? 'notice-card__type--event' : '';
