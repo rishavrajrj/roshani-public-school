@@ -40,9 +40,34 @@
   function initAdminSidebar() {
     const toggleBtn = document.getElementById('admin-sidebar-toggle');
     const sidebar = document.querySelector('.admin-sidebar');
-    if (toggleBtn && sidebar) {
-      toggleBtn.onclick = () => sidebar.classList.toggle('is-open');
+    let overlay = document.querySelector('.admin-sidebar-overlay');
+
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'admin-sidebar-overlay';
+      document.body.appendChild(overlay);
     }
+
+    const toggleSidebar = (state) => {
+      if (!sidebar) return;
+      const isOpen = state !== undefined ? state : !sidebar.classList.contains('is-open');
+      if (isOpen) {
+        sidebar.classList.add('is-open');
+        overlay.classList.add('is-active');
+      } else {
+        sidebar.classList.remove('is-open');
+        overlay.classList.remove('is-active');
+      }
+    };
+
+    if (toggleBtn) {
+      toggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleSidebar();
+      };
+    }
+
+    overlay.onclick = () => toggleSidebar(false);
 
     // Highlight current page dynamically
     const path = window.location.pathname;
