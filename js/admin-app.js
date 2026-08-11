@@ -15,14 +15,14 @@
       if (!session && !isPasscodeSession) {
         const path = window.location.pathname;
         if (!path.includes('login')) {
-          window.location.href = '/admin/login.html';
+          window.location.href = 'login.html';
         }
         return null;
       }
       const profile = await window.RPS_Supabase.getCurrentProfile();
       if (requiresSuperAdmin && profile && profile.role !== 'super_admin') {
         alert('Access Denied: Super Admin privileges required.');
-        window.location.href = '/admin/index.html';
+        window.location.href = 'index.html';
         return null;
       }
       return { session, profile };
@@ -30,7 +30,7 @@
       console.error('Auth guard check error:', err);
       const isPasscodeSession = sessionStorage.getItem('rps_admin_session') === 'true' || localStorage.getItem('rps_admin_session') === 'true';
       if (!isPasscodeSession && !window.location.pathname.includes('login')) {
-        window.location.href = '/admin/login.html';
+        window.location.href = 'login.html';
       }
       return null;
     }
@@ -69,7 +69,7 @@
           if (window.RPS_Supabase) {
             await window.RPS_Supabase.logoutAdmin();
           }
-          window.location.href = '/admin/login.html';
+          window.location.href = 'login.html';
         }
       };
     }

@@ -114,4 +114,42 @@ document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+
+  // ---- 3D Spinning Coin Logo Initialization ----
+  initCoinSpinLogos();
 });
+
+function initCoinSpinLogos() {
+  const logoSelector = '.header__logo-img, .admin-sidebar__logo, .admin-login-logo, .calendar-header-banner__logo';
+  document.querySelectorAll(logoSelector).forEach(img => {
+    // Skip if already converted to 3D coin
+    if (img.closest('.logo-coin__inner') || img.classList.contains('logo-coin__front') || img.classList.contains('logo-coin__back')) return;
+
+    const coin = document.createElement('div');
+    coin.className = 'logo-coin';
+    
+    // Retain original styling context
+    if (img.classList.contains('header__logo-img')) coin.classList.add('header__logo-img-wrapper');
+    if (img.classList.contains('admin-sidebar__logo')) coin.classList.add('admin-sidebar__logo-wrapper');
+    if (img.classList.contains('admin-login-logo')) coin.classList.add('admin-login-logo-wrapper');
+
+    const inner = document.createElement('div');
+    inner.className = 'logo-coin__inner';
+
+    const front = img.cloneNode(true);
+    front.classList.add('logo-coin__front');
+    front.removeAttribute('id');
+
+    const back = img.cloneNode(true);
+    back.classList.add('logo-coin__back');
+    back.removeAttribute('id');
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    coin.appendChild(inner);
+
+    if (img.parentNode) {
+      img.parentNode.replaceChild(coin, img);
+    }
+  });
+}

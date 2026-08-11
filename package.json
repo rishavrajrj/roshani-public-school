@@ -1,5 +1,8 @@
 {
   "name": "roshani-public-school",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site build complete'"
+  }
 }

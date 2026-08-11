@@ -743,8 +743,7 @@ function setupAdminSystem() {
 }
 
 function promptAdminAccess() {
-  window.location.href = 'admin/index.html';
-  return;
+  window.location.href = 'admin/login.html';
 }
   if (existing) existing.remove();
 

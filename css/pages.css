@@ -795,9 +795,9 @@
   z-index: 2;
   background: linear-gradient(
     90deg,
-    rgba(8, 16, 28, 0.85) 0%,
-    rgba(15, 36, 64, 0.45) 45%,
-    rgba(15, 36, 64, 0.10) 70%,
+    rgba(8, 16, 28, 0.35) 0%,
+    rgba(15, 36, 64, 0.15) 45%,
+    rgba(15, 36, 64, 0.02) 70%,
     transparent 100%
   );
   pointer-events: none;
@@ -820,9 +820,9 @@
   right: -2rem;
   background: linear-gradient(
     90deg,
-    rgba(8, 16, 28, 0.85) 0%,
-    rgba(15, 36, 64, 0.45) 45%,
-    rgba(15, 36, 64, 0.10) 70%,
+    rgba(8, 16, 28, 0.35) 0%,
+    rgba(15, 36, 64, 0.15) 45%,
+    rgba(15, 36, 64, 0.02) 70%,
     transparent 100%
   );
   z-index: -1;
@@ -866,14 +866,16 @@
   line-height: 1.15;
   margin-bottom: 1.25rem;
   letter-spacing: -0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .about-hero-ref__desc {
   font-size: 1rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 400;
   max-width: 580px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 /* Quick Info Cards */
