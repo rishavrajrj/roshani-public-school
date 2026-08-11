@@ -230,6 +230,9 @@ class NoticeManager {
       console.error("Failed to load notices:", e);
       this.notices = JSON.parse(JSON.stringify(DEFAULT_NOTICES));
     }
+
+    if (typeof renderPublicNotices === 'function') renderPublicNotices();
+    if (typeof renderNoticesPageRedesign === 'function') renderNoticesPageRedesign();
   }
 
   migrateNotice(n) {
@@ -268,12 +271,14 @@ class NoticeManager {
   }
 
   getPublishedNotices() {
-    const today = new Date().toISOString().split('T')[0];
+    if (!Array.isArray(this.notices)) return [];
     return this.notices
-      .filter(n => n.published && n.publishedAt <= today && (!n.expiresAt || n.expiresAt >= today))
+      .filter(n => n && n.published !== false)
       .sort((a, b) => {
-        if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-        return new Date(b.publishedAt) - new Date(a.publishedAt);
+        if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+        const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+        const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+        return dateB - dateA;
       });
   }
 
@@ -636,31 +641,67 @@ function renderDetailModal(notice) {
 function renderPublicNotices() {
   const track = document.querySelector('.notice-board__track');
   const legacyList = document.getElementById('notices-list');
+  const homeNoticesGrid = document.querySelector('#notices-events .notices-grid');
 
   const publicNotices = noticeMgr.getPublishedNotices();
 
   if (track) {
     if (publicNotices.length === 0) {
       track.innerHTML = '<div class="notice-card"><p class="notice-card__desc">No active notices at this time.</p></div>';
-      return;
+    } else {
+      track.innerHTML = '';
+      publicNotices.forEach(n => {
+        track.appendChild(createNoticeCardElement(n));
+      });
     }
+  }
 
-    track.innerHTML = '';
-    publicNotices.forEach(n => {
-      track.appendChild(createNoticeCardElement(n));
-    });
+  if (homeNoticesGrid) {
+    if (publicNotices.length === 0) {
+      homeNoticesGrid.innerHTML = '<div class="notice-card"><p class="notice-card__desc">No active notices at this time.</p></div>';
+    } else {
+      homeNoticesGrid.innerHTML = '';
+      publicNotices.slice(0, 4).forEach(n => {
+        homeNoticesGrid.appendChild(createHomeNoticeCard(n));
+      });
+    }
   }
 
   if (legacyList) {
     if (publicNotices.length === 0) {
       legacyList.innerHTML = '<li>No active notices at this time.</li>';
-      return;
+    } else {
+      legacyList.innerHTML = '';
+      publicNotices.forEach(n => {
+        legacyList.appendChild(createNoticeCard(n));
+      });
     }
-    legacyList.innerHTML = '';
-    publicNotices.forEach(n => {
-      legacyList.appendChild(createNoticeCard(n));
-    });
   }
+}
+
+function createHomeNoticeCard(n) {
+  const card = document.createElement('div');
+  const isNew = noticeMgr.isNewNotice(n);
+  const isImportant = n.pinned;
+  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''}`;
+  card.style.cursor = 'pointer';
+  card.onclick = () => {
+    window.location.href = `notices.html?id=${n.id}`;
+  };
+
+  const catLabel = noticeMgr.getCategoryLabel(n.category);
+
+  card.innerHTML = `
+    <div class="notice-card__meta">
+      <span class="notice-card__category">${noticeMgr.escapeHtml(catLabel)}</span>
+      ${isImportant ? '<span class="notice-card__badge" style="background:var(--primary);color:#fff;font-size:0.75rem;padding:2px 8px;border-radius:12px;font-weight:700;">★ Pinned</span>' : ''}
+      ${isNew ? '<span class="notice-card__badge" style="background:#e91e63;color:#fff;font-size:0.75rem;padding:2px 8px;border-radius:12px;font-weight:700;">NEW</span>' : ''}
+      <span class="notice-card__date">${noticeMgr.formatDate(n.publishedAt)}</span>
+    </div>
+    <h3 class="notice-card__title">${noticeMgr.escapeHtml(n.title)}</h3>
+    <p class="notice-card__desc">${noticeMgr.escapeHtml(n.description || (n.content ? n.content.substring(0, 110) + '...' : ''))}</p>
+  `;
+  return card;
 }
 
 function createNoticeCardElement(n) {

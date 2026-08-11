@@ -916,7 +916,9 @@
 /* Vertical Slide Window & Track */
 .notice-board__window {
   flex: 1;
-  overflow: hidden;
+  min-height: 280px;
+  max-height: 420px;
+  overflow-y: auto;
   position: relative;
   padding: var(--space-4);
   background: #f8fafc;
