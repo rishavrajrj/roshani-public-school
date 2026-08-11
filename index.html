@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Vercel Analytics & Speed Insights -->
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
   <title>Roshani Public School — Premier CBSE School in Turkauliya, East Champaran</title>
   <meta name="description" content="Roshani Public School is Turkauliya's top CBSE school (Affiliation No. 330943), shaping bright futures from Nursery to Class 12th with Science, Commerce & Arts streams.">
   <meta name="keywords" content="Roshani Public School, CBSE school Turkauliya, best school Motihari, school East Champaran, CBSE school Bihar">
@@ -661,94 +668,6 @@
       </div>
     </section>
 
-    <!-- ==================== NOTICES & EVENTS ==================== -->
-    <section class="section section--surface" id="notices-events">
-      <div class="container">
-        <div class="grid grid--2 fade-in" style="align-items:start">
-          <!-- Notices -->
-          <div>
-            <div class="section-header section-header--left">
-              <span class="section-header__badge">Latest Notices</span>
-              <h2 class="section-header__title" style="font-size:var(--text-2xl)">Notice Board</h2>
-            </div>
-            <div class="notices-grid" style="grid-template-columns:1fr;gap:var(--space-4)">
-              <div class="notice-card">
-                <div class="notice-card__meta">
-                  <span class="notice-card__category">Fee</span>
-                  <span class="notice-card__date">June 2026</span>
-                </div>
-                <h3 class="notice-card__title">Regarding Fee Structure</h3>
-                <p class="notice-card__desc">Updated fee structure for Academic Session 2026–27 has been published.</p>
-              </div>
-              <div class="notice-card">
-                <div class="notice-card__meta">
-                  <span class="notice-card__category">Admission</span>
-                  <span class="notice-card__date">2026</span>
-                </div>
-                <h3 class="notice-card__title">Admissions Open 2026–27</h3>
-                <p class="notice-card__desc">Admissions are open for Nursery to Class XII for the Academic Session 2026–27.</p>
-              </div>
-              <div class="notice-card">
-                <div class="notice-card__meta">
-                  <span class="notice-card__category">Academic</span>
-                  <span class="notice-card__date">2026</span>
-                </div>
-                <h3 class="notice-card__title">CBSE Board Exam Preparation</h3>
-                <p class="notice-card__desc">Special doubt clearance classes organized for Class X and XII students.</p>
-              </div>
-            </div>
-            <a href="notices.html" class="btn btn--ghost" style="margin-top:var(--space-5)">
-              View All Notices
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          </div>
-          <!-- Events -->
-          <div>
-            <div class="section-header section-header--left">
-              <span class="section-header__badge">School Events</span>
-              <h2 class="section-header__title" style="font-size:var(--text-2xl)">Recent Events</h2>
-            </div>
-            <div class="events-grid" style="grid-template-columns:1fr;gap:var(--space-4)">
-              <div class="event-card">
-                <div class="event-card__date">
-                  <div class="event-card__day">26</div>
-                  <div class="event-card__month">Jan</div>
-                </div>
-                <div class="event-card__content">
-                  <h3 class="event-card__title">Republic Day Celebration</h3>
-                  <p class="event-card__desc">Grand celebration with patriotic performances, flag hoisting ceremony, and cultural programs.</p>
-                </div>
-              </div>
-              <div class="event-card">
-                <div class="event-card__date">
-                  <div class="event-card__day">—</div>
-                  <div class="event-card__month">Annual</div>
-                </div>
-                <div class="event-card__content">
-                  <h3 class="event-card__title">Annual Day Celebration</h3>
-                  <p class="event-card__desc">Showcase of student talent through cultural performances, award ceremonies, and felicitations.</p>
-                </div>
-              </div>
-              <div class="event-card">
-                <div class="event-card__date">
-                  <div class="event-card__day">—</div>
-                  <div class="event-card__month">Sports</div>
-                </div>
-                <div class="event-card__content">
-                  <h3 class="event-card__title">Roshani P.S. Premier League</h3>
-                  <p class="event-card__desc">Inter-house sports championship with athletic events, cricket, football, and more.</p>
-                </div>
-              </div>
-            </div>
-            <a href="notices.html" class="btn btn--ghost" style="margin-top:var(--space-5)">
-              View All Events
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ==================== CTA BANNER ==================== -->
     <section class="cta-banner" aria-label="Admission call to action">
       <div class="container">
@@ -944,6 +863,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/navigation.js"></script>
+  <script src="js/admission-popup.js?v=1.0"></script>
   <script src="js/hero-carousel.js"></script>
   <script src="js/notices-admin.js?v=2.0"></script>
   <script src="js/gallery.js"></script>

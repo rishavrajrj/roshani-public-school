@@ -28,7 +28,9 @@
   padding: 0;
 }
 
-body.admin-body {
+body.admin-body,
+body {
+  zoom: 100%;
   font-family: var(--admin-font-sans);
   background-color: var(--admin-bg-light);
   color: var(--admin-text-main);
