@@ -112,17 +112,18 @@
           <table class="admin-table">
             <thead>
               <tr>
+                <th>Student Name</th>
                 <th>Parent Name</th>
+                <th>Class Seeking</th>
                 <th>Phone</th>
                 <th>Email</th>
-                <th>Student / Class</th>
                 <th>Submitted Date</th>
                 <th>Status</th>
                 <th style="text-align: right;">Actions</th>
               </tr>
             </thead>
             <tbody id="enquiries-tbody">
-              <tr><td colspan="7" style="text-align:center; padding:20px;">Loading enquiries list...</td></tr>
+              <tr><td colspan="8" style="text-align:center; padding:20px;">Loading enquiries list...</td></tr>
             </tbody>
           </table>
         </div>
@@ -133,21 +134,21 @@
   <!-- DETAIL MODAL -->
   <div id="enquiry-modal" class="modal-backdrop" style="display:none;">
     <div class="modal-dialog" style="background:#fff; width:100%; max-width:560px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
-        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Enquiry Details</h3>
-        <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--admin-border-color); padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="margin:0; font-family:var(--font-display, serif);">Enquiry Details</h3>
+        <button onclick="closeModal()" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
       </div>
 
       <div id="enquiry-detail-body" style="font-size:0.9rem; line-height:1.6;">
-        <!-- Filled dynamically -->
+        <!-- Filled by JS -->
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; border-top:1px solid var(--admin-border-color); padding-top:16px;">
-        <div style="display:flex; gap:8px;">
-          <button id="status-read-btn" class="admin-btn admin-btn--outline admin-btn--sm">Mark Read</button>
-          <button id="status-contacted-btn" class="admin-btn admin-btn--primary admin-btn--sm">Mark Contacted</button>
-        </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; pt:16px; border-top:1px solid var(--admin-border-color);">
         <button id="modal-delete-btn" class="admin-btn admin-btn--danger admin-btn--sm">Delete Enquiry</button>
+        <div style="display:flex; gap:8px;">
+          <button id="status-read-btn" class="admin-btn admin-btn--outline admin-btn--sm">Mark as Read</button>
+          <button id="status-contacted-btn" class="admin-btn admin-btn--primary admin-btn--sm">Mark as Contacted</button>
+        </div>
       </div>
     </div>
   </div>
@@ -164,9 +165,7 @@
       await window.RPS_Admin.checkAuth();
       loadEnquiries();
 
-      document.getElementById('modal-close-btn').onclick = closeModal;
       document.getElementById('search-input').oninput = renderTable;
-
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = (e) => {
           document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('is-active'));
@@ -189,15 +188,35 @@
       }
     }
 
+    function getStudentName(e) {
+      if (e.student_name && e.student_name.trim()) return e.student_name.trim();
+      if (e.message) {
+        const match = e.message.match(/(?:student|child)(?:\s*name)?\s*:\s*([^\n\r,]+)/i);
+        if (match && match[1]) return match[1].trim();
+      }
+      return null;
+    }
+
+    function getClassApplying(e) {
+      if (e.class_seeking && e.class_seeking.trim()) return e.class_seeking.trim();
+      if (e.message) {
+        const match = e.message.match(/(?:class|grade)(?:\s*seeking|\s*applying)?\s*:\s*([^\n\r,]+)/i);
+        if (match && match[1]) return match[1].trim();
+      }
+      return null;
+    }
+
     function renderTable() {
       const tbody = document.getElementById('enquiries-tbody');
       const search = document.getElementById('search-input').value.toLowerCase();
 
       let filtered = allEnquiries.filter(e => {
+        const studentName = getStudentName(e) || '';
+        const classSeeking = getClassApplying(e) || '';
         const matches = (e.full_name || '').toLowerCase().includes(search) ||
                         (e.phone || '').toLowerCase().includes(search) ||
-                        (e.student_name || '').toLowerCase().includes(search) ||
-                        (e.class_seeking || '').toLowerCase().includes(search);
+                        studentName.toLowerCase().includes(search) ||
+                        classSeeking.toLowerCase().includes(search);
         if (!matches) return false;
 
         if (currentFilter === 'unread') return e.status === 'unread';
@@ -207,23 +226,28 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No enquiries found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No enquiries found.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = filtered.map(e => `
-        <tr style="${e.status === 'unread' ? 'font-weight:700; background:#f0f9ff;' : ''}">
-          <td style="color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(e.full_name)}</td>
-          <td><a href="tel:${e.phone}" style="color:var(--admin-primary); text-decoration:none; font-weight:600;">📞 ${e.phone}</a></td>
-          <td>${e.email ? `<a href="mailto:${e.email}" style="color:var(--admin-info); text-decoration:none;">${e.email}</a>` : '—'}</td>
-          <td>${e.student_name ? `${window.RPS_Admin.escapeHtml(e.student_name)} (Class: ${e.class_seeking || 'N/A'})` : 'General Contact'}</td>
-          <td>${window.RPS_Admin.formatDate(e.created_at)}</td>
-          <td>${getStatusBadge(e.status)}</td>
-          <td style="text-align:right;">
-            <button onclick="viewEnquiry('${e.id}')" class="admin-btn admin-btn--outline admin-btn--sm">View Message</button>
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = filtered.map(e => {
+        const studentName = getStudentName(e);
+        const classApplying = getClassApplying(e);
+        return `
+          <tr style="${e.status === 'unread' ? 'font-weight:700; background:#f0f9ff;' : ''}">
+            <td style="color:var(--admin-primary); font-weight:700;">${studentName ? window.RPS_Admin.escapeHtml(studentName) : '<span style="color:#94a3b8; font-weight:400;">—</span>'}</td>
+            <td style="color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(e.full_name || 'Parent')}</td>
+            <td>${classApplying ? `<span class="admin-badge admin-badge--info" style="font-size:0.75rem;">Class ${window.RPS_Admin.escapeHtml(classApplying)}</span>` : '<span style="color:#94a3b8;">—</span>'}</td>
+            <td><a href="tel:${e.phone}" style="color:var(--admin-primary); text-decoration:none; font-weight:600;">📞 ${e.phone}</a></td>
+            <td>${e.email ? `<a href="mailto:${e.email}" style="color:var(--admin-info); text-decoration:none;">${e.email}</a>` : '—'}</td>
+            <td>${window.RPS_Admin.formatDate(e.created_at)}</td>
+            <td>${getStatusBadge(e.status)}</td>
+            <td style="text-align:right;">
+              <button onclick="viewEnquiry('${e.id}')" class="admin-btn admin-btn--outline admin-btn--sm">View Message</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function getStatusBadge(status) {
@@ -236,12 +260,18 @@
       currentEnquiry = allEnquiries.find(x => x.id === id);
       if (!currentEnquiry) return;
 
+      const studentName = getStudentName(currentEnquiry);
+      const classApplying = getClassApplying(currentEnquiry);
+
       const body = document.getElementById('enquiry-detail-body');
       body.innerHTML = `
+        <div style="margin-bottom:12px; font-size: 0.95rem; color: var(--admin-primary); background: #f0f9ff; padding: 12px 14px; border-radius: 8px; border-left: 4px solid var(--admin-primary);">
+          <strong>Student Name:</strong> ${studentName ? window.RPS_Admin.escapeHtml(studentName) : 'Not Specified (General Contact)'}
+          ${classApplying ? `<br><strong>Class Applying For:</strong> Class ${window.RPS_Admin.escapeHtml(classApplying)}` : ''}
+        </div>
         <div style="margin-bottom:12px;"><strong>Parent Name:</strong> ${window.RPS_Admin.escapeHtml(currentEnquiry.full_name)}</div>
         <div style="margin-bottom:12px;"><strong>Phone:</strong> <a href="tel:${currentEnquiry.phone}">${currentEnquiry.phone}</a></div>
         <div style="margin-bottom:12px;"><strong>Email:</strong> ${currentEnquiry.email ? `<a href="mailto:${currentEnquiry.email}">${currentEnquiry.email}</a>` : 'None'}</div>
-        ${currentEnquiry.student_name ? `<div style="margin-bottom:12px;"><strong>Student Name:</strong> ${window.RPS_Admin.escapeHtml(currentEnquiry.student_name)} (Class Seeking: ${currentEnquiry.class_seeking || 'N/A'})</div>` : ''}
         <div style="margin-bottom:12px;"><strong>Submitted On:</strong> ${window.RPS_Admin.formatDate(currentEnquiry.created_at)}</div>
         <div style="background:#f8fafc; padding:14px; border-radius:8px; border:1px solid var(--admin-border-color); margin-top:16px;">
           <strong>Message:</strong><br>

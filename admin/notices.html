@@ -182,10 +182,16 @@
         </div>
 
         <div class="admin-form-group">
-          <label class="admin-form-label" for="form-file">Upload Document Attachment (PDF / Image)</label>
-          <input type="file" id="form-file" accept="image/*,application/pdf" class="admin-form-input" style="padding:6px;">
+          <label class="admin-form-label" for="form-file" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Upload Document Attachment</span>
+            <span style="font-size:0.75rem; font-weight:700; background:#eff6ff; color:#0284c7; border:1px solid #bae6fd; padding:2px 8px; border-radius:12px;">📄 PDF Recommended</span>
+          </label>
+          <input type="file" id="form-file" accept="application/pdf,image/*" class="admin-form-input" style="padding:6px;">
           <input type="hidden" id="form-attach-url">
-          <div id="file-status" style="font-size:0.8rem; color:var(--admin-info); margin-top:4px;"></div>
+          <div id="file-recommendation-note" style="margin-top: 6px; padding: 8px 12px; background: #f0f9ff; border-left: 4px solid #0284c7; border-radius: 6px; font-size: 0.8rem; color: #0f172a;">
+            💡 <strong>Recommendation for Best Visibility:</strong> Uploading a <strong>PDF document</strong> is recommended for official school notices to ensure optimal clarity, multi-page support, and crisp rendering in the notice viewer.
+          </div>
+          <div id="file-status" style="font-size:0.8rem; color:var(--admin-info); margin-top:6px;"></div>
         </div>
 
         <div style="display:flex; gap:24px; margin:16px 0;">
@@ -226,6 +232,22 @@
       document.getElementById('modal-close-btn').onclick = closeNoticeModal;
       document.getElementById('modal-cancel-btn').onclick = closeNoticeModal;
       document.getElementById('search-input').oninput = renderTable;
+
+      const fileInput = document.getElementById('form-file');
+      const fileStatus = document.getElementById('file-status');
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          const file = fileInput.files[0];
+          if (file) {
+            const isPdf = file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+            if (isPdf) {
+              fileStatus.innerHTML = `<span style="color:#16a34a; font-weight:600;">✅ PDF Selected (${file.name}): Excellent choice for optimal document clarity & multi-page reading!</span>`;
+            } else {
+              fileStatus.innerHTML = `<span style="color:#d97706; font-weight:500;">ℹ️ File Selected: ${file.name}. Tip: Uploading PDF format is recommended for best document visibility.</span>`;
+            }
+          }
+        });
+      }
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = (e) => {

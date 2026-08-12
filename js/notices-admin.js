@@ -13,9 +13,9 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-08-08',
     updatedAt: null,
     expiresAt: null,
-    attachmentUrl: null,
-    attachmentName: null,
-    attachmentType: null,
+    attachmentUrl: 'assets/admission.png',
+    attachmentName: 'Admission Announcement 2026-27.png',
+    attachmentType: 'image',
     createdAt: '2026-08-08'
   },
   {
@@ -47,9 +47,9 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-08-01',
     updatedAt: null,
     expiresAt: '2026-08-29',
-    attachmentUrl: null,
-    attachmentName: null,
-    attachmentType: null,
+    attachmentUrl: 'assets/notice-board.png',
+    attachmentName: 'PAT-II Examination Routine & Syllabus.png',
+    attachmentType: 'image',
     createdAt: '2026-08-01'
   },
   {
@@ -132,9 +132,9 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-06-25',
     updatedAt: null,
     expiresAt: null,
-    attachmentUrl: null,
-    attachmentName: null,
-    attachmentType: null,
+    attachmentUrl: 'assets/admission-2026-27.png',
+    attachmentName: 'School Fee Structure & Online Payment Notice.png',
+    attachmentType: 'image',
     createdAt: '2026-06-25'
   },
   {
@@ -278,6 +278,26 @@ class NoticeManager {
 
   generateSlug(title) {
     return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  getNoticeById(id) {
+    if (!id) return null;
+    const list = this.getPublishedNotices();
+    const cleanId = String(id).trim().toLowerCase();
+    const notice = list.find(n => n && (
+      String(n.id).toLowerCase() === cleanId || 
+      (n.slug && String(n.slug).toLowerCase() === cleanId) ||
+      (n.title && String(n.title).toLowerCase().includes(cleanId))
+    ));
+    if (notice) {
+      const def = DEFAULT_NOTICES.find(d => d.id === notice.id);
+      if (def) {
+        if (!notice.attachmentUrl && def.attachmentUrl) notice.attachmentUrl = def.attachmentUrl;
+        if (!notice.attachmentName && def.attachmentName) notice.attachmentName = def.attachmentName;
+        if (!notice.attachmentType && def.attachmentType) notice.attachmentType = def.attachmentType;
+      }
+    }
+    return notice;
   }
 
   getPublishedNotices() {
@@ -603,54 +623,191 @@ function renderEmptyState(message) {
   `;
 }
 
-function handleLoadMore() {
-  noticeMgr.page++;
-  renderNoticesPageRedesign();
+function getAttachmentFileType(url, explicitType) {
+  if (explicitType) {
+    const t = String(explicitType).toLowerCase();
+    if (t.includes('pdf')) return 'pdf';
+    if (t.includes('image') || t.includes('jpg') || t.includes('png') || t.includes('jpeg') || t.includes('webp')) return 'image';
+  }
+  if (!url) return null;
+  const path = url.split('?')[0].split('#')[0].toLowerCase();
+  if (path.endsWith('.pdf')) return 'pdf';
+  if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.webp') || path.endsWith('.gif') || path.endsWith('.svg')) return 'image';
+  if (path.endsWith('.doc') || path.endsWith('.docx') || path.endsWith('.xls') || path.endsWith('.xlsx')) return 'document';
+  return 'file';
 }
 
-function renderDetailModal(notice) {
+function renderDetailModal(notice, updateHistory = true) {
+  if (!notice) return;
+
+  // Remove existing detail modal if present
   let oldModal = document.querySelector('.notice-detail-modal');
   if (oldModal) oldModal.remove();
 
-  const content = (notice.content || notice.description).replace(/\n/g, '<br>');
+  // Push state to browser history if requested
+  if (updateHistory) {
+    try {
+      const url = new URL(window.location);
+      url.searchParams.set('notice', notice.id);
+      window.history.pushState({ noticeId: notice.id }, '', url);
+    } catch (e) {}
+  }
+
+  const categoryLabel = window.noticeMgr ? window.noticeMgr.getCategoryLabel(notice.category) : (notice.category || 'General');
+  const categoryIcon = window.noticeMgr ? window.noticeMgr.getCategoryIcon(notice.category) : '📌';
+  const formattedDate = window.noticeMgr ? window.noticeMgr.formatDate(notice.publishedAt) : (notice.publishedAt || '');
+  const fullContent = (notice.content || notice.description || '').trim();
+  
+  // Format content paragraphs cleanly
+  const paragraphs = fullContent ? fullContent.split('\n\n').map(p => `<p class="notice-detail__paragraph">${(window.noticeMgr ? window.noticeMgr.escapeHtml(p) : p).replace(/\n/g, '<br>')}</p>`).join('') : '';
+
+  // Attachment Details
+  const fileUrl = notice.attachmentUrl || notice.attachment_url || notice.attachment || null;
+  const fileName = notice.attachmentName || notice.attachment_name || (fileUrl ? fileUrl.split('/').pop() : 'Notice Attachment');
+  const fileType = fileUrl ? getAttachmentFileType(fileUrl, notice.attachmentType || notice.attachment_type) : null;
+
+  let attachmentHtml = '';
+
+  if (fileUrl) {
+    if (fileType === 'pdf') {
+      attachmentHtml = `
+        <div class="notice-detail__attachment-block">
+          <div class="notice-detail__attachment-toolbar">
+            <div class="notice-detail__file-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span class="notice-detail__file-name">${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}</span>
+              <span class="notice-detail__file-badge">PDF DOCUMENT</span>
+            </div>
+            <div class="notice-detail__file-actions">
+              <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="btn btn--outline btn--sm notice-detail__btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Open in New Tab ↗
+              </a>
+              <a href="${fileUrl}" download="${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}" class="btn btn--primary btn--sm notice-detail__btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download PDF
+              </a>
+            </div>
+          </div>
+          
+          <div class="notice-detail__document-viewer notice-detail__pdf-viewer">
+            <div class="notice-detail__viewer-loading" id="pdf-viewer-loading">
+              <div class="notice-detail__spinner"></div>
+              <span>Loading PDF Document Preview...</span>
+            </div>
+            <object data="${fileUrl}#toolbar=1&navpanes=0&view=FitH" type="application/pdf" class="notice-detail__pdf-object" onload="document.getElementById('pdf-viewer-loading')?.remove();">
+              <iframe src="${fileUrl}#toolbar=1&navpanes=0&view=FitH" class="notice-detail__pdf-iframe" title="${window.noticeMgr ? window.noticeMgr.escapeHtml(notice.title) : notice.title}" onload="document.getElementById('pdf-viewer-loading')?.remove();">
+                <div class="notice-detail__viewer-fallback">
+                  <p>Unable to embed PDF preview directly inside browser.</p>
+                  <a href="${fileUrl}" target="_blank" class="btn btn--primary btn--sm">Open PDF Document ↗</a>
+                </div>
+              </iframe>
+            </object>
+          </div>
+        </div>
+      `;
+    } else if (fileType === 'image') {
+      attachmentHtml = `
+        <div class="notice-detail__attachment-block">
+          <div class="notice-detail__attachment-toolbar">
+            <div class="notice-detail__file-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span class="notice-detail__file-name">${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}</span>
+              <span class="notice-detail__file-badge">IMAGE NOTICE</span>
+            </div>
+            <div class="notice-detail__file-actions">
+              <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="btn btn--outline btn--sm notice-detail__btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                Open in New Tab ↗
+              </a>
+              <a href="${fileUrl}" download="${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}" class="btn btn--primary btn--sm notice-detail__btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Download Image
+              </a>
+            </div>
+          </div>
+
+          <div class="notice-detail__document-viewer notice-detail__image-viewer">
+            <div class="notice-detail__viewer-loading" id="img-viewer-loading">
+              <div class="notice-detail__spinner"></div>
+              <span>Loading notice image...</span>
+            </div>
+            <div class="notice-detail__img-wrapper">
+              <img src="${fileUrl}" 
+                   alt="${window.noticeMgr ? window.noticeMgr.escapeHtml(notice.title) : notice.title}" 
+                   class="notice-detail__image" 
+                   onload="document.getElementById('img-viewer-loading')?.remove();"
+                   onerror="const loader=document.getElementById('img-viewer-loading'); if(loader){ loader.innerHTML='<div class=\'notice-detail__error-box\'><p>Unable to load notice image.</p><a href=\'${fileUrl}\' download class=\'btn btn--primary btn--sm\'>Download Notice</a></div>'; }" />
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      attachmentHtml = `
+        <div class="notice-detail__attachment-block">
+          <div class="notice-detail__attachment-card-full">
+            <div class="notice-detail__file-info">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <div>
+                <span class="notice-detail__file-name-lg">${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}</span>
+                <span class="notice-detail__file-sub">Attached Notice Document</span>
+              </div>
+            </div>
+            <div class="notice-detail__file-actions">
+              <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="btn btn--outline btn--sm">Open ↗</a>
+              <a href="${fileUrl}" download="${window.noticeMgr ? window.noticeMgr.escapeHtml(fileName) : fileName}" class="btn btn--primary btn--sm">Download Notice</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
 
   const html = `
-    <div class="modal-backdrop notice-detail-modal">
-      <div class="modal-dialog">
-        <button class="close-modal-btn" aria-label="Close">&times;</button>
+    <div class="modal-backdrop notice-detail-modal" role="dialog" aria-modal="true" aria-label="${window.noticeMgr ? window.noticeMgr.escapeHtml(notice.title) : notice.title}">
+      <div class="notice-detail-dialog">
+        <!-- Sticky Top Navigation Bar -->
+        <div class="notice-detail__top-bar">
+          <button class="notice-detail__back-btn" id="notice-modal-back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <span>Back to Notices</span>
+          </button>
+          <button class="notice-detail__close-btn" id="notice-modal-close-btn" aria-label="Close Notice Modal">&times;</button>
+        </div>
         
-        <div class="notice-detail__inner">
-          <div class="notice-detail__header">
-            <span class="notice-cat-badge notice-cat-badge--${notice.category}">
-              <span class="notice-cat-icon">${noticeMgr.getCategoryIcon(notice.category)}</span>
-              ${noticeMgr.getCategoryLabel(notice.category)}
-            </span>
-            <span class="notice-detail__date-tag">${noticeMgr.formatDate(notice.publishedAt)}</span>
-          </div>
-          
-          <h2 class="notice-detail__title">${noticeMgr.escapeHtml(notice.title)}</h2>
-          
-          <div class="notice-detail__meta">
-            Published: ${noticeMgr.formatDate(notice.publishedAt)}
-            ${notice.updatedAt ? ` | Updated: ${noticeMgr.formatDate(notice.updatedAt)}` : ''}
-          </div>
-          
-          <div class="notice-detail__body">
-            ${content}
-          </div>
-          
-          ${notice.attachmentUrl ? `
-            <div class="notice-detail__attachment-card">
-              <div class="notice-detail__attachment-info">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                <span class="notice-detail__attachment-name">${noticeMgr.escapeHtml(notice.attachmentName || 'Attached Document')}</span>
-              </div>
-              <a href="${notice.attachmentUrl}" target="_blank" download class="btn btn--primary btn--sm">Download</a>
+        <!-- Main Document Scroll Container -->
+        <div class="notice-detail__scroll-area">
+          <div class="notice-detail__a4-sheet">
+            <!-- Category & Badge Header -->
+            <div class="notice-detail__header-meta">
+              <span class="notice-cat-badge notice-cat-badge--${notice.category}">
+                <span class="notice-cat-icon">${categoryIcon}</span>
+                ${categoryLabel}
+              </span>
+              ${notice.pinned ? `<span class="notice-badge--pinned">📌 PINNED UPDATE</span>` : ''}
+              <span class="notice-detail__date-pill">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Published: ${formattedDate}
+              </span>
             </div>
-          ` : ''}
-          
-          <div class="notice-detail__footer">
-            <button class="btn btn-outline close-modal-btn-bottom">← Back to All Notices</button>
+            
+            <!-- Title -->
+            <h1 class="notice-detail__main-title">${window.noticeMgr ? window.noticeMgr.escapeHtml(notice.title) : notice.title}</h1>
+            
+            <!-- Full Text Body -->
+            <div class="notice-detail__body-text">
+              ${paragraphs}
+            </div>
+            
+            <!-- Attachment Section (if exists) -->
+            ${attachmentHtml}
+
+            <!-- Bottom Back Action -->
+            <div class="notice-detail__bottom-bar">
+              <button class="btn btn--outline notice-detail__back-btn-bottom" id="notice-modal-back-bottom">
+                ← Return to All Notices
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -659,12 +816,124 @@ function renderDetailModal(notice) {
 
   document.body.insertAdjacentHTML('beforeend', html);
   const modal = document.querySelector('.notice-detail-modal');
-  
-  modal.querySelector('.close-modal-btn').onclick = () => modal.remove();
-  modal.querySelector('.close-modal-btn-bottom').onclick = () => modal.remove();
+  document.body.style.overflow = 'hidden';
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.add('is-closing');
+    setTimeout(() => {
+      if (document.body && !document.body.classList.contains('rps-loading')) {
+        document.body.style.overflow = '';
+      }
+      modal.remove();
+    }, 200);
+
+    // Clean up URL parameter if it matches
+    try {
+      const url = new URL(window.location);
+      if (url.searchParams.has('notice')) {
+        url.searchParams.delete('notice');
+        window.history.pushState({}, '', url);
+      }
+    } catch (e) {}
+  }
+
+  // Bind close buttons
+  const backBtn = modal.querySelector('#notice-modal-back-btn');
+  const closeBtn = modal.querySelector('#notice-modal-close-btn');
+  const backBottomBtn = modal.querySelector('#notice-modal-back-bottom');
+
+  if (backBtn) backBtn.onclick = closeModal;
+  if (closeBtn) closeBtn.onclick = closeModal;
+  if (backBottomBtn) backBottomBtn.onclick = closeModal;
+
+  // Backdrop click dismissal
   modal.onclick = (e) => {
-    if (e.target === modal) modal.remove();
+    if (e.target === modal) closeModal();
   };
+
+  // Keyboard Escape key dismissal
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      document.removeEventListener('keydown', handleKeyDown);
+      closeModal();
+    }
+  };
+  document.addEventListener('keydown', handleKeyDown);
+}
+
+// Global Event Delegate for ALL Notice Cards and Detail Trigger Links
+document.addEventListener('click', (e) => {
+  // Check if click target is a download button or open in new tab link inside notice modal
+  if (e.target.closest('a[download], a[target="_blank"], .btn, .close-modal-btn, .close-modal-btn-bottom')) return;
+
+  const card = e.target.closest('.notice-card, .notice-detail-trigger, .notice-pinned-card, .notice-list-card, .notices-sidebar__item');
+  if (!card) return;
+
+  let noticeId = card.dataset.id;
+  if (!noticeId) {
+    const childWithId = card.querySelector('[data-id]');
+    if (childWithId) noticeId = childWithId.dataset.id;
+  }
+
+  if (noticeId && window.noticeMgr) {
+    const notice = window.noticeMgr.getNoticeById(noticeId);
+    if (notice) {
+      e.preventDefault();
+      renderDetailModal(notice);
+    }
+  }
+}, true); // Capturing phase guarantees no child element swallows the click
+
+// Handle Tab Visibility Changes to pause/resume ticker
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && window.noticeTickerInterval) {
+    // Ticker naturally pauses when isPaused = true
+  }
+});
+
+// Global Popstate Handler for Browser Back/Forward buttons
+window.addEventListener('popstate', () => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const noticeId = params.get('notice');
+    if (noticeId && window.noticeMgr) {
+      const notice = window.noticeMgr.getNoticeById(noticeId);
+      if (notice) {
+        renderDetailModal(notice, false);
+        return;
+      }
+    }
+    const modal = document.querySelector('.notice-detail-modal');
+    if (modal) {
+      if (document.body && !document.body.classList.contains('rps-loading')) {
+        document.body.style.overflow = '';
+      }
+      modal.remove();
+    }
+  } catch (e) {}
+});
+
+// Auto Check URL Query Parameter on DOM Load (e.g. ?notice=n-1)
+function checkUrlForNoticeDetail() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const noticeId = params.get('notice') || params.get('id');
+    if (noticeId && window.noticeMgr) {
+      const notice = window.noticeMgr.getNoticeById(noticeId);
+      if (notice) {
+        setTimeout(() => {
+          renderDetailModal(notice, false);
+        }, 200);
+      }
+    }
+  } catch (e) {}
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkUrlForNoticeDetail);
+} else {
+  setTimeout(checkUrlForNoticeDetail, 200);
 }
 
 let noticeTickerInterval = null;
@@ -679,50 +948,46 @@ function initNoticeTicker() {
     noticeTickerInterval = null;
   }
 
+  // Strip any leftover cloned cards from previous implementations
+  track.querySelectorAll('.is-clone').forEach(c => c.remove());
+
   const cards = Array.from(track.children);
   if (cards.length <= 1) return; // Need at least 2 cards to slide
 
-  // Duplicate cards into track to create seamless looping loop
-  const originalCount = cards.length;
-  for (let i = 0; i < originalCount; i++) {
-    const clone = cards[i].cloneNode(true);
-    const noticeId = cards[i].dataset.id;
-    if (noticeId) {
-      clone.onclick = () => { window.location.href = `notices.html?id=${noticeId}`; };
-    }
-    track.appendChild(clone);
-  }
-
-  let currentIndex = 0;
   let isPaused = false;
+  let isAnimating = false;
 
-  function stepTicker() {
-    if (isPaused) return;
+  function slideNext() {
+    if (isPaused || isAnimating) return;
+    if (!track.firstElementChild) return;
 
-    currentIndex++;
-    const allCards = track.querySelectorAll('.notice-card');
-    if (currentIndex > originalCount) {
+    isAnimating = true;
+    const firstCard = track.firstElementChild;
+    const cardMarginBottom = parseFloat(window.getComputedStyle(firstCard).marginBottom || '0') || 12;
+    const cardHeight = firstCard.offsetHeight + cardMarginBottom;
+
+    // 1. Slide track up smoothly
+    track.style.transition = 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateY(-${cardHeight}px)`;
+
+    // 2. After transition completes, move top card to end of track and reset transform
+    setTimeout(() => {
       track.style.transition = 'none';
+      track.appendChild(firstCard);
       track.style.transform = 'translateY(0px)';
-      currentIndex = 1;
-      // Force reflow for seamless reset
       void track.offsetHeight;
-    }
-
-    const targetCard = allCards[currentIndex];
-    if (targetCard) {
-      const offsetTop = targetCard.offsetTop - allCards[0].offsetTop;
-      track.style.transition = 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)';
-      track.style.transform = `translateY(-${offsetTop}px)`;
-    }
+      isAnimating = false;
+    }, 620);
   }
 
-  noticeTickerInterval = setInterval(stepTicker, 3200);
+  noticeTickerInterval = setInterval(slideNext, 3500);
 
   windowEl.onmouseenter = () => { isPaused = true; };
   windowEl.onmouseleave = () => { isPaused = false; };
   windowEl.onfocusin = () => { isPaused = true; };
   windowEl.onfocusout = () => { isPaused = false; };
+  windowEl.ontouchstart = () => { isPaused = true; };
+  windowEl.ontouchend = () => { setTimeout(() => { isPaused = false; }, 2000); };
 }
 
 // Homepage Slide-up notices logic
@@ -772,10 +1037,13 @@ function createHomeNoticeCard(n) {
   const card = document.createElement('div');
   const isNew = noticeMgr.isNewNotice(n);
   const isImportant = n.pinned;
-  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''}`;
+  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''} notice-detail-trigger`;
+  card.dataset.id = n.id;
+  card.setAttribute('data-id', n.id);
   card.style.cursor = 'pointer';
-  card.onclick = () => {
-    window.location.href = `notices.html?id=${n.id}`;
+  card.onclick = (e) => {
+    e.preventDefault();
+    renderDetailModal(n);
   };
 
   const catLabel = noticeMgr.getCategoryLabel(n.category);
@@ -789,6 +1057,11 @@ function createHomeNoticeCard(n) {
     </div>
     <h3 class="notice-card__title">${noticeMgr.escapeHtml(n.title)}</h3>
     <p class="notice-card__desc">${noticeMgr.escapeHtml(n.description || (n.content ? n.content.substring(0, 110) + '...' : ''))}</p>
+    <div class="notice-card__footer" style="margin-top: 12px; display: flex; align-items: center; justify-content: space-between;">
+      <a href="#" class="notice-card__link notice-detail-trigger" data-id="${n.id}" style="color: var(--primary, #B91C5C); font-weight: 600; font-size: 0.875rem; text-decoration: none;">
+        View Details &rarr;
+      </a>
+    </div>
   `;
   return card;
 }
@@ -796,24 +1069,27 @@ function createHomeNoticeCard(n) {
 function createNoticeCardElement(n) {
   const card = document.createElement('div');
   card.dataset.id = n.id;
+  card.setAttribute('data-id', n.id);
   const catClass = n.category === 'admissions' ? 'notice-card__type--admission' :
                    n.category === 'academic' ? 'notice-card__type--academic' :
                    n.category === 'events' ? 'notice-card__type--event' : '';
   const isNew = noticeMgr.isNewNotice(n);
   const isImportant = n.pinned;
 
-  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''}`;
+  card.className = `notice-card ${isImportant ? 'notice-card--important' : ''} notice-detail-trigger`;
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   card.style.cursor = 'pointer';
 
-  card.onclick = () => {
-    window.location.href = `notices.html?id=${n.id}`;
+  card.onclick = (e) => {
+    e.preventDefault();
+    renderDetailModal(n);
   };
 
   card.onkeydown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      window.location.href = `notices.html?id=${n.id}`;
+      e.preventDefault();
+      renderDetailModal(n);
     }
   };
 
@@ -827,6 +1103,11 @@ function createNoticeCardElement(n) {
     </div>
     <h4 class="notice-card__title">${noticeMgr.escapeHtml(n.title)}</h4>
     <p class="notice-card__desc">${noticeMgr.escapeHtml(n.description || (n.content ? n.content.substring(0, 90) + '...' : ''))}</p>
+    <div class="notice-card__footer" style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between;">
+      <a href="#" class="notice-card__link notice-detail-trigger" data-id="${n.id}" style="color: var(--primary, #B91C5C); font-weight: 600; font-size: 0.875rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+        View Details &rarr;
+      </a>
+    </div>
   `;
   return card;
 }
@@ -839,7 +1120,7 @@ function createNoticeCard(n) {
     <div class="notice-date">${noticeMgr.formatDate(n.publishedAt)}</div>
     <div class="notice-title">
       ${n.pinned ? '<span style="color:red;font-size:12px;margin-right:5px">★</span>' : ''}
-      <a href="notices.html?id=${n.id}" style="text-decoration:none; color:inherit;">${noticeMgr.escapeHtml(n.title)}</a>
+      <a href="#" class="notice-detail-trigger" data-id="${n.id}" style="text-decoration:none; color:inherit;">${noticeMgr.escapeHtml(n.title)}</a>
       ${isNew ? '<span class="new-badge" style="background:#e91e63;color:white;font-size:10px;padding:2px 4px;border-radius:3px;margin-left:5px;">NEW</span>' : ''}
     </div>
   `;
@@ -1020,8 +1301,15 @@ function openNoticeFormModal(noticeToEdit = null) {
           </div>
           
           <div>
-            <label style="display:block; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">Upload Document / Image Attachment (Supabase Storage)</label>
-            <input type="file" id="fn-file-input" accept="image/*,application/pdf" style="width:100%; padding:6px; font-size:0.85rem;">
+            <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-weight:600; font-size:0.85rem; color:#334155;">
+              <span>Upload Document Attachment</span>
+              <span style="font-size:0.725rem; font-weight:700; background:#eff6ff; color:#0284c7; border:1px solid #bae6fd; padding:2px 8px; border-radius:10px;">📄 PDF Recommended</span>
+            </label>
+            <input type="file" id="fn-file-input" accept="application/pdf,image/*" style="width:100%; padding:8px; font-size:0.85rem; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box;">
+            <div style="margin-top: 6px; padding: 8px 12px; background: #f0f9ff; border-left: 3.5px solid #0284c7; border-radius: 4px; font-size: 0.8rem; color: #1e293b;">
+              💡 <strong>Recommendation:</strong> Uploading a <strong>PDF document</strong> is recommended for official notices to ensure best visibility, original formatting, and multi-page reading.
+            </div>
+            <div id="fn-file-hint" style="font-size:0.8rem; margin-top:4px;"></div>
             <input type="hidden" id="fn-attach" value="${d.attachmentUrl || ''}">
             ${d.attachmentUrl ? `<div style="font-size:0.8rem; color:#0284c7; margin-top:4px;">Current Attachment: <a href="${d.attachmentUrl}" target="_blank">View Document</a></div>` : ''}
           </div>
@@ -1047,6 +1335,22 @@ function openNoticeFormModal(noticeToEdit = null) {
   
   const modal = document.querySelector('.notice-form-modal');
   const closeFn = () => modal.remove();
+
+  const fnFileInput = modal.querySelector('#fn-file-input');
+  const fnFileHint = modal.querySelector('#fn-file-hint');
+  if (fnFileInput && fnFileHint) {
+    fnFileInput.onchange = () => {
+      const f = fnFileInput.files[0];
+      if (f) {
+        const isPdf = f.name.toLowerCase().endsWith('.pdf') || f.type === 'application/pdf';
+        if (isPdf) {
+          fnFileHint.innerHTML = `<span style="color:#16a34a; font-weight:600;">✅ PDF selected: ${f.name} — Excellent visibility!</span>`;
+        } else {
+          fnFileHint.innerHTML = `<span style="color:#d97706; font-weight:500;">ℹ️ File selected: ${f.name}. Tip: PDF format is recommended for best document visibility.</span>`;
+        }
+      }
+    };
+  }
   
   modal.querySelector('.form-close-btn').onclick = closeFn;
   modal.querySelector('#fn-cancel').onclick = closeFn;

@@ -1,13 +1,13 @@
 /**
  * ROSHANI PUBLIC SCHOOL — ADMISSION ANNOUNCEMENT POPUP COMPONENT
- * Displays a landing announcement modal using assets/admission-2026-27.png.
- * Features: LocalStorage campaign tracking, accessibility dialog, focus trap, scroll lock, ESC & backdrop dismissal.
+ * Displays landing announcement modal using assets/admission.png.
+ * Configured to show ONCE PER BROWSER SESSION using sessionStorage key "roshani_admission_popup_seen".
  */
 
 class AdmissionPopup {
   constructor(options = {}) {
-    this.storageKey = options.storageKey || 'roshni_admission_popup_2026_2027_v3';
-    this.imageSrc = options.imageSrc || 'assets/admission-2026-27.png';
+    this.storageKey = options.storageKey || 'roshani_admission_popup_seen';
+    this.imageSrc = options.imageSrc || 'assets/admission.png';
     this.isOpen = false;
     this.previousActiveElement = null;
 
@@ -15,46 +15,42 @@ class AdmissionPopup {
     this.close = this.close.bind(this);
   }
 
-  init() {
-    // Only display when user lands on the home page
-    if (!this.isHomePage()) {
-      return;
-    }
-
-    // Check if user has already dismissed or seen the popup
-    if (this.isDismissed()) {
-      return;
-    }
-
-    // Build and inject popup HTML into DOM
-    this.render();
-
-    // Trigger popup display after a short delay for smooth page entrance
-    setTimeout(() => {
-      this.open();
-    }, 350);
-  }
-
-  isHomePage() {
-    const path = window.location.pathname.toLowerCase();
-    const cleanPath = path.replace(/\/$/, '');
-    const page = cleanPath.split('/').pop();
-    return page === '' || page === 'index.html';
-  }
-
-  isDismissed() {
+  isSeen() {
     try {
-      return localStorage.getItem(this.storageKey) === 'dismissed';
+      return sessionStorage.getItem(this.storageKey) === 'true';
     } catch (e) {
       return false;
     }
   }
 
-  markAsDismissed() {
+  markAsSeen() {
     try {
-      localStorage.setItem(this.storageKey, 'dismissed');
+      sessionStorage.setItem(this.storageKey, 'true');
     } catch (e) {
-      console.warn('LocalStorage unavailable for admission popup:', e);
+      console.warn('sessionStorage unavailable for admission popup:', e);
+    }
+  }
+
+  init() {
+    // If already shown in this browser session, do not render or show popup
+    if (this.isSeen()) {
+      return;
+    }
+
+    // Preload image immediately so it loads fast
+    this.preloadImage();
+
+    // Render popup HTML into DOM
+    this.render();
+
+    // Open popup for this session
+    this.open();
+  }
+
+  preloadImage() {
+    if (this.imageSrc) {
+      const img = new Image();
+      img.src = this.imageSrc;
     }
   }
 
@@ -72,7 +68,7 @@ class AdmissionPopup {
             </svg>
           </button>
           <div class="admission-popup__image-wrapper">
-            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" />
+            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" onerror="this.onerror=null; this.src='assets/admission-2026-27.png';" />
           </div>
           <div class="admission-popup__cta">
             <a href="admissions.html#enquiry" class="btn btn--primary admission-popup__apply-btn" id="admission-popup-apply-btn">
@@ -92,9 +88,23 @@ class AdmissionPopup {
     this.closeBtnEl = document.getElementById('admission-popup-close');
     this.applyBtnEl = document.getElementById('admission-popup-apply-btn');
 
-    // Event Listeners
-    this.closeBtnEl.addEventListener('click', () => this.close());
-    this.overlayEl.addEventListener('click', () => this.close());
+    // Event Listeners for Closing
+    if (this.closeBtnEl) {
+      this.closeBtnEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.close();
+      });
+    }
+
+    if (this.overlayEl) {
+      this.overlayEl.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.close();
+      });
+    }
+
     if (this.applyBtnEl) {
       this.applyBtnEl.addEventListener('click', () => {
         this.close();
@@ -107,7 +117,9 @@ class AdmissionPopup {
 
     this.isOpen = true;
     this.previousActiveElement = document.activeElement;
-    this.markAsDismissed();
+
+    // Mark as seen for the current browser session when displayed
+    this.markAsSeen();
 
     // Lock body scrolling
     document.body.style.overflow = 'hidden';
@@ -132,7 +144,6 @@ class AdmissionPopup {
     if (!this.isOpen) return;
 
     this.isOpen = false;
-    this.markAsDismissed();
 
     // Remove event listener
     document.removeEventListener('keydown', this.onKeyDown);
@@ -144,7 +155,9 @@ class AdmissionPopup {
 
     // Restore body scrolling after animation finishes
     setTimeout(() => {
-      document.body.style.overflow = '';
+      if (!document.body.classList.contains('rps-loading')) {
+        document.body.style.overflow = '';
+      }
       if (this.popupEl) {
         this.popupEl.remove();
         this.popupEl = null;

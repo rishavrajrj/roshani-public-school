@@ -2,7 +2,7 @@
    ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER CONTROLLER
    Tracks complete element download & resource completion
    Guarantees progress bar starts cleanly at 0% and finishes at 100%
-   Intercepts same-page clicks to prevent browser reload and bypass preloader completely
+   Handles actual page resource readiness & smooth transition
    ============================================================ */
 
 (function () {
@@ -129,7 +129,7 @@
     currentProgress = 0;
     targetProgress = 0;
 
-    // Lock body scrolling immediately
+    // Lock body scrolling immediately to prevent layout shift or scrolling during load
     if (document.body) {
       document.body.classList.add('rps-loading');
     } else {
@@ -180,18 +180,19 @@
       });
     }
 
-    // Safety fallback: ensure loading completes after 2.5s maximum even if an external asset hangs
+    // Safety fallback: ensure loading completes after 3s maximum even if an external asset hangs
     setTimeout(() => {
       if (!isFinished) {
         windowLoaded = true;
         fontsLoaded = true;
         finishLoading();
       }
-    }, 2500);
+    }, 3000);
   }
 
   function trackResourceDownloads() {
-    const images = Array.from(document.querySelectorAll('img'));
+    // Collect critical images (e.g. hero images, logo, content images above the fold)
+    const images = Array.from(document.querySelectorAll('img')).filter(img => !img.hasAttribute('loading') || img.getAttribute('loading') !== 'lazy');
     const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
 
     totalResources = images.length + styles.length;
@@ -234,7 +235,7 @@
   function updateCalculatedProgress() {
     if (totalResources === 0) return;
     const ratio = loadedResources / totalResources;
-    const calculated = Math.min(92, Math.round(ratio * 90));
+    const calculated = Math.min(95, Math.round(ratio * 92));
     setTargetProgress(calculated, 'Loading...');
   }
 
@@ -291,10 +292,10 @@
 
       if (currentProgress < targetProgress) {
         let diff = targetProgress - currentProgress;
-        let step = Math.max(1, Math.ceil(diff * 0.15));
+        let step = Math.max(1, Math.ceil(diff * 0.2));
 
         if (targetProgress >= 100) {
-          step = Math.max(3, Math.ceil(diff * 0.25));
+          step = Math.max(4, Math.ceil(diff * 0.3));
         }
 
         currentProgress = Math.min(100, currentProgress + step);
@@ -311,10 +312,10 @@
           if (barEl) barEl.style.width = '100%';
           if (statusEl) statusEl.textContent = 'Welcome!';
 
-          // Wait 300ms at 100% so user clearly sees full 100% progress
+          // Wait 250ms at 100% so user clearly sees full 100% progress
           setTimeout(() => {
             completeExitAnimation();
-          }, 300);
+          }, 250);
         }
       }
     }, 16);
@@ -341,7 +342,7 @@
       if (document.body) {
         document.body.classList.remove('rps-loading');
       }
-    }, 600);
+    }, 500);
   }
 
   function showTransitionTo(targetUrl) {
@@ -425,9 +426,9 @@
       // Ignore external domains
       if (link.origin !== window.location.origin) return;
 
-      // IF CLICKING A LINK ON THE SAME PAGE (e.g. Home when on Home, About when on About, About#principal):
+      // IF CLICKING A LINK ON THE SAME PAGE:
       if (checkIsSamePage(link)) {
-        e.preventDefault(); // Stop browser from triggering full HTTP page reload!
+        e.preventDefault();
 
         if (link.hash && link.hash !== '#') {
           const targetEl = document.querySelector(link.hash);
@@ -438,7 +439,6 @@
           }
         }
 
-        // If no hash or hash section, smooth scroll to top of current page
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }

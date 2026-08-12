@@ -64,14 +64,25 @@ async function handleFormSubmit(e) {
   }
 
   const isAdmission = form.id === 'admissionForm';
+  const parentNameVal = form.querySelector('[name="parentName"], [name="parent_name"], [name="name"]')?.value.trim();
+  const studentNameVal = form.querySelector('[name="studentName"], [name="student_name"]')?.value.trim();
+  const classVal = form.querySelector('[name="classApplying"], [name="class_seeking"], [name="grade"], [name="class"]')?.value.trim();
+  const messageVal = form.querySelector('[name="message"], [name="comments"]')?.value.trim();
+  const addressVal = form.querySelector('[name="address"]')?.value.trim();
+
+  let finalMessage = messageVal || (isAdmission ? 'Online Admission Enquiry' : 'General Enquiry');
+  if (addressVal) {
+    finalMessage += `\nAddress: ${addressVal}`;
+  }
+
   const enquiryData = {
     form_type: isAdmission ? 'admission' : 'contact',
-    full_name: form.querySelector('[name="name"], [name="parent_name"]')?.value.trim() || 'Parent/Visitor',
+    full_name: parentNameVal || 'Parent/Visitor',
     email: form.querySelector('[name="email"]')?.value.trim() || null,
     phone: form.querySelector('[name="phone"]')?.value.trim() || '',
-    student_name: form.querySelector('[name="student_name"]')?.value.trim() || null,
-    class_seeking: form.querySelector('[name="class_seeking"], [name="grade"], [name="class"]')?.value.trim() || null,
-    message: form.querySelector('[name="message"], [name="comments"]')?.value.trim() || (isAdmission ? 'Online Admission Enquiry' : 'General Enquiry'),
+    student_name: studentNameVal || null,
+    class_seeking: classVal || null,
+    message: finalMessage,
     status: 'new'
   };
 
