@@ -2002,6 +2002,16 @@ header.header .header__logo:hover .logo-coin__inner,
   color: rgba(241, 245, 249, 0.55);
 }
 
+.footer__copyright a {
+  color: rgba(241, 245, 249, 0.85);
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.footer__copyright a:hover {
+  color: var(--white);
+}
+
 .footer__bottom-links {
   display: flex;
   gap: var(--space-6);

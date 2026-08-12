@@ -58,7 +58,7 @@
           <span>PROJECT DEMO • PORTFOLIO PREVIEW</span>
         </div>
         <p class="rps-demo-banner__text">
-          This website is a project preview developed by <strong>RSM Technologies</strong> and is currently under client review.
+          This website is a project preview developed by <a href="https://www.ekaagratechnologies.site/" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;"><strong>Ekaagra Technologies</strong></a> and is currently under client review.
         </p>
       </div>
     `;
