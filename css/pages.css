@@ -69,16 +69,19 @@
 /* Academics Preview */
 .stream-card {
   padding: var(--space-8);
-  background: var(--white);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(185, 28, 92, 0.1);
   border-radius: var(--radius-lg);
+  box-shadow: 0 6px 24px -4px rgba(26, 54, 93, 0.05);
   text-align: center;
   transition: all var(--transition-base);
 }
 
 .stream-card:hover {
-  border-color: var(--primary-20);
-  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(185, 28, 92, 0.25);
+  box-shadow: 0 12px 32px -4px rgba(26, 54, 93, 0.1);
   transform: translateY(-3px);
 }
 
