@@ -164,7 +164,14 @@ body {
   font-weight: var(--font-regular);
   line-height: var(--leading-relaxed);
   color: var(--text);
-  background-color: var(--background);
+  background-color: #FDFBFD;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(185, 28, 92, 0.08) 0px, transparent 45%),
+    radial-gradient(at 90% 15%, rgba(26, 54, 93, 0.09) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(139, 20, 69, 0.04) 0px, transparent 65%),
+    radial-gradient(at 85% 85%, rgba(217, 119, 6, 0.07) 0px, transparent 45%),
+    radial-gradient(at 15% 90%, rgba(26, 54, 93, 0.08) 0px, transparent 50%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -255,17 +262,72 @@ p:last-child { margin-bottom: 0; }
   padding-bottom: var(--space-24);
 }
 
-.section--surface { background-color: var(--surface); }
-.section--warm { background-color: var(--surface-warm); }
-.section--rose { background-color: var(--surface-rose); }
+.section--surface {
+  background-color: var(--surface);
+  border-top: 1px solid rgba(26, 54, 93, 0.05);
+  border-bottom: 1px solid rgba(26, 54, 93, 0.05);
+}
+.section--warm {
+  background: linear-gradient(180deg, #FFFDF7 0%, #FFF7ED 100%);
+  border-top: 2px solid rgba(217, 119, 6, 0.2);
+  border-bottom: 1px solid rgba(217, 119, 6, 0.1);
+}
+.section--rose {
+  background: linear-gradient(180deg, #FFF1F2 0%, #FCE4EC 100%);
+  border-top: 2px solid rgba(185, 28, 92, 0.15);
+  border-bottom: 1px solid rgba(185, 28, 92, 0.1);
+}
 .section--dark {
-  background-color: var(--secondary);
+  background: linear-gradient(135deg, #0F2440 0%, #1A365D 70%, #172A46 100%);
   color: var(--white);
+  position: relative;
+  border-top: 3px solid var(--accent);
 }
 .section--dark h1,
 .section--dark h2,
 .section--dark h3,
 .section--dark h4 { color: var(--white); }
+
+/* Custom Background Patterns & Utilities for Soft Royal Navy & Crimson Mesh Theme */
+.bg-institutional-hero {
+  background: linear-gradient(135deg, #0F2440 0%, #1A365D 45%, #8B1445 100%);
+  position: relative;
+  overflow: hidden;
+}
+.bg-institutional-hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(185, 28, 92, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.bg-institutional-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #B91C5C 0%, #D97706 50%, #1A365D 100%);
+}
+.bg-card-crisp {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(185, 28, 92, 0.1) !important;
+  box-shadow: 0 8px 30px -4px rgba(26, 54, 93, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.03) !important;
+  border-radius: var(--radius-lg);
+}
+.bg-pattern-subtle {
+  background-image: 
+    radial-gradient(rgba(185, 28, 92, 0.06) 1px, transparent 1px),
+    radial-gradient(rgba(26, 54, 93, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
 
 /* Grid */
 .grid {
