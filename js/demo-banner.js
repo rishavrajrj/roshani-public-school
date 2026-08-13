@@ -21,9 +21,10 @@
   function ensureStylesheetLoaded() {
     if (document.getElementById('rps-demo-banner-css')) return;
     
-    // Determine path relative to root or admin subfolder
-    var isAdminPath = window.location.pathname.indexOf('/admin/') !== -m1 && window.location.pathname.indexOf('/admin/') !== -1;
-    var cssPath = isAdminPath ? '../css/demo-banner.css' : 'css/demo-banner.css';
+    var isAdminPath = window.location.pathname.indexOf('/admin/') !== -1;
+    if (isAdminPath) return;
+
+    var cssPath = 'css/demo-banner.css';
 
     var link = document.createElement('link');
     link.id = 'rps-demo-banner-css';
@@ -68,19 +69,15 @@
     }
   }
 
-  // Handle fix for typo in isAdminPath helper
   function init() {
-    var isAdminPath = window.location.pathname.includes('/admin/');
-    var cssPath = isAdminPath ? '../css/demo-banner.css' : 'css/demo-banner.css';
+    var isAdminPath = window.location.pathname.indexOf('/admin/') !== -1;
+    if (isAdminPath) {
+      var existing = document.getElementById('rps-demo-banner');
+      if (existing) existing.remove();
+      return;
+    }
 
     if (isDemoModeEnabled()) {
-      if (!document.getElementById('rps-demo-banner-css')) {
-        var link = document.createElement('link');
-        link.id = 'rps-demo-banner-css';
-        link.rel = 'stylesheet';
-        link.href = cssPath;
-        document.head.appendChild(link);
-      }
       renderDemoBanner();
     } else {
       var existing = document.getElementById('rps-demo-banner');
