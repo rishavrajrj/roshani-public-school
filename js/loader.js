@@ -203,14 +203,14 @@
       });
     }
 
-    // Safety fallback: ensure loading completes after 3s maximum even if an external asset hangs
+    // Safety fallback: ensure loading completes after 1.2s maximum even if an external asset hangs
     setTimeout(() => {
       if (!isFinished) {
         windowLoaded = true;
         fontsLoaded = true;
         finishLoading();
       }
-    }, 3000);
+    }, 1200);
   }
 
   function trackResourceDownloads() {

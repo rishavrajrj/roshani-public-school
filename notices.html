@@ -58,6 +58,7 @@
   <script src="js/demo-banner.js"></script>
   <script src="js/loader.js"></script>
 
+  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="rps-loading">
 
@@ -278,7 +279,7 @@
       <div class="container">
         <div class="about-hero-ref__card">
           <div class="about-hero-ref__bg">
-            <img src="assets/notice-board.webp" alt="Roshani Public School Notice Board" style="object-position: top center;">
+            <img decoding="async" loading="lazy" src="assets/notice-board.webp" alt="Roshani Public School Notice Board" style="object-position: top center;">
           </div>
           <div class="about-hero-ref__overlay"></div>
           <div class="about-hero-ref__content">

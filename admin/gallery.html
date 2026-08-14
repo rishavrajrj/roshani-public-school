@@ -69,6 +69,7 @@
       gap: 8px;
     }
   </style>
+  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
@@ -268,7 +269,7 @@
       container.innerHTML = filtered.map(g => `
         <div class="gallery-card">
           <div class="gallery-card__img-box">
-            <img src="${g.image_url}" alt="${window.RPS_Admin.escapeHtml(g.title)}" class="gallery-card__img">
+            <img decoding="async" loading="lazy" src="${g.image_url}" alt="${window.RPS_Admin.escapeHtml(g.title)}" class="gallery-card__img">
           </div>
           <div class="gallery-card__body">
             <div class="gallery-card__cat">${g.category || 'campus'}</div>

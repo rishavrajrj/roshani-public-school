@@ -17,6 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
@@ -239,7 +240,7 @@
             document.getElementById('info-mission').value = info.mission || '';
 
             if (info.principal_photo_url) {
-              document.getElementById('photo-preview').innerHTML = `<img src="${info.principal_photo_url}" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">`;
+              document.getElementById('photo-preview').innerHTML = `<img decoding="async" loading="lazy" src="${info.principal_photo_url}" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">`;
             }
           }
         }
