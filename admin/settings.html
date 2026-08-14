@@ -1,32 +1,30 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
-  <title>Site Settings — Roshani Public School Admin</title>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
+  <title>Site Settings & Admission Controls — Roshani Public School Admin</title>
   <link rel="stylesheet" href="../css/admin.css">
+  <link rel="stylesheet" href="../css/components.css">
   <script src="../js/config.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
+  <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar__header">
       <img src="../assets/logo.webp" alt="RPS Logo" class="admin-sidebar__logo">
       <div>
         <div class="admin-sidebar__title">Roshani Public</div>
-        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+        <div class="admin-sidebar__subtitle">Admin ERP Portal</div>
       </div>
     </div>
 
@@ -62,6 +60,9 @@
       <a href="users.html" class="admin-sidebar__link">
         <span>👥</span> Admin Users
       </a>
+      <a href="audit-log.html" class="admin-sidebar__link">
+        <span>📜</span> Immutable Audit Log
+      </a>
       <a href="settings.html" class="admin-sidebar__link is-active">
         <span>⚙️</span> Site Settings
       </a>
@@ -76,31 +77,113 @@
     </nav>
 
     <div class="admin-sidebar__footer">
-      <div class="admin-sidebar__user-avatar">A</div>
+      <div class="admin-sidebar__user-avatar" id="sidebar-user-avatar">A</div>
       <div>
-        <div class="admin-sidebar__user-name">Administrator</div>
-        <div class="admin-sidebar__user-role">Super Admin</div>
+        <div class="admin-sidebar__user-name" id="sidebar-user-name">Administrator</div>
+        <div class="admin-sidebar__user-role" id="sidebar-user-role-badge">Super Admin</div>
       </div>
     </div>
   </aside>
 
+  <!-- MAIN CONTENT -->
   <main class="admin-main">
     <header class="admin-topbar">
       <div style="display: flex; align-items: center; gap: 16px;">
         <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
-        <h1 class="admin-topbar__title">⚙️ Website Settings & Branding</h1>
+        <h1 class="admin-topbar__title">⚙️ Site Settings & Admission Controls</h1>
+      </div>
+      <div class="admin-topbar__actions">
+        <a href="../index.html" target="_blank" class="admin-btn admin-btn--outline admin-btn--sm">
+          👁️ View Live Web Page
+        </a>
       </div>
     </header>
 
     <section class="admin-content">
-      <div style="max-width: 700px;">
+      <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:24px; max-width: 1200px;">
+        
+        <!-- PANEL 1: ADMISSION ANNOUNCEMENT & POPUP CONTROLS -->
         <div class="admin-panel">
           <div class="admin-panel__header">
-            <h2 class="admin-panel__title">Website Meta & Branding</h2>
+            <div>
+              <h2 class="admin-panel__title" style="display:flex; align-items:center; gap:8px;">
+                🎓 Admission Status & Popup Controls
+              </h2>
+              <div class="admin-panel__meta">Configure popup flyer, session years, and admission open/closed status</div>
+            </div>
+            <button type="button" id="preview-popup-btn" class="admin-btn admin-btn--outline admin-btn--sm">
+              👁️ Test Popup Now
+            </button>
+          </div>
+
+          <form id="admission-controls-form">
+            <!-- TOGGLE POPUP SHOW ON FIRST LOAD -->
+            <div class="admin-form-group" style="background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:18px;">
+              <label style="display:flex; align-items:center; gap:12px; font-weight:700; cursor:pointer; color:var(--admin-navy-dark);">
+                <input type="checkbox" id="setting-popup-enabled" style="width:20px; height:20px; accent-color:var(--admin-crimson);">
+                <span>Show Admission Popup on First Load</span>
+              </label>
+              <small style="display:block; margin-top:6px; color:var(--admin-text-muted);">
+                When enabled, visitors will see the admission announcement popup flyer once per browser session.
+              </small>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;" class="admin-grid-2">
+              <!-- ADMISSION STATUS (OPEN / CLOSED) -->
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="setting-admission-status">Current Admission Status</label>
+                <select id="setting-admission-status" class="admin-form-select" style="font-weight:600;">
+                  <option value="open">🟢 Admissions OPEN NOW</option>
+                  <option value="closed">🔴 Admissions CLOSED</option>
+                </select>
+              </div>
+
+              <!-- ACADEMIC SESSION YEAR -->
+              <div class="admin-form-group">
+                <label class="admin-form-label" for="setting-academic-session">Academic Session Year *</label>
+                <input type="text" id="setting-academic-session" class="admin-form-input" placeholder="e.g. 2026-2027" required>
+              </div>
+            </div>
+
+            <!-- POPUP FLYER IMAGE UPLOAD & PREVIEW -->
+            <div class="admin-form-group">
+              <label class="admin-form-label">Admission Announcement Flyer Image</label>
+              <div style="display:flex; gap:16px; align-items:flex-start;">
+                <div style="width:130px; height:170px; border-radius:8px; border:2px dashed #cbd5e1; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                  <img id="popup-image-preview" src="../assets/admission.webp" alt="Popup Preview" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; flex:1;">
+                  <input type="file" id="popup-image-file" accept="image/*" style="display:none;">
+                  <input type="hidden" id="setting-popup-image-url">
+                  <button type="button" id="upload-flyer-btn" class="admin-btn admin-btn--outline admin-btn--sm" style="width:fit-content;">
+                    📤 Change Flyer Image
+                  </button>
+                  <button type="button" id="reset-flyer-btn" class="admin-btn admin-btn--secondary admin-btn--sm" style="width:fit-content; color:var(--admin-danger);">
+                    🔄 Reset to Default Flyer
+                  </button>
+                  <small style="color:var(--admin-text-muted);">
+                    Recommended: Vertical image flyer (Ratio 3:4 or 4:5, WebP/JPG/PNG).
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-panel__footer" style="padding-top:16px;">
+              <button type="submit" id="save-admission-settings-btn" class="admin-btn admin-btn--primary">
+                💾 Save Admission Settings
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- PANEL 2: GENERAL WEBSITE META & SYSTEM INFO -->
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h2 class="admin-panel__title">🌐 General Website Branding & System</h2>
           </div>
           <form id="settings-form">
             <div class="admin-form-group">
-              <label class="admin-form-label" for="setting-title">Website Title</label>
+              <label class="admin-form-label" for="setting-title">Website SEO Title</label>
               <input type="text" id="setting-title" class="admin-form-input" value="Roshani Public School — Turkauliya, Motihari">
             </div>
 
@@ -114,9 +197,12 @@
               <input type="text" class="admin-form-input" value="https://kgbdnafhlkchkawsucbl.supabase.co" disabled style="background:#f1f5f9;">
             </div>
 
-            <button type="submit" class="admin-btn admin-btn--primary">Save Website Settings</button>
+            <div class="admin-panel__footer" style="padding-top:16px;">
+              <button type="submit" class="admin-btn admin-btn--primary">💾 Save Website Branding</button>
+            </div>
           </form>
         </div>
+
       </div>
     </section>
   </main>
@@ -124,16 +210,134 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/admin-app.js"></script>
+  <script src="../js/admission-popup.js"></script>
+
   <script>
+    let currentSchoolInfo = null;
+
     document.addEventListener('DOMContentLoaded', async () => {
       await window.RPS_Admin.checkAuth(true);
-
-      document.getElementById('settings-form').onsubmit = (e) => {
-        e.preventDefault();
-        window.RPS_Admin.showToast('Website Settings saved successfully!');
-        window.RPS_Admin.logActivity('Update Settings', 'site_settings', null, 'Website Title & Copyright');
-      };
+      await loadSettings();
+      setupHandlers();
     });
+
+    async function loadSettings() {
+      try {
+        if (window.RPS_Supabase) {
+          currentSchoolInfo = await window.RPS_Supabase.getSchoolInformation() || {};
+          
+          document.getElementById('setting-popup-enabled').checked = currentSchoolInfo.admission_popup_enabled !== false && currentSchoolInfo.admission_popup_enabled !== 'false';
+          document.getElementById('setting-admission-status').value = currentSchoolInfo.admission_status || 'open';
+          const rawPopupImg = currentSchoolInfo.admission_popup_image_url || 'assets/admission.webp';
+          const resolvedPopupImg = (rawPopupImg.startsWith('http') || rawPopupImg.startsWith('data:') || rawPopupImg.startsWith('/')) ? rawPopupImg : (rawPopupImg.startsWith('../') ? rawPopupImg : '../' + rawPopupImg);
+          document.getElementById('setting-popup-image-url').value = rawPopupImg;
+          document.getElementById('popup-image-preview').src = resolvedPopupImg;
+        }
+      } catch (e) {
+        console.error('Error loading settings:', e);
+      }
+    }
+
+    function setupHandlers() {
+      // Flyer upload
+      const flyerInput = document.getElementById('popup-image-file');
+      const uploadBtn = document.getElementById('upload-flyer-btn');
+      const resetBtn = document.getElementById('reset-flyer-btn');
+      const flyerPreview = document.getElementById('popup-image-preview');
+
+      uploadBtn.onclick = () => flyerInput.click();
+
+      flyerInput.onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            flyerPreview.src = event.target.result;
+            document.getElementById('setting-popup-image-url').value = event.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      };
+
+      resetBtn.onclick = () => {
+        flyerInput.value = '';
+        flyerPreview.src = '../assets/admission.webp';
+        document.getElementById('setting-popup-image-url').value = 'assets/admission.webp';
+      };
+
+      // Preview Popup Button
+      document.getElementById('preview-popup-btn').onclick = async () => {
+        const previewSrc = flyerPreview.src || '../assets/admission.webp';
+        const sessionVal = document.getElementById('setting-academic-session').value || '2026-2027';
+        const statusVal = document.getElementById('setting-admission-status').value || 'open';
+        
+        const popup = new AdmissionPopup({
+          imageSrc: previewSrc,
+          academicSession: sessionVal,
+          admissionStatus: statusVal
+        });
+        popup.init(true); // ignoreSeen = true for test preview
+      };
+
+      // Save Admission Settings Form
+      document.getElementById('admission-controls-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('save-admission-settings-btn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving Settings...';
+
+        try {
+          let flyerUrl = document.getElementById('setting-popup-image-url').value || 'assets/admission.webp';
+
+          if (flyerInput.files && flyerInput.files[0]) {
+            try {
+              const uploadRes = await window.RPS_Supabase.uploadFile('school-images', flyerInput.files[0], 'admissions');
+              if (uploadRes && uploadRes.url) flyerUrl = uploadRes.url;
+            } catch (err) {
+              console.warn('Storage upload fallback:', err);
+              flyerUrl = flyerPreview.src || flyerUrl;
+            }
+          }
+
+          const payload = {
+            admission_popup_enabled: document.getElementById('setting-popup-enabled').checked,
+            admission_status: document.getElementById('setting-admission-status').value,
+            academic_session: document.getElementById('setting-academic-session').value.trim(),
+            admission_popup_image_url: flyerUrl,
+            updated_at: new Date().toISOString()
+          };
+
+          await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
+          window.RPS_Admin.showToast('✅ Admission status & popup settings saved!');
+          window.RPS_Admin.logActivity('Update Admission Settings', 'school_information', 'admission', payload.academic_session);
+          await loadSettings();
+        } catch (err) {
+          window.RPS_Admin.showToast(err.message || 'Failed to save admission settings', 'error');
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = '💾 Save Admission Settings';
+        }
+      };
+
+      // Save Website Branding Form
+      document.getElementById('settings-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('setting-title').value.trim();
+        const copyright = document.getElementById('setting-copyright').value.trim();
+
+        try {
+          await window.RPS_Supabase.updateSchoolInformationAdmin({
+            website_title: title,
+            footer_copyright: copyright,
+            updated_at: new Date().toISOString()
+          });
+          window.RPS_Admin.showToast('✅ Website Branding & SEO settings saved!');
+          window.RPS_Admin.logActivity('Update Settings', 'school_information', null, 'Website Title & Copyright');
+          await loadSettings();
+        } catch (err) {
+          window.RPS_Admin.showToast(err.message || 'Failed to save settings', 'error');
+        }
+      };
+    }
   </script>
 </body>
 </html>

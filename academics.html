@@ -4,12 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="js/vercel-analytics.js"></script>
   <title>Academics - Roshani Public School</title>
   <meta name="description" content="Academics at Roshani Public School. CBSE aligned curriculum, NCERT framework, streams offered, assessment policy, and academic calendar.">
   <meta name="keywords" content="Roshani Public School Academics, CBSE curriculum, Science Commerce Humanities streams">
@@ -117,13 +112,13 @@
       <a href="index.html" class="header__logo" aria-label="Roshani Public School - Home">
         <div class="logo-coin">
           <div class="logo-coin__inner">
-            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__front">
-            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__back">
+            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__front" data-rps-info="school_logo">
+            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__back" data-rps-info="school_logo">
           </div>
         </div>
         <div class="header__logo-text">
-          <span class="header__logo-name">Roshani Public School</span>
-          <span class="header__logo-tagline">CBSE Affiliated · Est. 2001</span>
+          <span class="header__logo-name" data-rps-info="school_name">Roshani Public School</span>
+          <span class="header__logo-tagline" data-rps-info="tagline">CBSE Affiliated · Est. 2001</span>
         </div>
       </a>
 
@@ -885,6 +880,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/public-app.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/admission-popup.js?v=1.0"></script>
   <script src="js/animations.js"></script>

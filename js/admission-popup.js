@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ROSHANI PUBLIC SCHOOL — ADMISSION ANNOUNCEMENT POPUP COMPONENT
  * Displays landing announcement modal using assets/admission.webp.
  * Configured to show ONCE PER BROWSER SESSION using sessionStorage key "roshani_admission_popup_seen".
@@ -8,6 +8,8 @@ class AdmissionPopup {
   constructor(options = {}) {
     this.storageKey = options.storageKey || 'roshani_admission_popup_seen';
     this.imageSrc = options.imageSrc || 'assets/admission.webp';
+    this.academicSession = options.academicSession || '2026-2027';
+    this.admissionStatus = options.admissionStatus || 'open';
     this.isOpen = false;
     this.previousActiveElement = null;
 
@@ -31,9 +33,36 @@ class AdmissionPopup {
     }
   }
 
-  init() {
-    // If already shown in this browser session, do not render or show popup
-    if (this.isSeen()) {
+  async init(ignoreSeen = false) {
+    let settings = null;
+    try {
+      if (window.RPS_PublicApp && typeof window.RPS_PublicApp.fetchData === 'function') {
+        settings = await window.RPS_PublicApp.fetchData();
+      } else if (window.RPS_Supabase && typeof window.RPS_Supabase.getSchoolInformation === 'function') {
+        settings = await window.RPS_Supabase.getSchoolInformation();
+      }
+    } catch (e) {
+      console.warn('[AdmissionPopup] Settings fetch warning:', e);
+    }
+
+    if (settings) {
+      if (settings.admission_popup_enabled === false || settings.admission_popup_enabled === 'false' || settings.admission_popup_enabled === 0) {
+        console.log('[AdmissionPopup] Popup is currently disabled by Admin settings.');
+        return;
+      }
+      if (settings.admission_popup_image_url) {
+        this.imageSrc = settings.admission_popup_image_url;
+      }
+      if (settings.academic_session) {
+        this.academicSession = settings.academic_session;
+      }
+      if (settings.admission_status) {
+        this.admissionStatus = settings.admission_status;
+      }
+    }
+
+    // Check session seen state unless explicitly ignored (e.g. for admin live preview)
+    if (!ignoreSeen && this.isSeen()) {
       return;
     }
 
@@ -55,10 +84,16 @@ class AdmissionPopup {
   }
 
   render() {
-    if (document.getElementById('admission-popup')) return;
+    if (document.getElementById('admission-popup')) {
+      document.getElementById('admission-popup').remove();
+    }
+
+    const isClosed = this.admissionStatus === 'closed';
+    const ctaText = isClosed ? 'Admissions Closed' : 'Apply for Admission';
+    const sessionLabel = this.academicSession ? `Academic Session ${this.academicSession}` : 'Academic Session 2026-2027';
 
     const popupHtml = `
-      <div id="admission-popup" class="admission-popup" role="dialog" aria-modal="true" aria-label="Admission Announcement for Academic Session 2026-2027">
+      <div id="admission-popup" class="admission-popup" role="dialog" aria-modal="true" aria-label="Admission Announcement for ${sessionLabel}">
         <div class="admission-popup__overlay" id="admission-popup-overlay"></div>
         <div class="admission-popup__modal" id="admission-popup-modal" tabindex="-1">
           <button type="button" class="admission-popup__close-btn" id="admission-popup-close" aria-label="Close admission announcement">
@@ -68,12 +103,12 @@ class AdmissionPopup {
             </svg>
           </button>
           <div class="admission-popup__image-wrapper">
-            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" onerror="this.onerror=null; this.src='assets/admission.webp';" />
+            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement ${sessionLabel}" class="admission-popup__img" onerror="this.onerror=null; this.src='assets/admission.webp';" />
           </div>
           <div class="admission-popup__cta">
-            <a href="admissions.html#enquiry" class="btn btn--primary admission-popup__apply-btn" id="admission-popup-apply-btn">
+            <a href="admissions.html#enquiry" class="btn btn--primary admission-popup__apply-btn" id="admission-popup-apply-btn" ${isClosed ? 'style="opacity:0.75; cursor:not-allowed;"' : ''}>
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
-              Apply for Admission
+              ${ctaText}
             </a>
           </div>
         </div>

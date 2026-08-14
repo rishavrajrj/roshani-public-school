@@ -1,15 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
   <title>School Gallery Management — Roshani Public School Admin</title>
   <link rel="stylesheet" href="../css/admin.css">
   <script src="../js/config.js"></script>
@@ -20,56 +16,145 @@
   <style>
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
     }
     .gallery-card {
       background: #ffffff;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--admin-border-color);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .gallery-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.08);
     }
     .gallery-card__img-box {
       width: 100%;
-      height: 160px;
+      height: 180px;
       overflow: hidden;
       background: #f1f5f9;
       position: relative;
+      cursor: pointer;
     }
     .gallery-card__img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .gallery-card__img-box:hover .gallery-card__img {
+      transform: scale(1.04);
+    }
+    .gallery-card__badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
     }
     .gallery-card__body {
-      padding: 14px;
+      padding: 16px;
       flex: 1;
       display: flex;
       flex-direction: column;
     }
     .gallery-card__title {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: var(--admin-navy-dark);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      line-height: 1.35;
     }
-    .gallery-card__cat {
+    .gallery-card__desc {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 12px;
+      line-height: 1.45;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .gallery-card__meta {
       font-size: 0.75rem;
-      color: var(--admin-primary);
-      font-weight: 600;
-      text-transform: uppercase;
+      color: #94a3b8;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .gallery-card__actions {
-      margin-top: 12px;
       display: flex;
-      justify-content: flex-end;
       gap: 8px;
     }
+    .gallery-preview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .gallery-preview-modal.is-open {
+      display: flex;
+    }
+    .gallery-preview-content {
+      position: relative;
+      max-width: 900px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+    .gallery-preview-img {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      background: #0f172a;
+      display: block;
+    }
+    .gallery-preview-info {
+      padding: 20px 24px;
+    }
+    .gallery-preview-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .gallery-preview-close:hover {
+      background: rgba(220, 38, 38, 0.9);
+    }
   </style>
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
@@ -114,6 +199,9 @@
       <a href="users.html" class="admin-sidebar__link">
         <span>👥</span> Admin Users
       </a>
+      <a href="audit-log.html" class="admin-sidebar__link">
+        <span>📜</span> Immutable Audit Log
+      </a>
       <a href="settings.html" class="admin-sidebar__link">
         <span>⚙️</span> Site Settings
       </a>
@@ -152,20 +240,26 @@
 
     <section class="admin-content">
       <div class="admin-panel">
-        <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <!-- Filter Buttons -->
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="cat-filters">
             <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn is-active" data-cat="all">All Photos</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="campus">Campus</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="events">Events</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="annual">Annual Function</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="sports">Sports</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="cultural">Cultural</button>
-            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="classroom">Classrooms</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="campus">Campus & Infrastructure</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="academics">Academics & Labs</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="events">Events & Assemblies</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="sports">Sports & Athletics</button>
+            <button class="admin-btn admin-btn--outline admin-btn--sm cat-btn" data-cat="cultural">Cultural Activities</button>
+          </div>
+
+          <!-- Search Input & Count -->
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <input type="text" id="gallery-search" class="admin-form-input" placeholder="🔍 Search photos..." style="width: 220px; padding: 6px 12px; font-size: 0.85rem;">
+            <span id="gallery-count-badge" style="font-size: 0.8rem; color: #64748b; font-weight: 600; white-space: nowrap;">0 Photos</span>
           </div>
         </div>
 
         <div id="gallery-grid-container" class="gallery-grid">
-          <div style="grid-column: 1/-1; text-align: center; padding: 40px;">Loading gallery photos...</div>
+          <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;">Loading gallery photos...</div>
         </div>
       </div>
     </section>
@@ -175,7 +269,7 @@
   <div id="gallery-modal" class="modal-backdrop" style="display:none;">
     <div class="modal-dialog" style="background:#fff; width:100%; max-width:540px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
-        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">📸 Upload Photos to Supabase Storage</h3>
+        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark); margin:0;">📸 Upload Photos to Supabase Storage</h3>
         <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
       </div>
 
@@ -186,14 +280,14 @@
         </div>
 
         <div class="admin-form-group">
-          <label class="admin-form-label" for="form-category">Category / Album</label>
-          <select id="form-category" class="admin-form-select">
+          <label class="admin-form-label" for="form-category">Category / Album *</label>
+          <select id="form-category" class="admin-form-select" required>
             <option value="campus">Campus & Infrastructure</option>
+            <option value="academics">Academics & Labs</option>
             <option value="events">Academic & Special Events</option>
             <option value="annual">Annual Function</option>
             <option value="sports">Sports & Athletics</option>
             <option value="cultural">Cultural Activities</option>
-            <option value="classroom">Classroom & Labs</option>
           </select>
         </div>
 
@@ -215,21 +309,38 @@
     </div>
   </div>
 
+  <!-- LIGHTBOX PREVIEW MODAL -->
+  <div id="preview-modal" class="gallery-preview-modal">
+    <div class="gallery-preview-content">
+      <button class="gallery-preview-close" id="preview-close-btn">&times;</button>
+      <img id="preview-img" class="gallery-preview-img" src="" alt="">
+      <div class="gallery-preview-info">
+        <span id="preview-badge" class="gallery-card__badge" style="position:static; display:inline-block; margin-bottom:8px;"></span>
+        <h3 id="preview-title" style="margin:0 0 6px 0; color:var(--admin-navy-dark);"></h3>
+        <p id="preview-desc" style="margin:0; font-size:0.85rem; color:#64748b; line-height:1.5;"></p>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/admin-app.js"></script>
   <script>
     let allGallery = [];
     let currentCat = 'all';
+    let searchQuery = '';
+    let currentProfile = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      await window.RPS_Admin.checkAuth();
+      const auth = await window.RPS_Admin.checkAuth();
+      currentProfile = auth?.profile || (await window.RPS_Supabase.getCurrentProfile());
       loadGallery();
 
       document.getElementById('upload-photo-btn').onclick = openModal;
       document.getElementById('modal-close-btn').onclick = closeModal;
       document.getElementById('modal-cancel-btn').onclick = closeModal;
 
+      // Category filters
       document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.onclick = (e) => {
           document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('is-active'));
@@ -239,8 +350,57 @@
         };
       });
 
+      // Search bar
+      const searchInput = document.getElementById('gallery-search');
+      if (searchInput) {
+        searchInput.oninput = (e) => {
+          searchQuery = e.target.value.toLowerCase().trim();
+          renderGrid();
+        };
+      }
+
+      // Preview modal close
+      document.getElementById('preview-close-btn').onclick = closePreview;
+      document.getElementById('preview-modal').onclick = (e) => {
+        if (e.target.id === 'preview-modal') closePreview();
+      };
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePreview();
+      });
+
       document.getElementById('gallery-form').onsubmit = handleUpload;
     });
+
+    function resolveImageUrl(url) {
+      if (!url) return '../assets/BuildingViewFront.webp';
+      url = url.replace(/\.png$/i, '.webp');
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+        return url;
+      }
+      if (url.startsWith('../')) {
+        return url;
+      }
+      if (url.startsWith('/')) {
+        return url;
+      }
+      if (url.startsWith('assets/')) {
+        return '../' + url;
+      }
+      return '../' + url;
+    }
+
+    function formatCategory(cat) {
+      const map = {
+        campus: 'Campus & Infrastructure',
+        academics: 'Academics & Labs',
+        classroom: 'Classrooms & Labs',
+        events: 'Events & Assemblies',
+        annual: 'Annual Function',
+        sports: 'Sports & Athletics',
+        cultural: 'Cultural Activities'
+      };
+      return map[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'General');
+    }
 
     async function loadGallery() {
       try {
@@ -254,32 +414,127 @@
       }
     }
 
+    function checkCanDelete(photo) {
+      if (!currentProfile) return false;
+      if (currentProfile.role === 'super_admin') return true;
+
+      // For standard admin accounts, only allow deleting photos uploaded by their own account
+      const matchesUserId = photo.uploaded_by && currentProfile.id && String(photo.uploaded_by) === String(currentProfile.id);
+      const matchesUserEmail = (photo.uploader_email && currentProfile.email && photo.uploader_email.toLowerCase() === currentProfile.email.toLowerCase()) ||
+                               (photo.uploaded_by && currentProfile.email && String(photo.uploaded_by).toLowerCase() === currentProfile.email.toLowerCase());
+
+      return !!(matchesUserId || matchesUserEmail);
+    }
+
     function renderGrid() {
       const container = document.getElementById('gallery-grid-container');
+      const countBadge = document.getElementById('gallery-count-badge');
+
       let filtered = allGallery.filter(g => {
-        if (currentCat === 'all') return true;
-        return g.category === currentCat;
+        const cat = (g.category || '').toLowerCase();
+        let matchesCat = false;
+        if (currentCat === 'all') {
+          matchesCat = true;
+        } else if (currentCat === 'academics') {
+          matchesCat = (cat === 'academics' || cat === 'classroom');
+        } else if (currentCat === 'events') {
+          matchesCat = (cat === 'events' || cat === 'annual');
+        } else {
+          matchesCat = (cat === currentCat);
+        }
+
+        if (!matchesCat) return false;
+
+        if (searchQuery) {
+          const title = (g.title || '').toLowerCase();
+          const desc = (g.description || g.caption || '').toLowerCase();
+          return title.includes(searchQuery) || desc.includes(searchQuery);
+        }
+        return true;
       });
 
+      if (countBadge) {
+        countBadge.textContent = `${filtered.length} Photo${filtered.length === 1 ? '' : 's'}`;
+      }
+
       if (filtered.length === 0) {
-        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;">No gallery photos found in this category.</div>';
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 48px; color: #64748b; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">No gallery photos match your filter or search query.</div>';
         return;
       }
 
-      container.innerHTML = filtered.map(g => `
-        <div class="gallery-card">
-          <div class="gallery-card__img-box">
-            <img decoding="async" loading="lazy" src="${g.image_url}" alt="${window.RPS_Admin.escapeHtml(g.title)}" class="gallery-card__img">
-          </div>
-          <div class="gallery-card__body">
-            <div class="gallery-card__cat">${g.category || 'campus'}</div>
-            <div class="gallery-card__title">${window.RPS_Admin.escapeHtml(g.title)}</div>
-            <div class="gallery-card__actions">
-              <button onclick="deleteGalleryItem('${g.id}')" class="admin-btn admin-btn--danger admin-btn--sm">Delete</button>
+      container.innerHTML = filtered.map(g => {
+        const resolvedUrl = resolveImageUrl(g.image_url);
+        const titleEsc = window.RPS_Admin.escapeHtml(g.title || 'Gallery Photo');
+        const descEsc = window.RPS_Admin.escapeHtml(g.caption || g.description || '');
+        const catName = formatCategory(g.category);
+        const canDelete = checkCanDelete(g);
+
+        const isOwner = currentProfile && (
+          (g.uploaded_by && currentProfile.id && String(g.uploaded_by) === String(currentProfile.id)) ||
+          (g.uploader_email && currentProfile.email && g.uploader_email.toLowerCase() === currentProfile.email.toLowerCase()) ||
+          (g.uploaded_by && currentProfile.email && String(g.uploaded_by).toLowerCase() === currentProfile.email.toLowerCase())
+        );
+
+        let uploaderBadge = '';
+        if (isOwner) {
+          uploaderBadge = `<span style="font-size:0.7rem; color:#065f46; background:#d1fae5; padding:2px 7px; border-radius:4px; font-weight:600; display:inline-flex; align-items:center; gap:3px;"><span style="font-size:0.65rem;">✓</span> Uploaded by you</span>`;
+        } else if (g.uploader_name || g.uploader_email) {
+          const uploaderDisplay = window.RPS_Admin.escapeHtml(g.uploader_name || g.uploader_email);
+          uploaderBadge = `<span style="font-size:0.7rem; color:#475569; background:#f1f5f9; padding:2px 7px; border-radius:4px; border:1px solid #e2e8f0; display:inline-flex; align-items:center; gap:3px;" title="Uploaded by ${uploaderDisplay}">👤 ${uploaderDisplay}</span>`;
+        } else {
+          uploaderBadge = `<span style="font-size:0.7rem; color:#94a3b8; background:#f8fafc; padding:2px 7px; border-radius:4px; border:1px solid #f1f5f9;">System Default</span>`;
+        }
+
+        const actionBtn = canDelete
+          ? `<button type="button" onclick="deleteGalleryItem('${g.id}', '${titleEsc.replace(/'/g, "\\'")}')" class="admin-btn admin-btn--danger admin-btn--sm" style="font-size:0.75rem; padding:3px 8px;">Delete</button>`
+          : `<button type="button" class="admin-btn admin-btn--outline admin-btn--sm" disabled title="Deletion restricted: You can only delete photos uploaded by your admin account" style="font-size:0.72rem; padding:3px 8px; opacity:0.55; cursor:not-allowed; border-color:#cbd5e1; color:#94a3b8; background:#f8fafc;"><span style="margin-right:2px;">🔒</span> Locked</button>`;
+
+        return `
+          <div class="gallery-card">
+            <div class="gallery-card__img-box" onclick="openPreview('${g.id}')">
+              <img decoding="async" loading="lazy" src="${resolvedUrl}" alt="${titleEsc}" class="gallery-card__img" onerror="this.onerror=null; this.src='../assets/BuildingViewFront.webp';">
+              <div class="gallery-card__badge">${catName}</div>
+            </div>
+            <div class="gallery-card__body">
+              <div class="gallery-card__title">${titleEsc}</div>
+              ${descEsc ? `<div class="gallery-card__desc">${descEsc}</div>` : ''}
+              <div style="margin: 6px 0 10px 0;">${uploaderBadge}</div>
+              <div class="gallery-card__meta">
+                <button type="button" onclick="openPreview('${g.id}')" class="admin-btn admin-btn--outline admin-btn--sm" style="font-size:0.75rem; padding:3px 8px;">🔍 View</button>
+                <div class="gallery-card__actions">
+                  ${actionBtn}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+    }
+
+    function openPreview(id) {
+      const item = allGallery.find(g => String(g.id) === String(id));
+      if (!item) return;
+
+      const modal = document.getElementById('preview-modal');
+      const img = document.getElementById('preview-img');
+      const title = document.getElementById('preview-title');
+      const desc = document.getElementById('preview-desc');
+      const badge = document.getElementById('preview-badge');
+
+      img.src = resolveImageUrl(item.image_url);
+      img.alt = item.title || '';
+      title.textContent = item.title || 'Gallery Photo';
+
+      const uploaderText = item.uploader_name || item.uploader_email || (item.uploaded_by ? 'Admin Account' : 'System Default');
+      desc.innerHTML = `${item.caption || item.description || ''}<div style="margin-top:10px; font-size:0.75rem; color:#64748b; background:#f8fafc; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0;">👤 Uploaded by: <strong>${window.RPS_Admin.escapeHtml(uploaderText)}</strong></div>`;
+      badge.textContent = formatCategory(item.category);
+
+      modal.classList.add('is-open');
+    }
+
+    function closePreview() {
+      const modal = document.getElementById('preview-modal');
+      modal.classList.remove('is-open');
     }
 
     function openModal() {
@@ -291,13 +546,19 @@
       document.getElementById('gallery-modal').style.display = 'none';
     }
 
-    async function deleteGalleryItem(id) {
-      if (!confirm('Are you sure you want to delete this photo from the gallery?')) return;
+    async function deleteGalleryItem(id, itemTitle) {
+      const item = allGallery.find(g => String(g.id) === String(id));
+      if (item && !checkCanDelete(item)) {
+        window.RPS_Admin.showToast('Access denied: You can only delete photos uploaded by your admin account.', 'error');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to delete "${itemTitle || 'this photo'}" from the gallery?`)) return;
       try {
-        await window.RPS_Supabase.deleteGalleryItemAdmin(id);
+        await window.RPS_Supabase.deleteGalleryItemAdmin(id, itemTitle);
         window.RPS_Admin.showToast('Photo deleted from gallery');
-        window.RPS_Admin.logActivity('Delete Photo', 'gallery', id);
-        loadGallery();
+        allGallery = allGallery.filter(g => String(g.id) !== String(id));
+        renderGrid();
       } catch (err) {
         window.RPS_Admin.showToast(err.message || 'Failed to delete photo', 'error');
       }
@@ -323,17 +584,25 @@
           title: document.getElementById('form-title').value.trim(),
           category: document.getElementById('form-category').value,
           caption: document.getElementById('form-caption').value.trim(),
+          description: document.getElementById('form-caption').value.trim(),
           image_url: uploadRes.url,
           storage_path: uploadRes.path,
           published: true,
+          uploaded_by: currentProfile?.id || null,
+          uploader_name: currentProfile?.full_name || currentProfile?.name || currentProfile?.email || 'Administrator',
+          uploader_email: currentProfile?.email || null,
           created_at: new Date().toISOString()
         };
 
-        await window.RPS_Supabase.createGalleryItemAdmin(payload);
+        const created = await window.RPS_Supabase.createGalleryItemAdmin(payload);
         window.RPS_Admin.showToast('Photo uploaded and published successfully!');
-        window.RPS_Admin.logActivity('Upload Photo', 'gallery', null, payload.title);
         closeModal();
-        loadGallery();
+        if (created) {
+          allGallery.unshift(created);
+        } else {
+          loadGallery();
+        }
+        renderGrid();
       } catch (err) {
         window.RPS_Admin.showToast('Upload failed: ' + err.message, 'error');
       } finally {

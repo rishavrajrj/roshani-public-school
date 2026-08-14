@@ -4,12 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="js/vercel-analytics.js"></script>
   <title>Admissions | Roshani Public School</title>
   <meta name="description" content="Apply for admission at Roshani Public School. Learn about our admission process, fee structure, eligibility criteria, and required documents.">
   <meta name="keywords" content="Roshani Public School Admissions, RPS Turkauliya Admission, CBSE school admission, school fee structure">
@@ -121,11 +116,11 @@
         Admissions Open — Academic Session 2026–27 | Nursery to Class XII
       </div>
       <div class="announcement-bar__contact">
-        <a href="tel:+919472405097" aria-label="Call us">
+        <a href="tel:+919472405097" aria-label="Call us" data-rps-info="phone">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           +91 9472405097
         </a>
-        <a href="mailto:roshanipublicschoolturkauliya1@gmail.com" aria-label="Email us">
+        <a href="mailto:roshanipublicschoolturkauliya1@gmail.com" aria-label="Email us" data-rps-info="email">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
           roshanipublicschoolturkauliya1@gmail.com
         </a>
@@ -139,13 +134,13 @@
       <a href="index.html" class="header__logo" aria-label="Roshani Public School - Home">
         <div class="logo-coin">
           <div class="logo-coin__inner">
-            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__front">
-            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__back">
+            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__front" data-rps-info="school_logo">
+            <img src="assets/logo.webp" alt="Roshani Public School Logo" class="logo-coin__back" data-rps-info="school_logo">
           </div>
         </div>
         <div class="header__logo-text">
-          <span class="header__logo-name">Roshani Public School</span>
-          <span class="header__logo-tagline">CBSE Affiliated · Est. 2001</span>
+          <span class="header__logo-name" data-rps-info="school_name">Roshani Public School</span>
+          <span class="header__logo-tagline" data-rps-info="tagline">CBSE Affiliated · Est. 2001</span>
         </div>
       </a>
 
@@ -866,7 +861,7 @@
 
             <div class="footer__hours">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span>Mon – Sat: 9:00 AM – 5:00 PM</span>
+              <span data-rps-info="office_hours">Mon – Sat: 8:00 AM – 2:00 PM</span>
             </div>
           </div>
         </div>
@@ -892,6 +887,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js"></script>
+  <script src="js/public-app.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/admission-popup.js?v=1.0"></script>
   <script src="js/animations.js"></script>

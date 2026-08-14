@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
+  <!-- Vercel Analytics & Speed Insights -->
+  <script defer src="../js/vercel-analytics.js"></script>
+  <title>Immutable Audit Log & Change History — Roshani Public School Admin</title>
+  <link rel="stylesheet" href="../css/admin.css">
+  <script src="../js/config.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
+
+  <style>
+    .audit-stat-card {
+      background: #ffffff;
+      border: 1px solid var(--admin-border-color);
+      border-radius: var(--admin-radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--admin-shadow-sm);
+    }
+    .audit-stat-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--admin-navy-dark);
+      line-height: 1.1;
+    }
+    .audit-stat-label {
+      font-size: 0.8rem;
+      color: var(--admin-text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .audit-filters-bar {
+      background: #ffffff;
+      border: 1px solid var(--admin-border-color);
+      border-radius: var(--admin-radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .audit-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .audit-badge--create { background: #dcfce7; color: #166534; }
+    .audit-badge--update { background: #e0f2fe; color: #0369a1; }
+    .audit-badge--delete { background: #fee2e2; color: #991b1b; }
+    .audit-badge--restore { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .audit-badge--role { background: #f3e8ff; color: #6b21a8; }
+    .audit-badge--auth { background: #f1f5f9; color: #475569; }
+
+    .diff-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      word-break: break-all;
+    }
+    .diff-old {
+      background: #fef2f2;
+      color: #991b1b;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border-left: 4px solid #ef4444;
+      margin-bottom: 8px;
+    }
+    .diff-new {
+      background: #f0fdf4;
+      color: #166534;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border-left: 4px solid #22c55e;
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <img src="../assets/logo.webp" alt="RPS Logo" class="admin-sidebar__logo">
+      <div>
+        <div class="admin-sidebar__title">Roshani Public</div>
+        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+      </div>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <div class="admin-sidebar__section-title">Main</div>
+      <a href="index.html" class="admin-sidebar__link">
+        <span>📊</span> Dashboard
+      </a>
+
+      <div class="admin-sidebar__section-title">Content Management</div>
+      <a href="notices.html" class="admin-sidebar__link">
+        <span>📢</span> Notices & Circulars
+      </a>
+      <a href="events.html" class="admin-sidebar__link">
+        <span>📅</span> Events & Calendar
+      </a>
+      <a href="gallery.html" class="admin-sidebar__link">
+        <span>🖼️</span> School Gallery
+      </a>
+      <a href="mandatory-disclosure.html" class="admin-sidebar__link">
+        <span>📜</span> Mandatory Disclosure
+      </a>
+      <a href="school-information.html" class="admin-sidebar__link">
+        <span>🏫</span> School Information
+      </a>
+
+      <div class="admin-sidebar__section-title">Communication</div>
+      <a href="enquiries.html" class="admin-sidebar__link">
+        <span>📨</span> Parent Enquiries
+      </a>
+
+      <div class="admin-sidebar__section-title">Administration</div>
+      <a href="users.html" class="admin-sidebar__link">
+        <span>👥</span> Admin Users
+      </a>
+      <a href="audit-log.html" class="admin-sidebar__link is-active">
+        <span>📜</span> Immutable Audit Log
+      </a>
+      <a href="settings.html" class="admin-sidebar__link">
+        <span>⚙️</span> Site Settings
+      </a>
+
+      <div class="admin-sidebar__section-title">Account</div>
+      <a href="profile.html" class="admin-sidebar__link">
+        <span>👤</span> My Profile
+      </a>
+      <a href="#" id="admin-logout-btn" class="admin-sidebar__link">
+        <span>🚪</span> Sign Out
+      </a>
+    </nav>
+
+    <div class="admin-sidebar__footer">
+      <div class="admin-sidebar__user-avatar" id="sidebar-user-avatar">A</div>
+      <div>
+        <div class="admin-sidebar__user-name" id="sidebar-user-name">Administrator</div>
+        <div class="admin-sidebar__user-role" id="sidebar-user-role-badge">Super Admin</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTAINER -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
+        <h1 class="admin-topbar__title">📜 Immutable System Audit Log & Restoration</h1>
+      </div>
+
+      <div class="admin-topbar__actions">
+        <button id="refresh-audit-btn" class="admin-btn admin-btn--outline admin-btn--sm">
+          🔄 Refresh Logs
+        </button>
+      </div>
+    </header>
+
+    <section class="admin-content">
+
+      <!-- BANNER EXPLAINING IMMUTABILITY & RESTORATION -->
+      <div style="background: linear-gradient(135deg, #0f2440 0%, #1e3a8a 100%); color: #ffffff; padding: 18px 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(15, 36, 64, 0.12);">
+        <div style="display:flex; align-items:flex-start; gap:16px;">
+          <div style="font-size: 2rem;">🛡️</div>
+          <div>
+            <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; color: #ffffff;">Cryptographically Traceable Audit Trail</h3>
+            <p style="font-size: 0.875rem; line-height: 1.5; color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">
+              Every modification made by Administrators and Super Administrators is permanently recorded in an append-only, immutable database ledger.
+            </p>
+            <div style="font-size: 0.8rem; background: rgba(255, 255, 255, 0.12); padding: 6px 12px; border-radius: 6px; display: inline-block;">
+              <strong>Principle of Non-Destructive Restoration:</strong> When a previous value is restored, the original audit record remains untouched, and a brand new <code style="color:#fde047; font-weight:700;">RESTORE</code> event is appended to the ledger.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI METRIC CARDS -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px; margin-bottom:24px;">
+        <div class="audit-stat-card">
+          <div style="font-size:1.8rem;">📊</div>
+          <div>
+            <div class="audit-stat-number" id="stat-total-logs">...</div>
+            <div class="audit-stat-label">Total Logged Events</div>
+          </div>
+        </div>
+        <div class="audit-stat-card">
+          <div style="font-size:1.8rem;">✏️</div>
+          <div>
+            <div class="audit-stat-number" id="stat-update-logs">...</div>
+            <div class="audit-stat-label">Data Modifications</div>
+          </div>
+        </div>
+        <div class="audit-stat-card">
+          <div style="font-size:1.8rem;">⏪</div>
+          <div>
+            <div class="audit-stat-number" id="stat-restore-logs">...</div>
+            <div class="audit-stat-label">Restorations Executed</div>
+          </div>
+        </div>
+        <div class="audit-stat-card">
+          <div style="font-size:1.8rem;">👥</div>
+          <div>
+            <div class="audit-stat-number" id="stat-admin-actors">...</div>
+            <div class="audit-stat-label">Active Admin Actors</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH & FILTERS -->
+      <div class="audit-filters-bar">
+        <div style="flex: 1 1 240px;">
+          <input type="text" id="audit-search" class="admin-form-input" placeholder="🔍 Search by user, field name, values, details...">
+        </div>
+
+        <div style="flex: 0 0 160px;">
+          <select id="filter-module" class="admin-form-input">
+            <option value="all">All Modules</option>
+            <option value="school_information">School Information</option>
+            <option value="notices">Notices & Circulars</option>
+            <option value="events">Events & Calendar</option>
+            <option value="gallery">Gallery Photos</option>
+            <option value="documents">Mandatory Disclosure</option>
+            <option value="enquiries">Parent Enquiries</option>
+            <option value="users">User Management</option>
+            <option value="auth">Auth & Sign-in</option>
+          </select>
+        </div>
+
+        <div style="flex: 0 0 150px;">
+          <select id="filter-action" class="admin-form-input">
+            <option value="all">All Actions</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="RESTORE">RESTORE</option>
+            <option value="CREATE">CREATE</option>
+            <option value="DELETE">DELETE</option>
+            <option value="USER_CREATED">USER_CREATED</option>
+            <option value="USER_DELETED">USER_DELETED</option>
+            <option value="USER_DISABLED">USER_DISABLED</option>
+            <option value="USER_ENABLED">USER_ENABLED</option>
+            <option value="ROLE_CHANGE">ROLE_CHANGE</option>
+            <option value="LOGIN">LOGIN</option>
+          </select>
+        </div>
+
+        <div style="flex: 0 0 140px;">
+          <select id="filter-role" class="admin-form-input">
+            <option value="all">All Roles</option>
+            <option value="super_admin">Super Admin</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button id="clear-filters-btn" class="admin-btn admin-btn--outline admin-btn--sm">
+          Reset Filters
+        </button>
+      </div>
+
+      <!-- MAIN AUDIT LOG TABLE -->
+      <div class="admin-panel">
+        <div class="admin-panel__header">
+          <div>
+            <h2 class="admin-panel__title">Ledger Records</h2>
+            <div class="admin-panel__meta" id="audit-table-meta">Showing latest system events</div>
+          </div>
+        </div>
+
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Actor</th>
+                <th>Role</th>
+                <th>Module</th>
+                <th>Action</th>
+                <th>Target Field / Resource</th>
+                <th>Recorded Change (Old ➔ New)</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody">
+              <tr><td colspan="8" style="text-align:center; padding:30px;">Loading audit ledger...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- RESTORE CONFIRMATION MODAL -->
+  <div id="restore-modal" class="admin-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,36,64,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#ffffff; border-radius:12px; max-width:650px; width:90%; padding:24px; box-shadow:0 12px 32px rgba(0,0,0,0.25); max-height:90vh; overflow-y:auto;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:1.2rem; font-weight:800; color:var(--admin-navy-dark); display:flex; align-items:center; gap:8px;">
+          <span>⏪</span> Restore Previous Value
+        </h3>
+        <button id="close-restore-modal" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">✕</button>
+      </div>
+
+      <div id="restore-conflict-alert" style="display:none; background:#fef2f2; border:1px solid #f87171; color:#991b1b; padding:12px 16px; border-radius:8px; margin-bottom:16px; font-size:0.875rem;">
+        <strong>⚠️ Conflict Warning:</strong>
+        <div id="restore-conflict-text" style="margin-top:4px;"></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.85rem; color:var(--admin-text-muted); margin-bottom:4px;">Target Entity & Field</div>
+        <div id="restore-field-label" style="font-weight:700; color:var(--admin-navy-dark); font-size:1rem;">-</div>
+      </div>
+
+      <div class="diff-box" style="margin-bottom:16px;">
+        <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:6px;">Historical State Comparison</div>
+        <div class="diff-old">
+          <strong>Previous Value (Will be restored):</strong><br>
+          <span id="restore-old-val">-</span>
+        </div>
+        <div class="diff-new">
+          <strong>Current / Modified Value:</strong><br>
+          <span id="restore-new-val">-</span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; font-size:0.825rem; background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:16px;">
+        <div>
+          <span style="color:#64748b;">Originally Changed By:</span><br>
+          <strong id="restore-actor-email">-</strong>
+        </div>
+        <div>
+          <span style="color:#64748b;">Change Recorded At:</span><br>
+          <strong id="restore-change-time">-</strong>
+        </div>
+      </div>
+
+      <div class="admin-form-group" style="margin-bottom:20px;">
+        <label class="admin-form-label" for="restore-reason">Reason for Restoration (Audited & Permanent)</label>
+        <input type="text" id="restore-reason" class="admin-form-input" placeholder="e.g., Reverting unauthorized modification / incorrect phone number" value="Restoring previous value by Super Admin">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button type="button" id="cancel-restore-btn" class="admin-btn admin-btn--outline">Cancel</button>
+        <button type="button" id="confirm-restore-btn" class="admin-btn admin-btn--primary">
+          Confirm & Execute Restoration →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAILS INSPECTION MODAL -->
+  <div id="details-modal" class="admin-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(15,36,64,0.6); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#ffffff; border-radius:12px; max-width:600px; width:90%; padding:24px; box-shadow:0 12px 32px rgba(0,0,0,0.25);">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:12px; margin-bottom:16px;">
+        <h3 style="font-size:1.15rem; font-weight:800; color:var(--admin-navy-dark);">🔍 Event Details Payload</h3>
+        <button id="close-details-modal" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:#64748b;">✕</button>
+      </div>
+      <div id="details-payload" class="diff-box" style="white-space:pre-wrap; max-height:400px; overflow-y:auto;">
+        Loading payload...
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/admin-app.js"></script>
+  <script>
+    let activeLogs = [];
+    let currentRestoreAudit = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Strict Super Admin Auth Guard
+      const auth = await window.RPS_Admin.checkAuth(true);
+      if (!auth) return;
+
+      // 2. Fetch and render audit log
+      await loadAuditLogs();
+
+      // Filter events
+      document.getElementById('audit-search').addEventListener('input', renderTable);
+      document.getElementById('filter-module').addEventListener('change', renderTable);
+      document.getElementById('filter-action').addEventListener('change', renderTable);
+      document.getElementById('filter-role').addEventListener('change', renderTable);
+      document.getElementById('clear-filters-btn').onclick = () => {
+        document.getElementById('audit-search').value = '';
+        document.getElementById('filter-module').value = 'all';
+        document.getElementById('filter-action').value = 'all';
+        document.getElementById('filter-role').value = 'all';
+        renderTable();
+      };
+
+      document.getElementById('refresh-audit-btn').onclick = async () => {
+        window.RPS_Admin.showToast('Refreshing audit ledger...', 'success');
+        await loadAuditLogs();
+      };
+
+      // Modal handlers
+      document.getElementById('close-restore-modal').onclick = () => { document.getElementById('restore-modal').style.display = 'none'; };
+      document.getElementById('cancel-restore-btn').onclick = () => { document.getElementById('restore-modal').style.display = 'none'; };
+      document.getElementById('close-details-modal').onclick = () => { document.getElementById('details-modal').style.display = 'none'; };
+
+      document.getElementById('confirm-restore-btn').onclick = async () => {
+        if (!currentRestoreAudit) return;
+        const reason = document.getElementById('restore-reason').value.trim() || 'Restored by Super Admin';
+        const submitBtn = document.getElementById('confirm-restore-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Restoring...';
+
+        try {
+          const res = await window.RPS_Supabase.restoreAuditEntry({
+            auditId: currentRestoreAudit.id,
+            reason: reason,
+            force: true
+          });
+
+          if (res && res.success) {
+            window.RPS_Admin.showToast('Record successfully restored and logged to audit trail!', 'success');
+            document.getElementById('restore-modal').style.display = 'none';
+            await loadAuditLogs();
+          }
+        } catch (err) {
+          alert('Failed to restore value: ' + (err.message || err));
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Confirm & Execute Restoration →';
+        }
+      };
+    });
+
+    async function loadAuditLogs() {
+      try {
+        activeLogs = await window.RPS_Supabase.getAuditLogsAdmin({ limit: 200 });
+        updateKpis(activeLogs);
+        renderTable();
+      } catch (err) {
+        console.error('Failed to load audit logs:', err);
+        document.getElementById('audit-tbody').innerHTML = `<tr><td colspan="8" style="text-align:center; color:red; padding:20px;">Error loading audit logs: ${err.message}</td></tr>`;
+      }
+    }
+
+    function updateKpis(logs) {
+      document.getElementById('stat-total-logs').textContent = logs.length;
+      document.getElementById('stat-update-logs').textContent = logs.filter(l => l.action === 'UPDATE').length;
+      document.getElementById('stat-restore-logs').textContent = logs.filter(l => l.action === 'RESTORE').length;
+      const actors = new Set(logs.map(l => l.actor_name || l.actor_email).filter(Boolean));
+      document.getElementById('stat-admin-actors').textContent = actors.size;
+    }
+
+    function renderTable() {
+      const search = document.getElementById('audit-search').value.toLowerCase().trim();
+      const moduleFilter = document.getElementById('filter-module').value;
+      const actionFilter = document.getElementById('filter-action').value;
+      const roleFilter = document.getElementById('filter-role').value;
+
+      let filtered = activeLogs.filter(l => {
+        if (moduleFilter !== 'all' && l.module !== moduleFilter && l.resource_type !== moduleFilter) return false;
+        if (actionFilter !== 'all' && l.action !== actionFilter) return false;
+        if (roleFilter !== 'all' && l.actor_role !== roleFilter) return false;
+        if (search) {
+          const matchStr = `${l.details || ''} ${l.actor_name || ''} ${l.actor_email || ''} ${l.field_name || ''} ${l.old_value || ''} ${l.new_value || ''} ${l.action || ''} ${l.module || ''}`.toLowerCase();
+          if (!matchStr.includes(search)) return false;
+        }
+        return true;
+      });
+
+      const tbody = document.getElementById('audit-tbody');
+      document.getElementById('audit-table-meta').textContent = `Showing ${filtered.length} of ${activeLogs.length} events`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--admin-text-muted);">No audit records found matching your filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(l => {
+        const actionBadgeClass = getActionBadgeClass(l.action);
+        const canRestore = (l.old_value !== null && l.old_value !== undefined && l.old_value !== '') && (l.action === 'UPDATE' || l.action === 'DELETE');
+
+        return `
+          <tr>
+            <td style="font-size:0.8rem; color:#64748b; white-space:nowrap;">
+              ${window.RPS_Admin.formatDate(l.created_at)}
+            </td>
+            <td>
+              <div style="font-weight:600; color:var(--admin-navy-dark); font-size:0.875rem;">
+                ${window.RPS_Admin.escapeHtml(l.actor_name || 'Administrator')}
+              </div>
+              <div style="font-size:0.75rem; color:#64748b; font-weight:normal;">
+                ${window.RPS_Admin.escapeHtml(l.actor_email || '')}
+              </div>
+            </td>
+            <td>
+              <span class="admin-badge ${l.actor_role === 'super_admin' ? 'admin-badge--warning' : 'admin-badge--info'}" style="font-size:0.75rem;">
+                ${l.actor_role === 'super_admin' ? 'Super Admin' : 'Admin'}
+              </span>
+            </td>
+            <td>
+              <code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.8rem;">
+                ${window.RPS_Admin.escapeHtml(l.module || l.resource_type || 'general')}
+              </code>
+            </td>
+            <td>
+              <span class="audit-badge ${actionBadgeClass}">
+                ${window.RPS_Admin.escapeHtml(l.action)}
+              </span>
+            </td>
+            <td>
+              <strong>${window.RPS_Admin.escapeHtml(l.field_name || l.resource_id || '-')}</strong>
+            </td>
+            <td style="max-width:280px; font-size:0.825rem;">
+              ${renderDiffSummary(l)}
+            </td>
+            <td style="text-align:right; white-space:nowrap;">
+              <button onclick="viewDetails('${l.id}')" class="admin-btn admin-btn--outline admin-btn--sm" title="View Full Details">
+                🔍
+              </button>
+              ${canRestore ? `
+                <button onclick="initiateRestore('${l.id}')" class="admin-btn admin-btn--secondary admin-btn--sm" style="margin-left:4px;" title="Restore Previous Value">
+                  ⏪ Restore
+                </button>
+              ` : ''}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderDiffSummary(l) {
+      if (l.old_value !== null && l.new_value !== null) {
+        return `
+          <div style="color:#dc2626; text-decoration:line-through; font-size:0.75rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${window.RPS_Admin.escapeHtml(l.old_value)}</div>
+          <div style="color:#16a34a; font-weight:600; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${window.RPS_Admin.escapeHtml(l.new_value)}</div>
+        `;
+      } else if (l.new_value !== null) {
+        return `<div style="color:#16a34a; font-weight:600; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">+ ${window.RPS_Admin.escapeHtml(l.new_value)}</div>`;
+      } else if (l.old_value !== null) {
+        return `<div style="color:#dc2626; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">- ${window.RPS_Admin.escapeHtml(l.old_value)}</div>`;
+      }
+      return `<span style="color:#64748b; font-size:0.8rem;">${window.RPS_Admin.escapeHtml(l.details || '-')}</span>`;
+    }
+
+    function getActionBadgeClass(action) {
+      if (!action) return 'audit-badge--auth';
+      const a = action.toUpperCase();
+      if (a === 'CREATE' || a === 'USER_CREATED') return 'audit-badge--create';
+      if (a === 'UPDATE' || a === 'USER_ENABLED') return 'audit-badge--update';
+      if (a === 'DELETE' || a === 'USER_DELETED' || a === 'USER_DISABLED') return 'audit-badge--delete';
+      if (a === 'RESTORE') return 'audit-badge--restore';
+      if (a === 'ROLE_CHANGE') return 'audit-badge--role';
+      return 'audit-badge--auth';
+    }
+
+    window.viewDetails = function(id) {
+      const log = activeLogs.find(l => String(l.id) === String(id));
+      if (!log) return;
+      document.getElementById('details-payload').textContent = JSON.stringify(log, null, 2);
+      document.getElementById('details-modal').style.display = 'flex';
+    };
+
+    window.initiateRestore = async function(id) {
+      const log = activeLogs.find(l => String(l.id) === String(id));
+      if (!log) return;
+      currentRestoreAudit = log;
+
+      document.getElementById('restore-field-label').textContent = `${log.module || log.resource_type} ➔ ${log.field_name || log.record_id || 'record'}`;
+      document.getElementById('restore-old-val').textContent = log.old_value || 'None';
+      document.getElementById('restore-new-val').textContent = log.new_value || 'None';
+      const actorName = log.actor_name || (log.actor_email === 'admin@roshanipublicschool.com' ? 'Super Administrator' : (log.actor_email ? log.actor_email.split('@')[0] : 'Administrator'));
+      document.getElementById('restore-actor-email').textContent = `${actorName} (${log.actor_email || 'N/A'}) [${log.actor_role === 'super_admin' ? 'Super Admin' : 'Admin'}]`;
+      document.getElementById('restore-change-time').textContent = window.RPS_Admin.formatDate(log.created_at);
+
+      // Check for live conflict
+      const alertBox = document.getElementById('restore-conflict-alert');
+      alertBox.style.display = 'none';
+
+      if (log.module === 'school_information' || log.resource_type === 'school_information') {
+        try {
+          const currentInfo = await window.RPS_Supabase.getSchoolInformation();
+          const currentVal = log.field_name ? currentInfo[log.field_name] : null;
+          if (currentVal !== undefined && currentVal !== null && String(currentVal).trim() !== String(log.new_value).trim()) {
+            document.getElementById('restore-conflict-text').textContent = `The current live value in the database is "${currentVal}", which differs from this audit entry's recorded value "${log.new_value}". Proceeding will overwrite the current live value with "${log.old_value}".`;
+            alertBox.style.display = 'block';
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById('restore-modal').style.display = 'flex';
+    };
+  </script>
+</body>
+</html>

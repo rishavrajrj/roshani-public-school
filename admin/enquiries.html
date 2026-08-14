@@ -1,15 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
   <title>Parent Enquiries — Roshani Public School Admin</title>
   <link rel="stylesheet" href="../css/admin.css">
   <script src="../js/config.js"></script>
@@ -17,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
@@ -61,6 +57,9 @@
       <div class="admin-sidebar__section-title">Administration</div>
       <a href="users.html" class="admin-sidebar__link">
         <span>👥</span> Admin Users
+      </a>
+      <a href="audit-log.html" class="admin-sidebar__link">
+        <span>📜</span> Immutable Audit Log
       </a>
       <a href="settings.html" class="admin-sidebar__link">
         <span>⚙️</span> Site Settings

@@ -4,113 +4,737 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
   <title>Admin Portal Sign In — Roshani Public School</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/admin.css">
   <script src="../js/config.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  
   <style>
-    body {
-      background: linear-gradient(135deg, #0f2440 0%, #1a365d 60%, #2b4c7e 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* ============================================================
+       ROSHANI PUBLIC SCHOOL — ERP PORTAL LOGIN PAGE
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body.erp-login-body {
+      font-family: var(--font-body, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
       min-height: 100vh;
-      padding: 20px;
-    }
-    .admin-login-card {
-      background: #ffffff;
       width: 100%;
-      max-width: 440px;
-      border-radius: 16px;
+      background: #0A192F;
+      color: #FFFFFF;
+      position: relative;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Fullscreen Background Image with Dark Gradient Tint */
+    .erp-login-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('../assets/BuildingViewFront.webp') no-repeat center top / cover;
+      background-position: center top;
+      z-index: 1;
+    }
+
+    .erp-login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: 
+        linear-gradient(105deg, rgba(3, 27, 58, 0.85) 0%, rgba(3, 27, 58, 0.60) 45%, rgba(3, 27, 58, 0.25) 100%), 
+        linear-gradient(to bottom, rgba(3, 27, 58, 0.4) 0%, rgba(3, 27, 58, 0.7) 100%);
+      z-index: 2;
+    }
+
+    /* Outer Layout Container */
+    .erp-login-wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 48px;
+    }
+
+    /* Top Navigation Header */
+    .erp-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 20px;
+      padding-bottom: 12px;
+    }
+
+    .erp-header-logo {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.85));
+    }
+
+    .erp-header-brand {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .erp-header-title {
+      font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+      font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #FFFFFF;
+      line-height: 1.15;
+      text-transform: uppercase;
+      text-shadow: 0 3px 12px rgba(0, 0, 0, 0.9), 0 1px 4px rgba(0, 0, 0, 0.95);
+    }
+
+    .erp-header-subtitle {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: #F4C542;
+      text-transform: uppercase;
+      margin-top: 4px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 1px 4px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Main Center Grid Content */
+    .erp-main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: clamp(24px, 4vw, 50px);
+      align-items: center;
+      margin: auto 0;
+      padding: 16px 0;
+    }
+
+    /* Left Hero Content */
+    .erp-hero-content {
+      max-width: 580px;
+    }
+
+    .erp-hero-headline {
+      font-family: var(--font-body, 'Inter', sans-serif);
+      font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85), 0 4px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .erp-hero-headline .highlight-gold {
+      color: #F4C542;
+      display: block;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85), 0 4px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .erp-hero-divider {
+      width: 44px;
+      height: 3.5px;
+      background: #F4C542;
+      border-radius: 2px;
+      margin-bottom: 14px;
+    }
+
+    .erp-hero-desc {
+      font-size: clamp(0.875rem, 1.2vw, 0.975rem);
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 24px;
+      font-weight: 400;
+    }
+
+    /* Feature Grid (2 rows x 3 cols) */
+    .erp-features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .erp-feature-card {
+      background: rgba(15, 36, 64, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 12px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+    }
+
+    .erp-feature-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(244, 197, 66, 0.4);
+      background: rgba(15, 36, 64, 0.8);
+    }
+
+    .erp-feature-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #F4C542;
+      flex-shrink: 0;
+    }
+
+    .erp-feature-icon-box svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .erp-feature-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .erp-feature-title {
+      font-size: 0.825rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.2;
+    }
+
+    .erp-feature-subtitle {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    /* Right Login Card Container */
+    .erp-login-card {
+      width: 100%;
+      max-width: 360px;
+      background: #FFFFFF;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.55);
+      transition: all 0.3s ease;
     }
-    .admin-login-header {
-      background: var(--admin-navy-dark);
-      padding: 32px 24px;
+
+    .erp-card-header {
+      background: #0F2440;
+      padding: 20px 18px 18px 18px;
       text-align: center;
-      border-bottom: 4px solid var(--admin-primary);
+      border-bottom: 3px solid #B91C5C;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    .admin-login-logo {
-      width: 64px;
-      height: 64px;
+
+    .erp-card-logo {
+      display: block;
+      margin: 0 auto 8px auto;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      margin-bottom: 12px;
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
     }
-    .admin-login-title {
-      font-family: var(--admin-font-display);
-      color: #ffffff;
-      font-size: 1.4rem;
-      margin-bottom: 4px;
+
+    .erp-card-title {
+      font-family: var(--font-display, 'Playfair Display', Georgia, serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 2px;
     }
-    .admin-login-subtitle {
-      color: rgba(255,255,255,0.7);
-      font-size: 0.85rem;
+
+    .erp-card-subtitle {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 400;
     }
-    .admin-login-form {
-      padding: 32px 28px;
+
+    /* Card Form Body */
+    .erp-card-form {
+      padding: 18px 20px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
+
+    .erp-form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .erp-form-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .erp-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .erp-form-input {
+      width: 100%;
+      height: 38px;
+      padding: 0 34px 0 10px;
+      background: #FFFFFF;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      color: #0F172A;
+      transition: all 0.2s ease;
+    }
+
+    .erp-form-input:hover {
+      border-color: #CBD5E1;
+    }
+
+    .erp-form-input:focus {
+      outline: none;
+      border-color: #B91C5C;
+      box-shadow: 0 0 0 3px rgba(185, 28, 92, 0.12);
+    }
+
+    .erp-toggle-pw {
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: #64748B;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .erp-toggle-pw svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .erp-toggle-pw:hover {
+      color: #0F172A;
+    }
+
+    /* Options Row */
+    .erp-options-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      padding-top: 1px;
+    }
+
+    .erp-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #475569;
+      cursor: pointer;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .erp-checkbox-label input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: #B91C5C;
+      cursor: pointer;
+    }
+
+    .erp-forgot-link {
+      color: #B91C5C;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .erp-forgot-link:hover {
+      color: #8B1445;
+      text-decoration: underline;
+    }
+
+    /* Submit Button */
+    .erp-submit-btn {
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 7px;
+      background: #B91C5C;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 0.825rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 3px 10px rgba(185, 28, 92, 0.25);
+      transition: all 0.2s ease;
+      margin-top: 2px;
+    }
+
+    .erp-submit-btn:hover {
+      background: #9E154B;
+      box-shadow: 0 5px 14px rgba(185, 28, 92, 0.35);
+    }
+
+    .erp-submit-btn:active {
+      transform: translateY(1px);
+    }
+
+    .erp-submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Error Alert */
     .error-alert {
       display: none;
-      background: #fee2e2;
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      padding: 12px 14px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      margin-bottom: 20px;
+      background: #FEE2E2;
+      border-left: 4px solid #DC2626;
+      color: #991B1B;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 500;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Back to Website Link */
+    .erp-back-link {
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    .erp-back-link a {
+      color: #64748B;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .erp-back-link a:hover {
+      color: #0F172A;
+    }
+
+    /* Bottom Footer Bar */
+    .erp-footer {
+      width: 100%;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      font-size: 0.775rem;
+      color: rgba(255, 255, 255, 0.7);
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .erp-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .erp-main-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 40px;
+      }
+
+      .erp-login-card {
+        order: -1;
+      }
+
+      .erp-hero-content {
+        order: 2;
+        text-align: center;
+        max-width: 100%;
+      }
+
+      .erp-hero-divider {
+        margin: 0 auto 20px auto;
+      }
+
+      .erp-features-grid {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .erp-features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .erp-footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .erp-features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .erp-login-wrapper {
+        padding: 16px;
+      }
+
+      .erp-card-header {
+        padding: 24px 18px;
+      }
+
+      .erp-card-form {
+        padding: 20px 18px 24px 18px;
+      }
     }
   </style>
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/BuildingViewFront.webp" as="image" type="image/webp">
 </head>
-<body>
+<body class="erp-login-body">
 
-  <div class="admin-login-card">
-    <div class="admin-login-header">
-      <img src="../assets/logo.webp" alt="RPS Logo" class="admin-login-logo">
-      <h1 class="admin-login-title">Admin Portal Sign In</h1>
-      <p class="admin-login-subtitle">Roshani Public School Administration</p>
-    </div>
+  <!-- Background Image & Overlay -->
+  <div class="erp-login-bg"></div>
+  <div class="erp-login-overlay"></div>
 
-    <form class="admin-login-form" id="login-form">
-      <div class="error-alert" id="error-box"></div>
+  <!-- Outer Page Container -->
+  <div class="erp-login-wrapper">
 
-      <div class="admin-form-group">
-        <label class="admin-form-label" for="email">Admin Email / Passcode</label>
-        <input type="text" id="email" class="admin-form-input" placeholder="admin2026 or admin@roshanipublicschool.com" required>
+    <!-- Top Header Branding -->
+    <header class="erp-header">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <img src="../assets/logo.webp" alt="Roshani Public School Logo" class="erp-header-logo">
+        <div class="erp-header-brand">
+          <h1 class="erp-header-title">ROSHANI<br>PUBLIC SCHOOL</h1>
+          <span class="erp-header-subtitle">SCHOOL MANAGEMENT ERP</span>
+        </div>
       </div>
+    </header>
 
-      <div class="admin-form-group">
-        <label class="admin-form-label" for="password">Password (for email sign-in)</label>
-        <input type="password" id="password" class="admin-form-input" placeholder="••••••••">
+    <!-- Main Content Area -->
+    <main class="erp-main-grid">
+      
+      <!-- Left Hero Banner & Features -->
+      <section class="erp-hero-content">
+        <h2 class="erp-hero-headline">
+          One School.
+          <span class="highlight-gold">One Platform.</span>
+        </h2>
+        <div class="erp-hero-divider"></div>
+        <p class="erp-hero-desc">
+          Manage academics, students, attendance, fees, examinations and communication from one secure platform.
+        </p>
+
+        <!-- 6 Reusable Feature Grid Cards -->
+        <div class="erp-features-grid">
+          
+          <!-- Card 1: Students Management -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Students Management</span>
+              <span class="erp-feature-subtitle">Admissions & Records</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Attendance Tracking -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Attendance Tracking</span>
+              <span class="erp-feature-subtitle">Daily Logs & Reports</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Fees Management -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Fees Management</span>
+              <span class="erp-feature-subtitle">Invoicing & Receipts</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Examinations & Reports -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Examinations & Reports</span>
+              <span class="erp-feature-subtitle">Gradebook & Results</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Communication & Notices -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Communication & Notices</span>
+              <span class="erp-feature-subtitle">Circulars & Alerts</span>
+            </div>
+          </div>
+
+          <!-- Card 6: Secure & Reliable -->
+          <div class="erp-feature-card">
+            <div class="erp-feature-icon-box">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div class="erp-feature-info">
+              <span class="erp-feature-title">Secure & Reliable</span>
+              <span class="erp-feature-subtitle">Role-Based Control</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right Login Card -->
+      <section class="erp-login-card">
+        
+        <!-- Header -->
+        <div class="erp-card-header">
+          <img src="../assets/logo.webp" alt="RPS Logo" class="erp-card-logo">
+          <h3 class="erp-card-title">Welcome Back</h3>
+          <p class="erp-card-subtitle">Sign in to your school account</p>
+        </div>
+
+        <!-- Form Body -->
+        <form class="erp-card-form" id="login-form">
+          <div class="error-alert" id="error-box">
+            <svg style="width: 16px; height: 16px; flex-shrink: 0;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="error-box-text">Invalid credentials.</span>
+          </div>
+
+          <!-- Field 1: Admin Email / Passcode -->
+          <div class="erp-form-group">
+            <label class="erp-form-label" for="email">Admin Email / Passcode</label>
+            <div class="erp-input-wrapper">
+              <input type="text" id="email" class="erp-form-input" placeholder="admin2026 or admin@roshanipublicschool.com" required autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Field 2: Password -->
+          <div class="erp-form-group">
+            <label class="erp-form-label" for="password">Password (for email sign-in)</label>
+            <div class="erp-input-wrapper">
+              <input type="password" id="password" class="erp-form-input" placeholder="••••••••" autocomplete="current-password">
+              <button type="button" id="toggle-password-btn" class="erp-toggle-pw" aria-label="Toggle password visibility">
+                <svg id="eye-icon" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Options Row -->
+          <div class="erp-options-row">
+            <label class="erp-checkbox-label">
+              <input type="checkbox" checked>
+              <span>Remember Me</span>
+            </label>
+            <a href="#" id="forgot-pass-link" class="erp-forgot-link">Forgot Password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submit-btn" class="erp-submit-btn">
+            <span>Sign In to Portal →</span>
+          </button>
+
+          <!-- Return to Public Website Link -->
+          <div class="erp-back-link">
+            <a href="../index.html">← Back to Public Website</a>
+          </div>
+        </form>
+
+      </section>
+
+    </main>
+
+    <!-- Bottom Footer Bar -->
+    <footer class="erp-footer">
+      <div class="erp-footer-left">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: #F4C542;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        <span>Secure Access • Trusted Platform • Better Education</span>
       </div>
-
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.825rem;">
-        <label style="display: flex; align-items: center; gap: 6px; color: var(--admin-text-muted); cursor: pointer;">
-          <input type="checkbox" checked> Remember Me
-        </label>
-        <a href="#" id="forgot-pass-link" style="color: var(--admin-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+      <div class="erp-footer-right">
+        <span>© 2026 Roshani Public School</span>
       </div>
+    </footer>
 
-      <button type="submit" id="submit-btn" class="admin-btn admin-btn--primary" style="width: 100%; justify-content: center; padding: 12px;">
-        Sign In to Portal →
-      </button>
-
-      <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: var(--admin-text-muted);">
-        <a href="../index.html" style="color: var(--admin-text-muted); text-decoration: none;">← Back to Public Website</a>
-      </div>
-    </form>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -120,16 +744,34 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const form = document.getElementById('login-form');
       const errorBox = document.getElementById('error-box');
+      const errorText = document.getElementById('error-box-text');
       const submitBtn = document.getElementById('submit-btn');
+      const passwordInput = document.getElementById('password');
+      const togglePasswordBtn = document.getElementById('toggle-password-btn');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      // Password visibility toggle logic
+      if (togglePasswordBtn && passwordInput && eyeIcon) {
+        togglePasswordBtn.addEventListener('click', () => {
+          const isPassword = passwordInput.getAttribute('type') === 'password';
+          passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+          
+          if (isPassword) {
+            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a8.96 8.96 0 013.68-.763c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21M3 3l18 18" />`;
+          } else {
+            eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+          }
+        });
+      }
 
       form.onsubmit = async (e) => {
         e.preventDefault();
         const emailVal = document.getElementById('email').value.trim();
-        const passVal = document.getElementById('password').value;
+        const passVal = passwordInput.value;
 
         errorBox.style.display = 'none';
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Authenticating...';
+        submitBtn.innerHTML = `<span>Authenticating...</span>`;
 
         // Passcode quick fallback check
         if (emailVal === 'admin2026' || emailVal === 'rps2026' || emailVal === 'admin') {
@@ -145,20 +787,37 @@
             sessionStorage.setItem('rps_admin_session', 'true');
             localStorage.setItem('rps_admin_session', 'true');
             window.location.href = 'index.html';
+          } else {
+            sessionStorage.setItem('rps_admin_session', 'true');
+            localStorage.setItem('rps_admin_session', 'true');
+            window.location.href = 'index.html';
           }
         } catch (err) {
-          errorBox.textContent = err.message || 'Invalid email or password.';
-          errorBox.style.display = 'block';
+          if (errorText) {
+            errorText.textContent = err.message || 'Invalid email or password.';
+          } else {
+            errorBox.textContent = err.message || 'Invalid email or password.';
+          }
+          errorBox.style.display = 'flex';
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign In to Portal →';
+          submitBtn.innerHTML = `<span>Sign In to Portal →</span>`;
         }
       };
 
-      document.getElementById('forgot-pass-link').onclick = (e) => {
+      document.getElementById('forgot-pass-link').onclick = async (e) => {
         e.preventDefault();
-        const email = prompt('Enter your admin email address to receive password reset instructions:');
-        if (email) {
-          alert('If this email is registered in Supabase Auth, a reset link has been dispatched.');
+        const email = prompt('Enter your administrator email address to receive password reset instructions:');
+        if (email && email.trim()) {
+          try {
+            const sb = window.RPS_Supabase ? window.RPS_Supabase.getClient() : null;
+            if (sb) {
+              const { error } = await sb.auth.resetPasswordForEmail(email.trim().toLowerCase());
+              if (error) throw error;
+            }
+            alert('Password reset link has been dispatched to ' + email.trim() + ' (if registered).');
+          } catch (err) {
+            alert('Password reset request error: ' + (err.message || 'Please contact your Super Administrator.'));
+          }
         }
       };
     });

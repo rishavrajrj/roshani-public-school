@@ -1,23 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
-  <title>Admin User & Role Management — Roshani Public School Admin</title>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <title>Admin User Management — Roshani Public School Admin</title>
   <link rel="stylesheet" href="../css/admin.css">
   <script src="../js/config.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
 </head>
 <body class="admin-body">
 
@@ -62,6 +58,9 @@
       <a href="users.html" class="admin-sidebar__link is-active">
         <span>👥</span> Admin Users
       </a>
+      <a href="audit-log.html" class="admin-sidebar__link">
+        <span>📜</span> Immutable Audit Log
+      </a>
       <a href="settings.html" class="admin-sidebar__link">
         <span>⚙️</span> Site Settings
       </a>
@@ -76,10 +75,10 @@
     </nav>
 
     <div class="admin-sidebar__footer">
-      <div class="admin-sidebar__user-avatar">A</div>
+      <div class="admin-sidebar__user-avatar" id="sidebar-user-avatar">A</div>
       <div>
-        <div class="admin-sidebar__user-name">Administrator</div>
-        <div class="admin-sidebar__user-role">Super Admin</div>
+        <div class="admin-sidebar__user-name" id="sidebar-user-name">Administrator</div>
+        <div class="admin-sidebar__user-role" id="sidebar-user-role-badge">Super Admin</div>
       </div>
     </div>
   </aside>
@@ -88,20 +87,39 @@
     <header class="admin-topbar">
       <div style="display: flex; align-items: center; gap: 16px;">
         <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
-        <h1 class="admin-topbar__title">👥 Admin User & Role Management</h1>
+        <h1 class="admin-topbar__title">👥 Administrator Accounts & Authorization</h1>
       </div>
 
       <div class="admin-topbar__actions">
         <button id="create-user-btn" class="admin-btn admin-btn--primary">
-          + Add New Administrator
+          + Create Administrator
         </button>
       </div>
     </header>
 
     <section class="admin-content">
+
+      <!-- ROLE ARCHITECTURE NOTICE -->
+      <div style="background:#ffffff; border:1px solid var(--admin-border-color); border-radius:12px; padding:18px 22px; margin-bottom:24px; box-shadow:var(--admin-shadow-sm); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h3 style="font-size:1.05rem; font-weight:800; color:var(--admin-navy-dark); margin-bottom:4px;">
+            Two-Tier Authority Model
+          </h3>
+          <p style="font-size:0.85rem; color:var(--admin-text-muted); line-height:1.4;">
+            <strong>Super Admin</strong> maintains full system authority and user management. <strong>Admin</strong> has operational control over all school information, notices, events, and gallery with immutable audit logging.
+          </p>
+        </div>
+        <a href="audit-log.html" class="admin-btn admin-btn--outline admin-btn--sm">
+          View Complete Audit Trail →
+        </a>
+      </div>
+
       <div class="admin-panel">
         <div class="admin-panel__header">
-          <h2 class="admin-panel__title">Authorized Administrators</h2>
+          <div>
+            <h2 class="admin-panel__title">Authorized Administrators</h2>
+            <div class="admin-panel__meta">Super Admin accounts and Operational Administrators</div>
+          </div>
         </div>
 
         <div class="admin-table-container">
@@ -111,7 +129,7 @@
                 <th>Admin Name</th>
                 <th>Email Address</th>
                 <th>Role</th>
-                <th>Status</th>
+                <th>Account Status</th>
                 <th>Created Date</th>
                 <th style="text-align: right;">Actions</th>
               </tr>
@@ -125,11 +143,11 @@
     </section>
   </main>
 
-  <!-- ADD USER MODAL -->
+  <!-- ADD ADMIN MODAL -->
   <div id="user-modal" class="modal-backdrop" style="display:none;">
     <div class="modal-dialog" style="background:#fff; width:100%; max-width:520px; border-radius:14px; padding:28px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--admin-primary); padding-bottom:12px; margin-bottom:20px;">
-        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Add New Admin User</h3>
+        <h3 style="font-family:var(--admin-font-display); color:var(--admin-navy-dark);">Create Administrator Account</h3>
         <button id="modal-close-btn" style="background:none; border:none; font-size:24px; cursor:pointer;">&times;</button>
       </div>
 
@@ -141,20 +159,35 @@
 
         <div class="admin-form-group">
           <label class="admin-form-label" for="form-email">Admin Email *</label>
-          <input type="email" id="form-email" class="admin-form-input" placeholder="admin@roshanipublicschool.com" required>
+          <input type="email" id="form-email" class="admin-form-input" placeholder="staff@roshanipublicschool.com" required>
         </div>
 
         <div class="admin-form-group">
-          <label class="admin-form-label" for="form-role">Assigned Role</label>
-          <select id="form-role" class="admin-form-select">
-            <option value="content_admin">Content Admin (Notices, Events, Gallery, Docs)</option>
-            <option value="super_admin">Super Admin (Full Administrative & User Access)</option>
-          </select>
+          <label class="admin-form-label" for="form-password">Login Password *</label>
+          <div style="position:relative; display:flex; align-items:center;">
+            <input type="password" id="form-password" class="admin-form-input" placeholder="Set login password (min. 6 characters)" minlength="6" required style="padding-right:44px; width:100%;">
+            <button type="button" id="modal-toggle-pwd" style="position:absolute; right:10px; background:none; border:none; color:var(--admin-text-muted); cursor:pointer; font-size:1rem; padding:4px;" title="Toggle password visibility">👁️</button>
+          </div>
+          <small style="color:var(--admin-text-muted); font-size:0.775rem; margin-top:4px; display:block;">
+            The new administrator will use this email and password to log in at the Admin Portal.
+          </small>
+        </div>
+
+        <div class="admin-form-group">
+          <label class="admin-form-label">Assigned Role</label>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:8px; font-size:0.875rem; color:var(--admin-navy-dark); font-weight:600; display:flex; align-items:center; gap:8px;">
+            <span class="admin-badge admin-badge--info">Admin</span>
+            <span>Operational Administrator (Full School CMS Access)</span>
+          </div>
+          <input type="hidden" id="form-role" value="admin">
+          <small style="color:var(--admin-text-muted); font-size:0.775rem; margin-top:4px; display:block;">
+            Admins have full operational access to school information, notices, events, and gallery.
+          </small>
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:24px;">
           <button type="button" id="modal-cancel-btn" class="admin-btn admin-btn--secondary">Cancel</button>
-          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Register Admin</button>
+          <button type="submit" id="modal-save-btn" class="admin-btn admin-btn--primary">Create Admin Account</button>
         </div>
       </form>
     </div>
@@ -165,16 +198,30 @@
   <script src="../js/admin-app.js"></script>
   <script>
     let allProfiles = [];
+    let currentAuthUser = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       // Require Super Admin access
-      await window.RPS_Admin.checkAuth(true);
+      const auth = await window.RPS_Admin.checkAuth(true);
+      if (!auth) return;
+      currentAuthUser = auth.profile;
+
       loadProfiles();
 
       document.getElementById('create-user-btn').onclick = openModal;
       document.getElementById('modal-close-btn').onclick = closeModal;
       document.getElementById('modal-cancel-btn').onclick = closeModal;
       document.getElementById('user-form').onsubmit = handleAddUser;
+
+      const pwdToggle = document.getElementById('modal-toggle-pwd');
+      const pwdInput = document.getElementById('form-password');
+      if (pwdToggle && pwdInput) {
+        pwdToggle.onclick = () => {
+          const isPwd = pwdInput.type === 'password';
+          pwdInput.type = isPwd ? 'text' : 'password';
+          pwdToggle.textContent = isPwd ? '🙈' : '👁️';
+        };
+      }
     });
 
     async function loadProfiles() {
@@ -191,52 +238,93 @@
     function renderTable() {
       const tbody = document.getElementById('users-tbody');
       if (!allProfiles || allProfiles.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td style="font-weight:600; color:var(--admin-navy-dark);">Primary Super Admin</td>
-            <td>admin@roshanipublicschool.com</td>
-            <td><span class="admin-badge admin-badge--purple">Super Admin</span></td>
-            <td><span class="admin-badge admin-badge--success">Active</span></td>
-            <td>2026-08-10</td>
-            <td style="text-align:right;">—</td>
-          </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">No administrative profiles found.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = allProfiles.map(p => `
-        <tr>
-          <td style="font-weight:600; color:var(--admin-navy-dark);">${window.RPS_Admin.escapeHtml(p.name)}</td>
-          <td>${window.RPS_Admin.escapeHtml(p.email)}</td>
-          <td>${p.role === 'super_admin' ? '<span class="admin-badge admin-badge--purple">Super Admin</span>' : '<span class="admin-badge admin-badge--info">Content Admin</span>'}</td>
-          <td>${p.is_active !== false ? '<span class="admin-badge admin-badge--success">Active</span>' : '<span class="admin-badge admin-badge--danger">Disabled</span>'}</td>
-          <td>${window.RPS_Admin.formatDate(p.created_at)}</td>
-          <td style="text-align:right;">
-            <button onclick="toggleRole('${p.id}', '${p.role}')" class="admin-btn admin-btn--outline admin-btn--sm">Change Role</button>
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = allProfiles.map(p => {
+        const isSuperAdmin = p.role === 'super_admin';
+        const isSelf = currentAuthUser && currentAuthUser.id === p.id;
+        const isActive = p.is_active !== false && p.status !== 'disabled';
+
+        return `
+          <tr>
+            <td style="font-weight:600; color:var(--admin-navy-dark);">
+              ${window.RPS_Admin.escapeHtml(p.full_name || p.name || 'Admin User')}
+              ${isSelf ? '<span style="font-size:0.75rem; color:#d97706; font-weight:700; margin-left:6px;">(You)</span>' : ''}
+            </td>
+            <td>${window.RPS_Admin.escapeHtml(p.email)}</td>
+            <td>
+              ${isSuperAdmin ? 
+                '<span class="admin-badge admin-badge--warning" style="font-weight:700;">Super Admin</span>' : 
+                '<span class="admin-badge admin-badge--info">Admin</span>'
+              }
+            </td>
+            <td>
+              ${isActive ? 
+                '<span class="admin-badge admin-badge--success">Active</span>' : 
+                '<span class="admin-badge admin-badge--danger">Disabled</span>'
+              }
+            </td>
+            <td>${window.RPS_Admin.formatDate(p.created_at)}</td>
+            <td style="text-align:right; white-space:nowrap;">
+              ${isSelf ? `
+                <span style="font-size:0.8rem; color:var(--admin-text-muted); font-style:italic;">Protected Account</span>
+              ` : `
+                <button onclick="toggleActive('${p.id}', ${isActive})" class="admin-btn admin-btn--outline admin-btn--sm" style="margin-right:4px;">
+                  ${isActive ? 'Disable' : 'Enable'}
+                </button>
+                <button onclick="deleteAdmin('${p.id}', '${window.RPS_Admin.escapeHtml(p.email)}')" class="admin-btn admin-btn--outline admin-btn--sm" style="color:#dc2626; border-color:#fca5a5;">
+                  Delete
+                </button>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function openModal() {
       document.getElementById('user-form').reset();
+      const pwdInput = document.getElementById('form-password');
+      const pwdToggle = document.getElementById('modal-toggle-pwd');
+      if (pwdInput) pwdInput.type = 'password';
+      if (pwdToggle) pwdToggle.textContent = '👁️';
       document.getElementById('user-modal').style.display = 'flex';
     }
 
     function closeModal() {
       document.getElementById('user-modal').style.display = 'none';
+      document.getElementById('user-form').reset();
     }
 
-    async function toggleRole(id, currentRole) {
-      const newRole = currentRole === 'super_admin' ? 'content_admin' : 'super_admin';
-      if (!confirm(`Change admin role to ${newRole}?`)) return;
+    async function toggleActive(id, currentlyActive) {
+      const targetUser = allProfiles.find(p => p.id === id);
+      const actionLabel = currentlyActive ? 'disable' : 'enable';
+      
+      if (!confirm(`Are you sure you want to ${actionLabel} account "${targetUser?.email}"?`)) return;
+
       try {
-        await window.RPS_Supabase.updateProfileAdmin(id, { role: newRole });
-        window.RPS_Admin.showToast(`Admin role updated to ${newRole}`);
-        window.RPS_Admin.logActivity('Change Admin Role', 'profiles', id, newRole);
+        await window.RPS_Supabase.updateProfileAdmin(id, {
+          is_active: !currentlyActive,
+          status: currentlyActive ? 'disabled' : 'active'
+        });
+        window.RPS_Admin.showToast(`Account successfully ${currentlyActive ? 'disabled' : 'enabled'}.`);
         loadProfiles();
       } catch (err) {
-        window.RPS_Admin.showToast(err.message || 'Failed to update role', 'error');
+        window.RPS_Admin.showToast(err.message || 'Action failed', 'error');
+      }
+    }
+
+    async function deleteAdmin(id, userEmail) {
+      if (!confirm(`Delete administrator account "${userEmail}"?\n\nThis action cannot be undone.`)) return;
+
+      try {
+        await window.RPS_Supabase.deleteAdminProfile(id, userEmail);
+        window.RPS_Admin.showToast(`Administrator account "${userEmail}" deleted.`);
+        loadProfiles();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to delete user', 'error');
       }
     }
 
@@ -244,29 +332,39 @@
       e.preventDefault();
       const saveBtn = document.getElementById('modal-save-btn');
       saveBtn.disabled = true;
+      saveBtn.textContent = 'Creating Account...';
 
       const name = document.getElementById('form-name').value.trim();
       const email = document.getElementById('form-email').value.trim();
-      const role = document.getElementById('form-role').value;
+      const password = document.getElementById('form-password').value;
+
+      if (!password || password.length < 6) {
+        window.RPS_Admin.showToast('Password must be at least 6 characters.', 'error');
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Create Admin Account';
+        return;
+      }
 
       try {
         await window.RPS_Supabase.createAdminProfile({
-          name,
-          email,
-          role,
+          full_name: name,
+          email: email,
+          password: password,
+          role: 'admin',
           is_active: true,
-          created_at: new Date().toISOString()
+          status: 'active'
         });
-        window.RPS_Admin.showToast('Admin user registered successfully!');
-        window.RPS_Admin.logActivity('Add Admin User', 'profiles', null, email);
+        window.RPS_Admin.showToast('Administrator registered successfully! They can now log in with their credentials.');
         closeModal();
         loadProfiles();
       } catch (err) {
         window.RPS_Admin.showToast(err.message || 'Failed to register admin', 'error');
       } finally {
         saveBtn.disabled = false;
+        saveBtn.textContent = 'Create Admin Account';
       }
     }
   </script>
 </body>
 </html>
+

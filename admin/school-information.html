@@ -1,15 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Vercel Analytics & Speed Insights -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script defer src="../js/vercel-analytics.js"></script>
+  <link rel="icon" type="image/webp" href="../assets/logo.webp">
   <title>School Information & Principal Profile — Roshani Public School Admin</title>
   <link rel="stylesheet" href="../css/admin.css">
   <script src="../js/config.js"></script>
@@ -17,16 +13,586 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700&display=swap" rel="stylesheet">
-  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="preload" href="../assets/logo.webp" as="image" type="image/webp">
+
+  <style>
+    /* ==========================================================================
+       ROSHANI PUBLIC SCHOOL — SCHOOL INFORMATION CMS REDESIGN STYLES
+       ========================================================================== */
+    
+    /* Zero horizontal page overflow guarantee */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .admin-main {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .admin-content {
+      max-width: 1400px;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    /* Redesigned Header */
+    .cms-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--admin-border-color);
+    }
+
+    .cms-header__brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .cms-header__title {
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      font-weight: 800;
+      color: var(--admin-navy-dark);
+      line-height: 1.2;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .cms-header__subtitle {
+      font-size: 0.85rem;
+      color: var(--admin-text-muted);
+      line-height: 1.45;
+    }
+
+    .cms-header__actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Redesigned Access / Permission Bar */
+    .cms-permission-card {
+      background: linear-gradient(135deg, #0f2440 0%, #1a365d 60%, #1e3a8a 100%);
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: #ffffff;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 14px rgba(15, 36, 64, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .cms-permission-card__left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .cms-permission-card__label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      color: #ffffff;
+    }
+
+    .cms-permission-card__select {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 7px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .cms-permission-card__select option {
+      background: #0f2440;
+      color: #ffffff;
+    }
+
+    .cms-permission-card__info {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+      margin-left: auto;
+      word-break: break-word;
+    }
+
+    /* Redesigned Section Navigation Ribbon */
+    .cms-section-nav {
+      display: flex;
+      gap: 8px;
+      background: #ffffff;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--admin-border-color);
+      margin-bottom: 24px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cms-section-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cms-section-nav__link {
+      flex-shrink: 0;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #475569;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cms-section-nav__link:hover {
+      background: #f1f5f9;
+      color: var(--admin-navy-dark);
+      border-color: #cbd5e1;
+    }
+
+    .cms-section-nav__link.is-active {
+      background: var(--admin-primary);
+      color: #ffffff;
+      border-color: var(--admin-primary);
+      box-shadow: 0 2px 8px rgba(185, 28, 92, 0.25);
+    }
+
+    /* Section Cards */
+    .cms-panel {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid var(--admin-border-color);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+      padding: 24px 28px;
+      margin-bottom: 26px;
+      min-width: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cms-panel__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      min-width: 0;
+    }
+
+    .cms-panel__title-wrap {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .cms-panel__title {
+      font-family: var(--admin-font-display);
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: var(--admin-navy-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .cms-panel__subtitle {
+      font-size: 0.8rem;
+      color: var(--admin-text-muted);
+      line-height: 1.45;
+    }
+
+    .cms-panel__meta {
+      font-size: 0.775rem;
+      color: #94a3b8;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* Protected Banner */
+    .cms-banner-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      border-left: 4px solid var(--admin-danger);
+      color: #991b1b;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin-bottom: 20px;
+      min-width: 0;
+    }
+
+    .cms-banner-notice__icon {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .cms-banner-notice__text {
+      flex: 1;
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    /* Grid Layouts */
+    .cms-grid-identity {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 26px;
+      margin-bottom: 20px;
+      min-width: 0;
+    }
+
+    .cms-grid-principal {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 26px;
+      min-width: 0;
+    }
+
+    .cms-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      min-width: 0;
+    }
+
+    /* Form Fields & Controls */
+    .cms-form-group {
+      margin-bottom: 16px;
+      min-width: 0;
+    }
+
+    .cms-label-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .cms-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cms-input,
+    .cms-textarea {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1e293b;
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .cms-input:focus,
+    .cms-textarea:focus {
+      border-color: var(--admin-primary);
+      box-shadow: 0 0 0 3px rgba(185, 28, 92, 0.12);
+    }
+
+    .cms-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    .cms-counter {
+      font-size: 0.725rem;
+      font-weight: 600;
+      color: #94a3b8;
+      background: #f8fafc;
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .cms-counter.is-near-limit {
+      color: var(--admin-warning);
+      border-color: #fed7aa;
+      background: #fff7ed;
+    }
+
+    .cms-counter.is-at-limit {
+      color: var(--admin-danger);
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    /* Media / Photo Cards */
+    .cms-photo-card {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-width: 0;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .cms-photo-card:hover {
+      border-color: var(--admin-primary);
+    }
+
+    .cms-logo-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      object-fit: contain;
+      border: 2px solid var(--admin-navy-primary);
+      background: #ffffff;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .cms-principal-preview {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--admin-primary);
+      margin-bottom: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .cms-principal-placeholder {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin-bottom: 12px;
+      border: 2px solid #cbd5e1;
+    }
+
+    .cms-photo-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .cms-photo-actions .admin-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* Panel Footer Action Bar */
+    .cms-panel__footer {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .cms-panel__footer-hint {
+      font-size: 0.775rem;
+      color: var(--admin-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Admission Highlight Card */
+    .cms-admission-banner {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .cms-admission-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: #166534;
+      font-size: 0.95rem;
+    }
+
+    .cms-status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    }
+
+    /* Responsive Adaptations */
+    @media (max-width: 992px) {
+      .cms-grid-identity,
+      .cms-grid-principal {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .cms-photo-card {
+        max-width: 320px;
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cms-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .cms-permission-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .cms-permission-card__select {
+        width: 100%;
+      }
+
+      .cms-permission-card__info {
+        margin-left: 0;
+        font-size: 0.775rem;
+      }
+
+      .cms-panel {
+        padding: 18px 16px;
+        border-radius: 12px;
+      }
+
+      .cms-panel__footer {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 12px;
+        text-align: center;
+      }
+
+      .cms-panel__footer .admin-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .cms-panel__footer-hint {
+        justify-content: center;
+      }
+
+      .cms-header__actions {
+        width: 100%;
+      }
+
+      .cms-header__actions .admin-btn {
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-content {
+        padding: 14px 10px;
+      }
+
+      .cms-panel {
+        padding: 14px 12px;
+      }
+
+      .cms-header__title {
+        font-size: 1.15rem;
+      }
+
+      .cms-input,
+      .cms-textarea {
+        font-size: 16px; /* Prevents auto-zoom jump on iOS Safari */
+        padding: 8px 10px;
+      }
+    }
+  </style>
 </head>
 <body class="admin-body">
 
+  <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <div class="admin-sidebar__header">
       <img src="../assets/logo.webp" alt="RPS Logo" class="admin-sidebar__logo">
       <div>
         <div class="admin-sidebar__title">Roshani Public</div>
-        <div class="admin-sidebar__subtitle">Admin CMS Portal</div>
+        <div class="admin-sidebar__subtitle">Admin ERP Portal</div>
       </div>
     </div>
 
@@ -62,6 +628,9 @@
       <a href="users.html" class="admin-sidebar__link">
         <span>👥</span> Admin Users
       </a>
+      <a href="audit-log.html" class="admin-sidebar__link">
+        <span>📜</span> Immutable Audit Log
+      </a>
       <a href="settings.html" class="admin-sidebar__link">
         <span>⚙️</span> Site Settings
       </a>
@@ -76,229 +645,1247 @@
     </nav>
 
     <div class="admin-sidebar__footer">
-      <div class="admin-sidebar__user-avatar">A</div>
+      <div class="admin-sidebar__user-avatar" id="sidebar-user-avatar">A</div>
       <div>
-        <div class="admin-sidebar__user-name">Administrator</div>
-        <div class="admin-sidebar__user-role">Content Admin</div>
+        <div class="admin-sidebar__user-name" id="sidebar-user-name">Administrator</div>
+        <div class="admin-sidebar__user-role" id="sidebar-user-role-badge">Super Admin</div>
       </div>
     </div>
   </aside>
 
+  <!-- MAIN LAYOUT -->
   <main class="admin-main">
+    
+    <!-- TOP NAVIGATION BAR -->
     <header class="admin-topbar">
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <button id="admin-sidebar-toggle" class="admin-topbar__toggle">☰</button>
-        <h1 class="admin-topbar__title">🏫 School Information & Principal Profile</h1>
+      <div class="admin-topbar__brand-wrap">
+        <button id="admin-sidebar-toggle" class="admin-topbar__toggle" aria-label="Toggle Navigation Menu">☰</button>
+        <h1 class="admin-topbar__title">🏫 School Information &amp; Profile</h1>
       </div>
 
       <div class="admin-topbar__actions">
-        <button id="save-info-btn" class="admin-btn admin-btn--primary">
-          💾 Save School Information
+        <span class="admin-badge admin-badge--purple" id="topbar-role-tag">🛡️ Super Admin</span>
+        <button type="button" id="export-github-json-btn" class="admin-btn admin-btn--outline admin-btn--sm" title="Download updated data/school-information.json file for GitHub repository commit">
+          📦 Export GitHub JSON Sync
         </button>
+        <a href="../index.html" target="_blank" class="admin-btn admin-btn--outline admin-btn--sm">
+          👁️ View Live Web Page
+        </a>
       </div>
     </header>
 
     <section class="admin-content">
-      <form id="school-info-form">
-        <!-- BASIC INFORMATION -->
-        <div class="admin-panel">
-          <div class="admin-panel__header">
-            <h2 class="admin-panel__title">🏢 Basic School Details</h2>
+
+      <!-- CMS PAGE HEADER -->
+      <div class="cms-header">
+        <div class="cms-header__brand">
+          <div>
+            <h2 class="cms-header__title">School Information</h2>
+            <div class="cms-header__subtitle">Manage the official identity, contact details and institutional information displayed across the school website.</div>
           </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-name">School Name</label>
-              <input type="text" id="info-name" class="admin-form-input" required>
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-tagline">Tagline / Motto</label>
-              <input type="text" id="info-tagline" class="admin-form-input">
-            </div>
+        </div>
+      </div>
+
+      <!-- INSTITUTIONAL AUDIT & ACCESS STATUS CARD -->
+      <div class="cms-permission-card" style="background: linear-gradient(135deg, #0f2440 0%, #1a365d 60%, #1e3a8a 100%);">
+        <div class="cms-permission-card__left">
+          <div class="cms-permission-card__label">
+            <span>🛡️ Institutional CMS &amp; Live Audit Trail</span>
           </div>
-          <div class="admin-form-group">
-            <label class="admin-form-label" for="info-address">Full Campus Address</label>
-            <textarea id="info-address" class="admin-form-textarea" rows="2"></textarea>
+        </div>
+        <div class="cms-permission-card__info" id="role-permissions-summary">
+          Every modification to School Identity, Contacts, and Principal details is permanently recorded in the immutable audit log.
+        </div>
+      </div>
+
+      <!-- SECTION QUICK JUMP NAVIGATION -->
+      <nav class="cms-section-nav admin-section-nav" aria-label="Quick jump section navigation">
+        <a href="#sec-identity" class="cms-section-nav__link admin-section-nav__link is-active">🏫 1. School Identity</a>
+        <a href="#sec-contact" class="cms-section-nav__link admin-section-nav__link">📞 2. Contact &amp; Operations</a>
+        <a href="#sec-principal" class="cms-section-nav__link admin-section-nav__link">👨‍🏫 3. Principal Profile</a>
+        <a href="#sec-content" class="cms-section-nav__link admin-section-nav__link">📚 4. School Content</a>
+        <a href="#sec-admissions" class="cms-section-nav__link admin-section-nav__link">🎓 5. Admission Settings</a>
+        <a href="#sec-history" class="cms-section-nav__link admin-section-nav__link">📜 6. Audit Log History</a>
+      </nav>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 1: SCHOOL IDENTITY — AUDITED -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-identity">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>🏛️ School Identity</span>
+              <span class="admin-lock-badge admin-lock-badge--super" id="identity-lock-badge" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">🛡️ Audited Institutional Information</span>
+            </h3>
+            <div class="cms-panel__subtitle">Official institutional information used across the public website, legal credentials, and certificates.</div>
+          </div>
+          <div id="identity-last-updated" class="cms-panel__meta admin-panel__meta">
+            Last Updated: Loading...
           </div>
         </div>
 
-        <!-- CONTACT NUMBERS & HOURS -->
-        <div class="admin-panel">
-          <div class="admin-panel__header">
-            <h2 class="admin-panel__title">📞 Contact Details & Hours</h2>
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;">
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-phone">Main Phone / WhatsApp</label>
-              <input type="text" id="info-phone" class="admin-form-input">
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-office-phone">Office / Landline</label>
-              <input type="text" id="info-office-phone" class="admin-form-input">
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-admission-contact">Admission Helpline</label>
-              <input type="text" id="info-admission-contact" class="admin-form-input">
-            </div>
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-email">Official School Email</label>
-              <input type="email" id="info-email" class="admin-form-input">
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-hours">Working Hours</label>
-              <input type="text" id="info-hours" class="admin-form-input" placeholder="Mon – Sat: 8:00 AM – 2:00 PM">
-            </div>
+        <!-- INSTITUTIONAL IDENTITY AUDIT NOTICE -->
+        <div class="cms-banner-notice admin-protected-banner" id="identity-protected-banner" style="background:#fffbeb; border-color:#fef3c7; color:#92400e; display:flex;">
+          <div class="cms-banner-notice__icon admin-protected-banner__icon">⚠️</div>
+          <div class="cms-banner-notice__text admin-protected-banner__text">
+            <strong>Important Institutional Information:</strong> Changes to institutional identity information (School Name, School Code, Official Email, Affiliation, and Address) are permanently recorded in the audit history and can be reviewed or restored by Super Admin.
           </div>
         </div>
 
-        <!-- PRINCIPAL PROFILE & MESSAGE -->
-        <div class="admin-panel">
-          <div class="admin-panel__header">
-            <h2 class="admin-panel__title">👨‍🏫 Principal Profile & Welcome Message</h2>
+        <form id="form-school-identity">
+          <div class="cms-grid-identity admin-grid-identity">
+            
+            <!-- OFFICIAL SCHOOL LOGO -->
+            <div class="identity-logo-col">
+              <label class="cms-label admin-form-label">Official School Logo</label>
+              <div class="cms-photo-card principal-photo-card identity-logo-card">
+                <img id="identity-logo-preview" src="../assets/logo.webp" alt="School Logo" class="cms-logo-preview principal-photo-preview identity-logo-preview">
+                <input type="file" id="identity-logo-file" accept="image/*" style="display:none;">
+                <button type="button" id="identity-logo-upload-btn" class="admin-btn admin-btn--outline admin-btn--sm identity-logo-btn">
+                  📤 Change Logo
+                </button>
+              </div>
+            </div>
+
+            <!-- NAME, CODE, EMAIL & AFFILIATION -->
+            <div class="identity-fields-col">
+              <div class="cms-grid-2 admin-grid-2">
+                <div class="cms-form-group admin-form-group" id="group-info-name">
+                  <label class="cms-label admin-form-label" for="info-name">
+                    Official School Name *
+                  </label>
+                  <input type="text" id="info-name" class="cms-input admin-form-input" required placeholder="e.g. Roshani Public School">
+                </div>
+                <div class="cms-form-group admin-form-group" id="group-info-code">
+                  <label class="cms-label admin-form-label" for="info-code">
+                    School Code / Registration No.
+                  </label>
+                  <input type="text" id="info-code" class="cms-input admin-form-input" placeholder="e.g. RPS-BR-845437">
+                </div>
+              </div>
+
+              <div class="cms-grid-2 admin-grid-2">
+                <div class="cms-form-group admin-form-group" id="group-info-email">
+                  <label class="cms-label admin-form-label" for="info-email">
+                    Official School Email *
+                  </label>
+                  <input type="email" id="info-email" class="cms-input admin-form-input" required placeholder="roshanipublicschoolturkauliya1@gmail.com">
+                </div>
+                <div class="cms-form-group admin-form-group" id="group-info-affiliation">
+                  <label class="cms-label admin-form-label" for="info-affiliation">
+                    CBSE / Board Affiliation Information
+                  </label>
+                  <input type="text" id="info-affiliation" class="cms-input admin-form-input" placeholder="e.g. CBSE Affiliated | Reg No: BSEB/2001/RPS">
+                </div>
+              </div>
+            </div>
           </div>
-          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px;">
+
+          <!-- REGISTERED CAMPUS ADDRESS -->
+          <div class="cms-form-group admin-form-group" id="group-info-address">
+            <label class="cms-label admin-form-label" for="info-address">Registered Campus &amp; Operational Address</label>
+            <textarea id="info-address" class="cms-textarea admin-form-textarea" rows="2" placeholder="Full postal campus address..."></textarea>
+          </div>
+
+          <!-- FOOTER -->
+          <div class="cms-panel__footer admin-panel__footer">
+            <div class="cms-panel__footer-hint admin-panel__meta" id="identity-status-hint">
+              🔒 Identity changes require confirmation dialog &amp; audit logging.
+            </div>
+            <button type="submit" id="save-identity-btn" class="admin-btn admin-btn--primary">
+              💾 Save School Identity
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 2: CONTACT & OPERATIONS — ADMIN EDITABLE -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-contact">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>📞 Contact &amp; Operations</span>
+              <span class="admin-lock-badge" id="contact-lock-badge">✍️ Admin Editable</span>
+            </h3>
+            <div class="cms-panel__subtitle">Official phone numbers, WhatsApp helpline, and campus opening hours.</div>
+          </div>
+          <div id="contact-last-updated" class="cms-panel__meta admin-panel__meta">
+            Last Updated: Loading...
+          </div>
+        </div>
+
+        <div class="cms-banner-notice admin-protected-banner" id="contact-protected-banner" style="display:none; background:#f1f5f9; border-color:#cbd5e1; border-left-color:#64748b; color:#334155;">
+          <div class="cms-banner-notice__icon admin-protected-banner__icon">🔒</div>
+          <div class="cms-banner-notice__text admin-protected-banner__text">
+            <strong>Restricted to Administrators:</strong> Content Managers cannot modify operational contact numbers or working hours.
+          </div>
+        </div>
+
+        <form id="form-contact-details">
+          <div class="cms-grid-2 admin-grid-contact">
+            <div class="cms-form-group admin-form-group">
+              <label class="cms-label admin-form-label" for="info-phone">Main Phone / WhatsApp *</label>
+              <input type="text" id="info-phone" class="cms-input admin-form-input" placeholder="+91 99342 34471" required>
+            </div>
+            <div class="cms-form-group admin-form-group">
+              <label class="cms-label admin-form-label" for="info-office-phone">Office / Landline</label>
+              <input type="text" id="info-office-phone" class="cms-input admin-form-input" placeholder="+91 99342 34471">
+            </div>
+            <div class="cms-form-group admin-form-group">
+              <label class="cms-label admin-form-label" for="info-admission-contact">Admission Helpline *</label>
+              <input type="text" id="info-admission-contact" class="cms-input admin-form-input" placeholder="+91 99342 34471" required>
+            </div>
+            <div class="cms-form-group admin-form-group">
+              <label class="cms-label admin-form-label" for="info-hours">Working Hours &amp; Days</label>
+              <input type="text" id="info-hours" class="cms-input admin-form-input" placeholder="Mon – Sat: 8:00 AM – 2:00 PM">
+            </div>
+          </div>
+
+          <div class="cms-panel__footer admin-panel__footer">
+            <div class="cms-panel__footer-hint admin-panel__meta">
+              ⚡ Displayed on public website header, footer, &amp; contact page.
+            </div>
+            <button type="submit" id="save-contact-btn" class="admin-btn admin-btn--primary">
+              💾 Save Contact Details
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 3: PRINCIPAL PROFILE -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-principal">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>👨‍🏫 Principal Profile</span>
+              <span class="admin-lock-badge" id="principal-lock-badge">✍️ Admin Editable</span>
+            </h3>
+            <div class="cms-panel__subtitle">Principal photograph, official name, and homepage welcome statement.</div>
+          </div>
+          <div id="principal-last-updated" class="cms-panel__meta admin-panel__meta">
+            Last Updated: Loading...
+          </div>
+        </div>
+
+        <div class="cms-banner-notice admin-protected-banner" id="principal-protected-banner" style="display:none; background:#f1f5f9; border-color:#cbd5e1; border-left-color:#64748b; color:#334155;">
+          <div class="cms-banner-notice__icon admin-protected-banner__icon">🔒</div>
+          <div class="cms-banner-notice__text admin-protected-banner__text">
+            <strong>Restricted Access:</strong> Content Managers cannot modify Principal profile information.
+          </div>
+        </div>
+
+        <form id="form-principal-profile">
+          <div class="cms-grid-principal admin-grid-principal">
+            
+            <!-- PHOTO CARD -->
+            <div class="cms-photo-card principal-photo-card">
+              <img id="principal-photo-preview" src="../assets/principal.jpg" alt="Principal Preview" class="cms-principal-preview principal-photo-preview" style="display:block;">
+              <div id="principal-photo-placeholder" class="cms-principal-placeholder principal-photo-placeholder" style="display:none;">👨‍🏫</div>
+              
+              <input type="file" id="info-principal-photo-file" accept="image/*" style="display:none;">
+              <input type="hidden" id="info-principal-photo-url">
+
+              <div class="cms-photo-actions principal-photo-actions">
+                <button type="button" id="upload-photo-btn" class="admin-btn admin-btn--outline admin-btn--sm">
+                  📷 Upload / Change Photo
+                </button>
+                <button type="button" id="remove-photo-btn" class="admin-btn admin-btn--secondary admin-btn--sm">
+                  🗑️ Remove Photo
+                </button>
+              </div>
+            </div>
+
+            <!-- NAME & WELCOME MESSAGE -->
+            <div class="principal-fields-col">
+              <div class="cms-form-group admin-form-group" id="group-principal-name">
+                <div class="cms-label-wrapper admin-form-label-wrapper">
+                  <label class="cms-label admin-form-label" for="info-principal-name">
+                    Principal Full Name
+                  </label>
+                  <span class="admin-lock-badge admin-lock-badge--super" id="principal-name-lock">🔒 Super Admin Required</span>
+                </div>
+                <input type="text" id="info-principal-name" class="cms-input admin-form-input" placeholder="e.g. Mr. Avay Kumar">
+                <small class="admin-stat-label" id="principal-name-hint" style="display:block; margin-top:4px; font-size:0.775rem; color:var(--admin-text-muted);">
+                  Principal name is an official institutional field. Updating it requires Super Admin approval.
+                </small>
+              </div>
+
+              <div class="cms-form-group admin-form-group">
+                <div class="cms-label-wrapper admin-form-label-wrapper">
+                  <label class="cms-label admin-form-label" for="info-principal-msg">Principal Welcome Message</label>
+                  <span class="cms-counter char-counter" id="principal-msg-counter">0 / 1000</span>
+                </div>
+                <textarea id="info-principal-msg" class="cms-textarea admin-form-textarea" rows="5" maxlength="1000" placeholder="Welcome message displayed on the homepage and about page..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="cms-panel__footer admin-panel__footer">
+            <div class="cms-panel__footer-hint admin-panel__meta">
+              🌟 Displayed on homepage Principal's Desk &amp; About RPS page.
+            </div>
+            <button type="submit" id="save-principal-btn" class="admin-btn admin-btn--primary">
+              💾 Save Principal Profile
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 4: SCHOOL CONTENT — ADMIN & CONTENT MANAGER EDITABLE -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-content">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>📚 School Content</span>
+              <span class="admin-lock-badge" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">✏️ Content Manager Editable</span>
+            </h3>
+            <div class="cms-panel__subtitle">Tagline, about summary, school vision, mission statement, and core values.</div>
+          </div>
+          <div id="content-last-updated" class="cms-panel__meta admin-panel__meta">
+            Last Updated: Loading...
+          </div>
+        </div>
+
+        <form id="form-school-content">
+          <div class="cms-form-group admin-form-group">
+            <div class="cms-label-wrapper admin-form-label-wrapper">
+              <label class="cms-label admin-form-label" for="info-tagline">School Tagline / Motto</label>
+              <span class="cms-counter char-counter" id="tagline-counter">0 / 150</span>
+            </div>
+            <input type="text" id="info-tagline" class="cms-input admin-form-input" maxlength="150" placeholder="e.g. Shaping Bright Futures Since 2001">
+          </div>
+
+          <div class="cms-form-group admin-form-group">
+            <div class="cms-label-wrapper admin-form-label-wrapper">
+              <label class="cms-label admin-form-label" for="info-about">About School Summary</label>
+              <span class="cms-counter char-counter" id="about-counter">0 / 800</span>
+            </div>
+            <textarea id="info-about" class="cms-textarea admin-form-textarea" rows="3" maxlength="800" placeholder="Comprehensive school summary for about page..."></textarea>
+          </div>
+
+          <div class="cms-grid-2 admin-grid-2">
+            <div class="cms-form-group admin-form-group">
+              <div class="cms-label-wrapper admin-form-label-wrapper">
+                <label class="cms-label admin-form-label" for="info-vision">School Vision</label>
+                <span class="cms-counter char-counter" id="vision-counter">0 / 500</span>
+              </div>
+              <textarea id="info-vision" class="cms-textarea admin-form-textarea" rows="3" maxlength="500" placeholder="Long-term vision..."></textarea>
+            </div>
+
+            <div class="cms-form-group admin-form-group">
+              <div class="cms-label-wrapper admin-form-label-wrapper">
+                <label class="cms-label admin-form-label" for="info-mission">School Mission</label>
+                <span class="cms-counter char-counter" id="mission-counter">0 / 500</span>
+              </div>
+              <textarea id="info-mission" class="cms-textarea admin-form-textarea" rows="3" maxlength="500" placeholder="Mission statement..."></textarea>
+            </div>
+          </div>
+
+          <div class="cms-form-group admin-form-group">
+            <div class="cms-label-wrapper admin-form-label-wrapper">
+              <label class="cms-label admin-form-label" for="info-values">Core School Values</label>
+              <span class="cms-counter char-counter" id="values-counter">0 / 400</span>
+            </div>
+            <textarea id="info-values" class="cms-textarea admin-form-textarea" rows="2" maxlength="400" placeholder="e.g. Excellence, Integrity, Innovation, Compassion, and Leadership"></textarea>
+          </div>
+
+          <div class="cms-panel__footer admin-panel__footer">
+            <div class="cms-panel__footer-hint admin-panel__meta">
+              📝 Freely editable by Content Managers &amp; Administrators.
+            </div>
+            <button type="submit" id="save-content-btn" class="admin-btn admin-btn--primary">
+              💾 Save School Content
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- SECTION 5: ADMISSION SETTINGS & POPUP -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-admissions">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>🎓 Admission &amp; Website Settings</span>
+              <span class="admin-badge admin-badge--success">Live Active</span>
+            </h3>
+            <div class="cms-panel__subtitle">Admissions banner status, session indicators, and application form dialogs.</div>
+          </div>
+        </div>
+
+        <div class="cms-admission-banner">
+          <div class="cms-admission-status">
+            <div class="cms-status-indicator"></div>
             <div>
-              <div class="admin-form-group">
-                <label class="admin-form-label" for="info-principal-name">Principal Name</label>
-                <input type="text" id="info-principal-name" class="admin-form-input">
-              </div>
-              <div class="admin-form-group">
-                <label class="admin-form-label" for="info-principal-photo">Principal Photo Upload</label>
-                <input type="file" id="info-principal-photo" accept="image/*" class="admin-form-input" style="padding:6px;">
-                <input type="hidden" id="info-principal-photo-url">
-                <div id="photo-preview" style="margin-top:8px;"></div>
-              </div>
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-principal-msg">Principal Welcome Message</label>
-              <textarea id="info-principal-msg" class="admin-form-textarea" rows="6" placeholder="Welcome message displayed on the homepage and about page..."></textarea>
+              <div>● Admissions Open for Current Academic Year</div>
+              <div style="font-size:0.8rem; font-weight:500; color:#15803d; margin-top:2px;">Academic Session: 2026–2027</div>
             </div>
           </div>
+          <a href="settings.html" class="admin-btn admin-btn--primary" style="text-decoration:none;">
+            ⚙️ Configure Admission Settings &amp; Popups ➔
+          </a>
         </div>
+      </div>
 
-        <!-- ABOUT & VISION / MISSION -->
-        <div class="admin-panel">
-          <div class="admin-panel__header">
-            <h2 class="admin-panel__title">📜 Vision, Mission & Values</h2>
+      <!-- =================================================================== -->
+      <!-- SECTION 6: AUDIT LOG & CHANGE HISTORY -->
+      <!-- =================================================================== -->
+      <div class="cms-panel admin-panel" id="sec-history">
+        <div class="cms-panel__header admin-panel__header">
+          <div class="cms-panel__title-wrap">
+            <h3 class="cms-panel__title admin-panel__title">
+              <span>📜 Audit History &amp; Institutional Change Log</span>
+              <span class="admin-badge admin-badge--purple" id="audit-count-badge">0 Entries</span>
+            </h3>
+            <div class="cms-panel__subtitle">Permanent record of all modifications to school identity, contact details, &amp; profiles.</div>
           </div>
-          <div class="admin-form-group">
-            <label class="admin-form-label" for="info-about">About School Summary</label>
-            <textarea id="info-about" class="admin-form-textarea" rows="3"></textarea>
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-vision">School Vision</label>
-              <textarea id="info-vision" class="admin-form-textarea" rows="3"></textarea>
-            </div>
-            <div class="admin-form-group">
-              <label class="admin-form-label" for="info-mission">School Mission</label>
-              <textarea id="info-mission" class="admin-form-textarea" rows="3"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; margin-bottom:40px;">
-          <button type="submit" class="admin-btn admin-btn--primary" style="padding:12px 28px;">
-            💾 Save All School Changes
+          <button type="button" id="refresh-audit-btn" class="admin-btn admin-btn--outline admin-btn--sm">
+            🔄 Refresh Log
           </button>
         </div>
-      </form>
+
+        <div class="admin-table-container">
+          <table class="admin-table audit-table">
+            <thead>
+              <tr>
+                <th style="min-width:130px;">Date &amp; Time</th>
+                <th style="min-width:110px;">Changed By</th>
+                <th style="min-width:90px;">Role</th>
+                <th style="min-width:140px;">Action / Field</th>
+                <th style="min-width:130px;">Previous Value</th>
+                <th style="min-width:130px;">New Value</th>
+              </tr>
+            </thead>
+            <tbody id="audit-log-tbody">
+              <tr>
+                <td colspan="6" style="text-align:center; padding:24px; color:var(--admin-text-muted);">
+                  Loading audit log history...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </section>
   </main>
 
+  <!-- =================================================================== -->
+  <!-- CONFIRMATION MODAL DIALOG (CRITICAL IDENTITY CHANGES) -->
+  <!-- =================================================================== -->
+  <div id="confirm-modal" class="modal-backdrop" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-dialog__header">
+        <h3 class="modal-dialog__title">
+          ⚠️ Confirm Sensitive Changes
+        </h3>
+        <button type="button" id="confirm-modal-close" class="modal-dialog__close" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="cms-banner-notice admin-protected-banner" style="margin-bottom:16px;">
+        <div class="cms-banner-notice__icon admin-protected-banner__icon">🔒</div>
+        <div class="cms-banner-notice__text admin-protected-banner__text">
+          <strong>Are you sure you want to change this official school information?</strong>
+          <br>This modification affects official school identity records, certificates, and website disclosures.
+        </div>
+      </div>
+
+      <div class="confirm-diff-box">
+        <div class="confirm-diff-box__title">
+          Proposed Modifications Summary:
+        </div>
+        <div id="confirm-diff-list" class="confirm-diff-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <p class="confirm-diff-note">
+        ℹ️ This change will be permanently logged in the audit history with your account email and timestamp.
+      </p>
+
+      <div class="modal-dialog__footer">
+        <button type="button" id="confirm-modal-cancel" class="admin-btn admin-btn--secondary">
+          Cancel
+        </button>
+        <button type="button" id="confirm-modal-submit" class="admin-btn admin-btn--danger">
+          Confirm &amp; Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/admin-app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      await window.RPS_Admin.checkAuth();
-      loadSchoolInfo();
 
-      document.getElementById('save-info-btn').onclick = () => document.getElementById('school-info-form').requestSubmit();
-      document.getElementById('school-info-form').onsubmit = handleSaveInfo;
+  <script>
+    // GLOBAL STATE
+    let currentSchoolInfo = null;
+    let currentUserProfile = null;
+    let activeRole = 'super_admin'; // Default active role simulator
+    let pendingSaveAction = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Auth Guard
+      const auth = await window.RPS_Admin.checkAuth();
+      if (auth && auth.profile) {
+        currentUserProfile = auth.profile;
+        activeRole = auth.profile.role || 'admin';
+      }
+
+      // 2. Setup Character Counters & Auto-resize
+      setupCharacterCounters();
+
+      // 3. Setup Image Upload Handlers
+      setupImageHandlers();
+
+      // 4. Setup Form Submissions & Confirmation Modal
+      setupFormSubmitHandlers();
+
+      // 5. Load Initial School Data & Audit Logs
+      await loadSchoolInfo();
+      await loadAuditLogs();
+
+      // 6. Navigation Scroll Highlight
+      setupNavScrollHighlight();
     });
 
+    // ---------------------------------------------------------------------
+    // ASSET PATH RESOLVER & AUTOMATIC RECORD POPULATION
+    // ---------------------------------------------------------------------
+    function resolveAdminAssetUrl(url, fallback = '') {
+      if (!url || typeof url !== 'string' || url.trim() === '') return fallback;
+      const trimmed = url.trim();
+      if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+        return trimmed;
+      }
+      if (trimmed.startsWith('../')) {
+        return trimmed;
+      }
+      return '../' + trimmed;
+    }
+
+    // ---------------------------------------------------------------------
+    // LOAD SCHOOL INFORMATION (AUTOMATIC PRE-FILLING)
+    // ---------------------------------------------------------------------
     async function loadSchoolInfo() {
       try {
-        if (window.RPS_Supabase) {
-          const info = await window.RPS_Supabase.getSchoolInformation();
-          if (info) {
-            document.getElementById('info-name').value = info.school_name || '';
-            document.getElementById('info-tagline').value = info.tagline || '';
-            document.getElementById('info-address').value = info.address || '';
-            document.getElementById('info-phone').value = info.phone || '';
-            document.getElementById('info-office-phone').value = info.office_phone || '';
-            document.getElementById('info-admission-contact').value = info.admission_contact || '';
-            document.getElementById('info-email').value = info.email || '';
-            document.getElementById('info-hours').value = info.office_hours || '';
-            document.getElementById('info-principal-name').value = info.principal_name || '';
-            document.getElementById('info-principal-msg').value = info.principal_message || '';
-            document.getElementById('info-principal-photo-url').value = info.principal_photo_url || '';
-            document.getElementById('info-about').value = info.about || '';
-            document.getElementById('info-vision').value = info.vision || '';
-            document.getElementById('info-mission').value = info.mission || '';
+        if (!window.RPS_Supabase) return;
+        currentSchoolInfo = await window.RPS_Supabase.getSchoolInformation() || {};
 
-            if (info.principal_photo_url) {
-              document.getElementById('photo-preview').innerHTML = `<img decoding="async" loading="lazy" src="${info.principal_photo_url}" style="width:70px; height:70px; border-radius:50%; object-fit:cover;">`;
-            }
+        // Section 1: School Identity
+        document.getElementById('info-name').value = currentSchoolInfo.school_name || currentSchoolInfo.name || 'Roshani Public School';
+        document.getElementById('info-code').value = currentSchoolInfo.school_code || currentSchoolInfo.code || 'RPS-BR-845437';
+        document.getElementById('info-email').value = currentSchoolInfo.email || 'roshanipublicschoolturkauliya1@gmail.com';
+        document.getElementById('info-affiliation').value = currentSchoolInfo.affiliation_info || currentSchoolInfo.affiliation || 'CBSE Affiliated · Est. 2001';
+        document.getElementById('info-address').value = currentSchoolInfo.address || 'Turkaulia, East Champaran, Bihar - 845437';
+        
+        // Official Logo Image Preview
+        const logoUrl = currentSchoolInfo.school_logo_url || currentSchoolInfo.logo_url || 'assets/logo.webp';
+        document.getElementById('identity-logo-preview').src = resolveAdminAssetUrl(logoUrl, '../assets/logo.webp');
+
+        // Section 2: Contact & Operations
+        document.getElementById('info-phone').value = currentSchoolInfo.phone || '+91 99342 34471';
+        document.getElementById('info-office-phone').value = currentSchoolInfo.office_phone || '+91 99342 34471';
+        document.getElementById('info-admission-contact').value = currentSchoolInfo.admission_contact || '+91 99342 34471';
+        document.getElementById('info-hours').value = currentSchoolInfo.office_hours || 'Mon – Sat: 8:00 AM – 2:00 PM';
+
+        // Section 3: Principal Profile
+        document.getElementById('info-principal-name').value = currentSchoolInfo.principal_name || 'Mr. Arun Kumar';
+        document.getElementById('info-principal-msg').value = currentSchoolInfo.principal_message || 'Welcome to Roshani Public School. Since 2001, our mission has been to nurture curiosity, foster academic brilliance, and build strong moral character in every student.';
+        
+        // Principal Photo Image Preview
+        const principalPhoto = currentSchoolInfo.principal_photo_url || 'assets/teachers.webp';
+        document.getElementById('info-principal-photo-url').value = principalPhoto;
+
+        if (principalPhoto) {
+          document.getElementById('principal-photo-preview').src = resolveAdminAssetUrl(principalPhoto, '../assets/teachers.webp');
+          document.getElementById('principal-photo-preview').style.display = 'block';
+          document.getElementById('principal-photo-placeholder').style.display = 'none';
+        } else {
+          document.getElementById('principal-photo-preview').style.display = 'none';
+          document.getElementById('principal-photo-placeholder').style.display = 'flex';
+        }
+
+        // Section 4: School Content
+        document.getElementById('info-tagline').value = currentSchoolInfo.tagline || 'Shaping Bright Futures Since 2001';
+        document.getElementById('info-about').value = currentSchoolInfo.about || 'At Roshani Public School, we strive to create an inspiring academic environment where young minds can discover their true potential, challenge their boundaries, and develop into confident, compassionate citizens.';
+        document.getElementById('info-vision').value = currentSchoolInfo.vision || "To empower every student with knowledge, character, and leadership skills for tomorrow's world.";
+        document.getElementById('info-mission').value = currentSchoolInfo.mission || 'Providing quality education through modern technology, practical experience, and strong moral values.';
+        document.getElementById('info-values').value = currentSchoolInfo.values || 'Excellence, Integrity, Innovation, Compassion, and Leadership';
+
+        // Update timestamps
+        const formattedDate = window.RPS_Admin.formatDate(currentSchoolInfo.updated_at || new Date().toISOString());
+        document.getElementById('identity-last-updated').textContent = 'Last Updated: ' + formattedDate;
+        document.getElementById('contact-last-updated').textContent = 'Last Updated: ' + formattedDate;
+        document.getElementById('principal-last-updated').textContent = 'Last Updated: ' + formattedDate;
+        document.getElementById('content-last-updated').textContent = 'Last Updated: ' + formattedDate;
+
+        // Trigger character counters updates & auto resize textareas
+        document.querySelectorAll('input[maxlength], textarea[maxlength]').forEach(el => el.dispatchEvent(new Event('input')));
+
+        // Update role permissions summary text
+        const permissionsSummary = document.getElementById('role-permissions-summary');
+        if (permissionsSummary) {
+          if (activeRole === 'super_admin') {
+            permissionsSummary.innerHTML = '✨ <strong>Super Admin Mode:</strong> Full management of School Information with user privilege controls and audit restoration.';
+          } else {
+            permissionsSummary.innerHTML = '🛡️ <strong>Administrator Mode:</strong> Full operational editing of School Identity, Contact, Principal Profile & Content. Every change is logged to the immutable ledger.';
           }
         }
       } catch (err) {
         console.error('Error loading school info:', err);
+        window.RPS_Admin.showToast('Failed to load school information', 'error');
       }
     }
 
-    async function handleSaveInfo(e) {
-      e.preventDefault();
-      const saveBtn = document.getElementById('save-info-btn');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'Saving...';
+    // ---------------------------------------------------------------------
+    // CHARACTER COUNTERS & TEXTAREA AUTO-RESIZE
+    // ---------------------------------------------------------------------
+    function setupCharacterCounters() {
+      const counters = [
+        { inputId: 'info-principal-msg', counterId: 'principal-msg-counter', max: 1000 },
+        { inputId: 'info-tagline', counterId: 'tagline-counter', max: 150 },
+        { inputId: 'info-about', counterId: 'about-counter', max: 800 },
+        { inputId: 'info-vision', counterId: 'vision-counter', max: 500 },
+        { inputId: 'info-mission', counterId: 'mission-counter', max: 500 },
+        { inputId: 'info-values', counterId: 'values-counter', max: 400 }
+      ];
 
-      const fileInput = document.getElementById('info-principal-photo');
-      let photoUrl = document.getElementById('info-principal-photo-url').value;
+      counters.forEach(({ inputId, counterId, max }) => {
+        const input = document.getElementById(inputId);
+        const counter = document.getElementById(counterId);
+        if (!input || !counter) return;
 
-      if (fileInput.files && fileInput.files[0]) {
-        try {
-          const uploadRes = await window.RPS_Supabase.uploadFile('school-images', fileInput.files[0], 'principal');
-          photoUrl = uploadRes.url;
-        } catch (uploadErr) {
-          window.RPS_Admin.showToast('Photo upload failed: ' + uploadErr.message, 'error');
-          saveBtn.disabled = false;
-          saveBtn.textContent = '💾 Save School Information';
-          return;
+        const updateCounter = () => {
+          const len = input.value ? input.value.length : 0;
+          counter.textContent = `${len} / ${max}`;
+          counter.classList.remove('is-near-limit', 'is-at-limit');
+
+          if (len >= max) {
+            counter.classList.add('is-at-limit');
+          } else if (len >= max * 0.85) {
+            counter.classList.add('is-near-limit');
+          }
+        };
+
+        input.addEventListener('input', updateCounter);
+
+        // Auto resize textarea
+        if (input.tagName.toLowerCase() === 'textarea') {
+          input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight + 2) + 'px';
+          });
         }
+      });
+    }
+
+    // ---------------------------------------------------------------------
+    // IMAGE UPLOAD & PREVIEW HANDLERS
+    // ---------------------------------------------------------------------
+    function setupImageHandlers() {
+      // Principal Photo
+      const uploadPhotoBtn = document.getElementById('upload-photo-btn');
+      const photoFileInput = document.getElementById('info-principal-photo-file');
+      const photoPreview = document.getElementById('principal-photo-preview');
+      const photoPlaceholder = document.getElementById('principal-photo-placeholder');
+      const removePhotoBtn = document.getElementById('remove-photo-btn');
+
+      if (uploadPhotoBtn) uploadPhotoBtn.onclick = () => photoFileInput.click();
+
+      if (photoFileInput) {
+        photoFileInput.onchange = (e) => {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              photoPreview.src = event.target.result;
+              photoPreview.style.display = 'block';
+              photoPlaceholder.style.display = 'none';
+              document.getElementById('info-principal-photo-url').value = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        };
       }
 
-      const payload = {
-        school_name: document.getElementById('info-name').value.trim(),
-        tagline: document.getElementById('info-tagline').value.trim(),
-        address: document.getElementById('info-address').value.trim(),
-        phone: document.getElementById('info-phone').value.trim(),
-        office_phone: document.getElementById('info-office-phone').value.trim(),
-        admission_contact: document.getElementById('info-admission-contact').value.trim(),
-        email: document.getElementById('info-email').value.trim(),
-        office_hours: document.getElementById('info-hours').value.trim(),
-        principal_name: document.getElementById('info-principal-name').value.trim(),
-        principal_message: document.getElementById('info-principal-msg').value.trim(),
-        principal_photo_url: photoUrl || null,
-        about: document.getElementById('info-about').value.trim(),
-        vision: document.getElementById('info-vision').value.trim(),
-        mission: document.getElementById('info-mission').value.trim(),
-        updated_at: new Date().toISOString()
+      if (removePhotoBtn) {
+        removePhotoBtn.onclick = () => {
+          photoFileInput.value = '';
+          document.getElementById('info-principal-photo-url').value = '';
+          photoPreview.style.display = 'none';
+          photoPlaceholder.style.display = 'flex';
+        };
+      }
+
+      // School Logo
+      const logoUploadBtn = document.getElementById('identity-logo-upload-btn');
+      const logoFileInput = document.getElementById('identity-logo-file');
+      const logoPreview = document.getElementById('identity-logo-preview');
+
+      if (logoUploadBtn) logoUploadBtn.onclick = () => logoFileInput.click();
+      if (logoFileInput) {
+        logoFileInput.onchange = (e) => {
+          if (e.target.files && e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              logoPreview.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+          }
+        };
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // FORM SUBMISSION & CONFIRMATION MODAL HANDLERS
+    // ---------------------------------------------------------------------
+    function setupFormSubmitHandlers() {
+      // Modal Controls
+      const modal = document.getElementById('confirm-modal');
+      const modalClose = document.getElementById('confirm-modal-close');
+      const modalCancel = document.getElementById('confirm-modal-cancel');
+      const modalSubmit = document.getElementById('confirm-modal-submit');
+
+      const closeModal = () => {
+        if (modal) modal.style.display = 'none';
+        pendingSaveAction = null;
       };
 
+      if (modalClose) modalClose.onclick = closeModal;
+      if (modalCancel) modalCancel.onclick = closeModal;
+
+      if (modalSubmit) {
+        modalSubmit.onclick = async () => {
+          if (pendingSaveAction) {
+            const action = pendingSaveAction;
+            closeModal();
+            await action();
+          }
+        };
+      }
+
+      // 1. SAVE SCHOOL IDENTITY
+      document.getElementById('form-school-identity').onsubmit = (e) => {
+        e.preventDefault();
+
+        // Compare diffs
+        const newName = document.getElementById('info-name').value.trim();
+        const newEmail = document.getElementById('info-email').value.trim();
+        const newCode = document.getElementById('info-code').value.trim();
+        const newAff = document.getElementById('info-affiliation').value.trim();
+        const newAddr = document.getElementById('info-address').value.trim();
+        const logoFileInput = document.getElementById('identity-logo-file');
+
+        const diffs = [];
+        if (newName !== (currentSchoolInfo.school_name || '')) diffs.push({ field: 'school_name', label: 'School Name', old: currentSchoolInfo.school_name || '', new: newName });
+        if (newEmail !== (currentSchoolInfo.email || '')) diffs.push({ field: 'email', label: 'Official Email', old: currentSchoolInfo.email || '', new: newEmail });
+        if (newCode !== (currentSchoolInfo.school_code || '')) diffs.push({ field: 'school_code', label: 'School Code', old: currentSchoolInfo.school_code || '', new: newCode });
+        if (newAff !== (currentSchoolInfo.affiliation_info || '')) diffs.push({ field: 'affiliation_info', label: 'Affiliation Info', old: currentSchoolInfo.affiliation_info || '', new: newAff });
+        if (newAddr !== (currentSchoolInfo.address || '')) diffs.push({ field: 'address', label: 'Campus Address', old: currentSchoolInfo.address || '', new: newAddr });
+        if (logoFileInput && logoFileInput.files && logoFileInput.files.length > 0) {
+          diffs.push({ field: 'school_logo_url', label: 'Official School Logo', old: currentSchoolInfo.school_logo_url || 'Logo', new: 'New Logo Uploaded' });
+        }
+
+        if (diffs.length === 0) {
+          window.RPS_Admin.showToast('No identity changes detected.');
+          return;
+        }
+
+        // Render Diff list in Confirmation Modal
+        const diffContainer = document.getElementById('confirm-diff-list');
+        if (diffContainer) {
+          diffContainer.innerHTML = diffs.map(d => `
+            <div>
+              <strong>${d.label}:</strong>
+              <span class="audit-diff-old">${window.RPS_Admin.escapeHtml(d.old || 'None')}</span> ➔ 
+              <span class="audit-diff-new">${window.RPS_Admin.escapeHtml(d.new)}</span>
+            </div>
+          `).join('');
+        }
+
+        pendingSaveAction = () => executeSaveIdentity(diffs);
+        if (modal) modal.style.display = 'flex';
+        else executeSaveIdentity(diffs);
+      };
+
+      // 2. SAVE CONTACT DETAILS
+      document.getElementById('form-contact-details').onsubmit = async (e) => {
+        e.preventDefault();
+        await executeSaveContact();
+      };
+
+      // 3. SAVE PRINCIPAL PROFILE
+      document.getElementById('form-principal-profile').onsubmit = async (e) => {
+        e.preventDefault();
+        await executeSavePrincipal();
+      };
+
+      // 4. SAVE SCHOOL CONTENT
+      document.getElementById('form-school-content').onsubmit = async (e) => {
+        e.preventDefault();
+        await executeSaveContent();
+      };
+
+      // Refresh Audit Log Button
+      const refreshBtn = document.getElementById('refresh-audit-btn');
+      if (refreshBtn) refreshBtn.onclick = loadAuditLogs;
+    }
+
+    // ---------------------------------------------------------------------
+    // EXECUTE SAVE ACTIONS
+    // ---------------------------------------------------------------------
+    async function executeSaveIdentity(diffs) {
+      const saveBtn = document.getElementById('save-identity-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Identity...';
+
       try {
+        let logoUrl = currentSchoolInfo.school_logo_url;
+        const logoFileInput = document.getElementById('identity-logo-file');
+        const logoPreview = document.getElementById('identity-logo-preview');
+
+        if (logoFileInput.files && logoFileInput.files[0]) {
+          try {
+            const uploadRes = await window.RPS_Supabase.uploadFile('school-images', logoFileInput.files[0], 'identity');
+            if (uploadRes && uploadRes.url) logoUrl = uploadRes.url;
+          } catch (uploadErr) {
+            console.warn('Storage upload fallback for logo:', uploadErr);
+            logoUrl = logoPreview.src || logoUrl;
+          }
+        }
+
+        const payload = {
+          school_name: document.getElementById('info-name').value.trim(),
+          school_code: document.getElementById('info-code').value.trim(),
+          email: document.getElementById('info-email').value.trim(),
+          affiliation_info: document.getElementById('info-affiliation').value.trim(),
+          address: document.getElementById('info-address').value.trim(),
+          school_logo_url: logoUrl || currentSchoolInfo.school_logo_url,
+          updated_at: new Date().toISOString()
+        };
+
         await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
-        window.RPS_Admin.showToast('School Information saved & updated live across public site!');
-        window.RPS_Admin.logActivity('Update School Info', 'school_information', null, payload.school_name);
-        loadSchoolInfo();
+
+        window.RPS_Admin.showToast('✅ School Identity saved & updated live!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
       } catch (err) {
-        window.RPS_Admin.showToast(err.message || 'Failed to update school info', 'error');
+        window.RPS_Admin.showToast(err.message || 'Failed to update School Identity', 'error');
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = '💾 Save School Information';
+        saveBtn.textContent = '💾 Save School Identity';
       }
+    }
+
+    async function executeSaveContact() {
+      const saveBtn = document.getElementById('save-contact-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Contact...';
+
+      try {
+        const payload = {
+          phone: document.getElementById('info-phone').value.trim(),
+          office_phone: document.getElementById('info-office-phone').value.trim(),
+          admission_contact: document.getElementById('info-admission-contact').value.trim(),
+          office_hours: document.getElementById('info-hours').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
+
+        window.RPS_Admin.showToast('✅ Contact Details & Working Hours saved!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update contact details', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save Contact Details';
+      }
+    }
+
+    async function executeSavePrincipal() {
+      const saveBtn = document.getElementById('save-principal-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Principal Profile...';
+
+      try {
+        let photoUrl = document.getElementById('info-principal-photo-url').value || currentSchoolInfo.principal_photo_url;
+        const photoFileInput = document.getElementById('info-principal-photo-file');
+        const photoPreview = document.getElementById('principal-photo-preview');
+
+        if (photoFileInput && photoFileInput.files && photoFileInput.files[0]) {
+          try {
+            const uploadRes = await window.RPS_Supabase.uploadFile('school-images', photoFileInput.files[0], 'principal');
+            if (uploadRes && uploadRes.url) {
+              photoUrl = uploadRes.url;
+            }
+          } catch (uploadErr) {
+            console.warn('Storage upload warning, using image preview data URL:', uploadErr);
+            photoUrl = photoPreview.src || photoUrl;
+          }
+        }
+
+        const payload = {
+          principal_name: document.getElementById('info-principal-name').value.trim(),
+          principal_message: document.getElementById('info-principal-msg').value.trim(),
+          principal_photo_url: photoUrl,
+          updated_at: new Date().toISOString()
+        };
+
+        await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
+
+        window.RPS_Admin.showToast('✅ Principal Profile saved successfully!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update principal profile', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save Principal Profile';
+      }
+    }
+
+    async function executeSaveContent() {
+      const saveBtn = document.getElementById('save-content-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving School Content...';
+
+      try {
+        const payload = {
+          tagline: document.getElementById('info-tagline').value.trim(),
+          about: document.getElementById('info-about').value.trim(),
+          vision: document.getElementById('info-vision').value.trim(),
+          mission: document.getElementById('info-mission').value.trim(),
+          values: document.getElementById('info-values').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        await window.RPS_Supabase.updateSchoolInformationAdmin(payload);
+
+        window.RPS_Admin.showToast('✅ School Profile & Content saved!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to save school content', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save School Content';
+      }
+    }
+
+      // Export GitHub JSON Sync Button
+      const exportBtn = document.getElementById('export-github-json-btn');
+      if (exportBtn) {
+        exportBtn.onclick = async () => {
+          const info = await window.RPS_Supabase.getSchoolInformation();
+          const jsonStr = JSON.stringify(info || window.RPS_Supabase.DEFAULT_SCHOOL_INFO, null, 2);
+          const blob = new Blob([jsonStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'school-information.json';
+          a.click();
+          URL.revokeObjectURL(url);
+          if (window.RPS_Admin && typeof window.RPS_Admin.showToast === 'function') {
+            window.RPS_Admin.showToast('📦 Downloaded data/school-information.json for GitHub commit!');
+          }
+        };
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // EXECUTE SAVE ACTIONS
+    // ---------------------------------------------------------------------
+    async function executeSaveIdentity(diffs) {
+      const saveBtn = document.getElementById('save-identity-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Identity...';
+
+      try {
+        let logoUrl = currentSchoolInfo.school_logo_url;
+        const logoFileInput = document.getElementById('identity-logo-file');
+        const logoPreview = document.getElementById('identity-logo-preview');
+
+        if (logoFileInput.files && logoFileInput.files[0]) {
+          try {
+            const uploadRes = await window.RPS_Supabase.uploadFile('school-images', logoFileInput.files[0], 'identity');
+            if (uploadRes && uploadRes.url) logoUrl = uploadRes.url;
+          } catch (uploadErr) {
+            console.warn('Storage upload fallback for logo:', uploadErr);
+            logoUrl = logoPreview.src || logoUrl;
+          }
+        }
+
+        const payload = {
+          school_name: document.getElementById('info-name').value.trim(),
+          school_code: document.getElementById('info-code').value.trim(),
+          email: document.getElementById('info-email').value.trim(),
+          affiliation_info: document.getElementById('info-affiliation').value.trim(),
+          address: document.getElementById('info-address').value.trim(),
+          school_logo_url: logoUrl || currentSchoolInfo.school_logo_url,
+          updated_at: new Date().toISOString()
+        };
+
+        // Backend security validation check
+        await window.RPS_Supabase.updateSchoolIdentityAdmin(payload, activeRole);
+
+        // Log each diff entry into audit history
+        for (const d of diffs) {
+          await window.RPS_Supabase.logActivityAdmin(
+            `Updated ${d.field}`,
+            'school_information',
+            'identity',
+            `Changed by ${currentUserProfile?.email || 'User'} (${activeRole})`,
+            d.old,
+            d.new,
+            activeRole,
+            d.field
+          );
+        }
+
+        window.RPS_Admin.showToast('✅ School Identity saved & updated live!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update School Identity', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save School Identity';
+      }
+    }
+
+    async function executeSaveContact() {
+      const saveBtn = document.getElementById('save-contact-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Contact...';
+
+      try {
+        const payload = {
+          phone: document.getElementById('info-phone').value.trim(),
+          office_phone: document.getElementById('info-office-phone').value.trim(),
+          admission_contact: document.getElementById('info-admission-contact').value.trim(),
+          office_hours: document.getElementById('info-hours').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        const diffs = [];
+        if (payload.phone !== (currentSchoolInfo.phone || '')) diffs.push({ field: 'Main Phone', old: currentSchoolInfo.phone, new: payload.phone });
+        if (payload.office_phone !== (currentSchoolInfo.office_phone || '')) diffs.push({ field: 'Office Phone', old: currentSchoolInfo.office_phone, new: payload.office_phone });
+        if (payload.admission_contact !== (currentSchoolInfo.admission_contact || '')) diffs.push({ field: 'Admission Helpline', old: currentSchoolInfo.admission_contact, new: payload.admission_contact });
+        if (payload.office_hours !== (currentSchoolInfo.office_hours || '')) diffs.push({ field: 'Working Hours', old: currentSchoolInfo.office_hours, new: payload.office_hours });
+
+        await window.RPS_Supabase.updateContactDetailsAdmin(payload, activeRole);
+
+        for (const d of diffs) {
+          await window.RPS_Supabase.logActivityAdmin(
+            `Changed ${d.field}`,
+            'school_information',
+            'contact',
+            `Administrator changed ${d.field}`,
+            d.old,
+            d.new,
+            activeRole,
+            d.field
+          );
+        }
+
+        window.RPS_Admin.showToast('✅ Contact Details & Working Hours saved!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update contact details', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save Contact Details';
+      }
+    }
+
+    async function executeSavePrincipal() {
+      const saveBtn = document.getElementById('save-principal-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving Principal Profile...';
+
+      try {
+        let photoUrl = document.getElementById('info-principal-photo-url').value || currentSchoolInfo.principal_photo_url;
+        const photoFileInput = document.getElementById('info-principal-photo-file');
+
+        if (photoFileInput.files && photoFileInput.files[0]) {
+          try {
+            const uploadRes = await window.RPS_Supabase.uploadFile('school-images', photoFileInput.files[0], 'principal');
+            if (uploadRes && uploadRes.url) {
+              photoUrl = uploadRes.url;
+            }
+          } catch (uploadErr) {
+            console.warn('Storage upload warning, using image preview data URL:', uploadErr);
+            photoUrl = photoPreview.src || photoUrl;
+          }
+        }
+
+        const payload = {
+          principal_name: document.getElementById('info-principal-name').value.trim(),
+          principal_message: document.getElementById('info-principal-msg').value.trim(),
+          principal_photo_url: photoUrl,
+          updated_at: new Date().toISOString()
+        };
+
+        const diffs = [];
+        if (payload.principal_name !== (currentSchoolInfo.principal_name || '')) diffs.push({ field: 'Principal Name', old: currentSchoolInfo.principal_name, new: payload.principal_name });
+        if (payload.principal_message !== (currentSchoolInfo.principal_message || '')) diffs.push({ field: 'Welcome Message', old: 'Previous Statement', new: 'Updated Statement' });
+        if (payload.principal_photo_url !== (currentSchoolInfo.principal_photo_url || '')) diffs.push({ field: 'Principal Photo', old: 'Previous Photo', new: 'New Photo Uploaded' });
+
+        await window.RPS_Supabase.updatePrincipalProfileAdminWithRole(payload, activeRole);
+
+        for (const d of diffs) {
+          await window.RPS_Supabase.logActivityAdmin(
+            `Updated ${d.field}`,
+            'school_information',
+            'principal',
+            `Principal Profile updated by ${activeRole}`,
+            d.old,
+            d.new,
+            activeRole,
+            d.field
+          );
+        }
+
+        window.RPS_Admin.showToast('✅ Principal Profile saved successfully!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to update principal profile', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save Principal Profile';
+      }
+    }
+
+    async function executeSaveContent() {
+      const saveBtn = document.getElementById('save-content-btn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving School Content...';
+
+      try {
+        const payload = {
+          tagline: document.getElementById('info-tagline').value.trim(),
+          about: document.getElementById('info-about').value.trim(),
+          vision: document.getElementById('info-vision').value.trim(),
+          mission: document.getElementById('info-mission').value.trim(),
+          values: document.getElementById('info-values').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        await window.RPS_Supabase.updateSchoolContentAdminWithRole(payload, activeRole);
+
+        await window.RPS_Supabase.logActivityAdmin(
+          'Updated School Content (CMS)',
+          'school_information',
+          'content',
+          `Tagline, About, Vision & Mission updated by ${activeRole}`,
+          'Previous CMS Content',
+          'Updated CMS Content',
+          activeRole,
+          'School Content'
+        );
+
+        window.RPS_Admin.showToast('✅ School Profile & Content saved!');
+        await loadSchoolInfo();
+        await loadAuditLogs();
+      } catch (err) {
+        window.RPS_Admin.showToast(err.message || 'Failed to save school content', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = '💾 Save School Content';
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // AUDIT LOG HISTORY TABLE
+    // ---------------------------------------------------------------------
+    async function loadAuditLogs() {
+      const tbody = document.getElementById('audit-log-tbody');
+      try {
+        if (!window.RPS_Supabase) return;
+        const logs = await window.RPS_Supabase.getSchoolInfoAuditLogs(50);
+        document.getElementById('audit-count-badge').textContent = `${logs.length} Entries`;
+
+        if (!logs || logs.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align:center; padding:20px; color:var(--admin-text-muted);">
+                No change history recorded yet. All modifications will appear here.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = logs.map(log => {
+          const dateStr = log.created_at ? new Date(log.created_at).toLocaleString('en-IN', {
+            day: 'numeric', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          }) : 'N/A';
+
+          const actorName = log.actor_name || log.user_name || (log.user_email === 'admin@roshanipublicschool.com' || log.actor_email === 'admin@roshanipublicschool.com' ? 'Super Administrator' : ((log.user_email || log.actor_email || '').split('@')[0] || 'Administrator'));
+          const actorEmail = log.actor_email || log.user_email || '';
+          const roleBadge = (log.user_role === 'super_admin' || log.actor_role === 'super_admin') ?
+            '<span class="admin-badge admin-badge--purple">Super Admin</span>' :
+            '<span class="admin-badge admin-badge--info">Administrator</span>';
+
+          const fieldName = log.field_name || log.resource_id || 'Information';
+          const oldVal = log.old_value ? window.RPS_Admin.escapeHtml(log.old_value) : '—';
+          const newVal = log.new_value ? window.RPS_Admin.escapeHtml(log.new_value) : '—';
+
+          return `
+            <tr>
+              <td class="audit-timestamp">⏱️ ${dateStr}</td>
+              <td style="font-weight:600; color:var(--admin-navy-dark);">
+                <div>${window.RPS_Admin.escapeHtml(actorName)}</div>
+                ${actorEmail ? `<div style="font-size:0.75rem; color:#64748b; font-weight:normal;">${window.RPS_Admin.escapeHtml(actorEmail)}</div>` : ''}
+              </td>
+              <td>${roleBadge}</td>
+              <td><strong>${window.RPS_Admin.escapeHtml(log.action)}</strong></td>
+              <td><span class="audit-diff-old" title="${oldVal}">${oldVal}</span></td>
+              <td><span class="audit-diff-new" title="${newVal}">${newVal}</span></td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Error loading audit logs:', err);
+      }
+    }
+
+    // ---------------------------------------------------------------------
+    // JUMP NAV HIGHLIGHT ON SCROLL
+    // ---------------------------------------------------------------------
+    function setupNavScrollHighlight() {
+      const links = document.querySelectorAll('.admin-section-nav__link');
+      window.addEventListener('scroll', () => {
+        let current = '';
+        document.querySelectorAll('.admin-panel').forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          if (window.scrollY >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        links.forEach(link => {
+          link.classList.remove('is-active');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('is-active');
+          }
+        });
+      });
     }
   </script>
 </body>
