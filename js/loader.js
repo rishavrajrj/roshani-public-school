@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER CONTROLLER
    Tracks complete element download & resource completion
    Guarantees progress bar starts cleanly at 0% and finishes at 100%
@@ -123,6 +123,29 @@
     });
   }
 
+  function setupLazyIframeObserver() {
+    const lazyIframes = document.querySelectorAll('iframe[data-src]');
+    if (!lazyIframes.length) return;
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const iframe = entry.target;
+            if (iframe.dataset.src && (!iframe.src || iframe.src === 'about:blank')) {
+              iframe.src = iframe.dataset.src;
+            }
+            obs.unobserve(iframe);
+          }
+        });
+      }, { rootMargin: '300px 0px' });
+
+      lazyIframes.forEach(iframe => observer.observe(iframe));
+    } else {
+      loadLazyIframes();
+    }
+  }
+
   function initLoader() {
     isFinished = false;
     isExiting = false;
@@ -149,11 +172,11 @@
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         trackResourceDownloads();
-        loadLazyIframes();
+        setupLazyIframeObserver();
       });
     } else {
       trackResourceDownloads();
-      loadLazyIframes();
+      setupLazyIframeObserver();
     }
 
     // Track Google Fonts load state
