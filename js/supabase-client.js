@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ROSHANI PUBLIC SCHOOL — SUPABASE CLIENT & API LAYER
  * Handles public data fetching, form submissions, and authenticated admin operations.
  */

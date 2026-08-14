@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    ROSHANI PUBLIC SCHOOL — LUXURY PRELOADER CONTROLLER
    Tracks complete element download & resource completion
    Guarantees progress bar starts cleanly at 0% and finishes at 100%
@@ -54,7 +54,7 @@
                     stroke="url(#rpsRingGrad2)" stroke-width="2.5" stroke-dasharray="140 60" stroke-linecap="round" />
           </svg>
           <div class="rps-loader__logo-box">
-            <img src="assets/logo.png" alt="Roshani Public School Emblem" class="rps-loader__logo" 
+            <img src="assets/logo.webp" alt="Roshani Public School Emblem" class="rps-loader__logo" 
                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <span style="display:none; font-family:'Playfair Display', serif; font-weight:800; color:#B91C5C; font-size:1.5rem;">RPS</span>
           </div>

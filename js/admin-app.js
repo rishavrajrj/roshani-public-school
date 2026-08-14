@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ROSHANI PUBLIC SCHOOL — ADMIN PORTAL CORE SCRIPT (js/admin-app.js)
  * Handles Auth Guards, Shared UI, Sidebar Navigation, Toast Notifications & Activity Logging.
  */

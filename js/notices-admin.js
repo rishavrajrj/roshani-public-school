@@ -1,4 +1,4 @@
-const NOTICE_STORAGE_KEY = 'rps_notices_db_v3';
+﻿const NOTICE_STORAGE_KEY = 'rps_notices_db_v3';
 
 const DEFAULT_NOTICES = [
   {
@@ -13,7 +13,7 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-08-08',
     updatedAt: null,
     expiresAt: null,
-    attachmentUrl: 'assets/admission.png',
+    attachmentUrl: 'assets/admission.webp',
     attachmentName: 'Admission Announcement 2026-27.png',
     attachmentType: 'image',
     createdAt: '2026-08-08'
@@ -47,7 +47,7 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-08-01',
     updatedAt: null,
     expiresAt: '2026-08-29',
-    attachmentUrl: 'assets/notice-board.png',
+    attachmentUrl: 'assets/notice-board.webp',
     attachmentName: 'PAT-II Examination Routine & Syllabus.png',
     attachmentType: 'image',
     createdAt: '2026-08-01'
@@ -132,7 +132,7 @@ const DEFAULT_NOTICES = [
     publishedAt: '2026-06-25',
     updatedAt: null,
     expiresAt: null,
-    attachmentUrl: 'assets/admission-2026-27.png',
+    attachmentUrl: 'assets/admission.webp',
     attachmentName: 'School Fee Structure & Online Payment Notice.png',
     attachmentType: 'image',
     createdAt: '2026-06-25'

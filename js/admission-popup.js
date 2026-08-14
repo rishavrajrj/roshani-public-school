@@ -1,13 +1,13 @@
-/**
+﻿/**
  * ROSHANI PUBLIC SCHOOL — ADMISSION ANNOUNCEMENT POPUP COMPONENT
- * Displays landing announcement modal using assets/admission.png.
+ * Displays landing announcement modal using assets/admission.webp.
  * Configured to show ONCE PER BROWSER SESSION using sessionStorage key "roshani_admission_popup_seen".
  */
 
 class AdmissionPopup {
   constructor(options = {}) {
     this.storageKey = options.storageKey || 'roshani_admission_popup_seen';
-    this.imageSrc = options.imageSrc || 'assets/admission.png';
+    this.imageSrc = options.imageSrc || 'assets/admission.webp';
     this.isOpen = false;
     this.previousActiveElement = null;
 
@@ -68,7 +68,7 @@ class AdmissionPopup {
             </svg>
           </button>
           <div class="admission-popup__image-wrapper">
-            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" onerror="this.onerror=null; this.src='assets/admission-2026-27.png';" />
+            <img src="${this.imageSrc}" alt="Roshani Public School Admission Announcement 2026-2027" class="admission-popup__img" onerror="this.onerror=null; this.src='assets/admission.webp';" />
           </div>
           <div class="admission-popup__cta">
             <a href="admissions.html#enquiry" class="btn btn--primary admission-popup__apply-btn" id="admission-popup-apply-btn">

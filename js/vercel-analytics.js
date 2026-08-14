@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Vercel Analytics & Speed Insights Loader for Static HTML Sites
  */
 (function() {

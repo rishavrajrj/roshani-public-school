@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ROSHANI PUBLIC SCHOOL — HERO CAROUSEL MODULE
  * Handles auto-play, fade/slide transitions, prev/next controls,
  * pagination dots, keyboard navigation, touch swipe, and pause on hover.

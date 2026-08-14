@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Roshani Public School — Academic Calendar 2026–27 Module
  * Dynamic Date Engine, LocalStorage Persistence, Category Filtering,
  * Interactive Modals, Admin Portal, and A4 Print Helper.

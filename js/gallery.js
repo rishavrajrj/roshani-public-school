@@ -161,12 +161,14 @@ function renderDynamicGallery(container, images) {
     item.className = `bento-item-ref gallery-item fade-in is-visible ${isHero ? 'bento-wide bento-tall' : ''}`;
     item.setAttribute('data-category', img.category || 'campus');
     
+    let imgSrc = (img.image_url || '').replace(/\.png$/i, '.webp');
+
     item.innerHTML = `
-      <img src="${img.image_url}" alt="${escapeHtml(img.title || 'Roshani Public School Gallery')}" loading="lazy">
+      <img src="${imgSrc}" alt="${escapeHtml(img.title || 'Roshani Public School Gallery')}" loading="lazy" onerror="if(this.src.includes('.png')){this.src=this.src.replace('.png','.webp');}">
       <div class="bento-overlay">
         <div class="bento-overlay__inner">
           <span class="bento-pill">${capitalize(img.category || 'Campus')}</span>
-          <span class="bento-caption">${escapeHtml(img.title)}</span>
+          <span class="bento-caption">${escapeHtml(img.title || '')}</span>
         </div>
       </div>
     `;
@@ -176,7 +178,6 @@ function renderDynamicGallery(container, images) {
 
 function initGalleryFiltersAndLightbox() {
   const filterBtns = document.querySelectorAll('#gallery-filter-btns .facility-cat-btn, .gallery-filter button');
-  const galleryItems = document.querySelectorAll('.gallery-item');
 
   filterBtns.forEach(btn => {
     btn.onclick = () => {
@@ -230,7 +231,8 @@ function initGalleryFiltersAndLightbox() {
     const item = visibleItems[currentIndex];
     const img = item?.querySelector('img');
     if (img && lightboxImg) {
-      lightboxImg.src = img.getAttribute('src') || '';
+      let src = (img.getAttribute('src') || '').replace(/\.png$/i, '.webp');
+      lightboxImg.src = src;
       lightboxImg.alt = img.getAttribute('alt') || '';
       if (lightboxCap) {
         lightboxCap.textContent = img.getAttribute('alt') || item.dataset.caption || '';
@@ -251,13 +253,15 @@ function initGalleryFiltersAndLightbox() {
     document.body.style.overflow = '';
   };
 
-  document.querySelectorAll('.gallery-item').forEach((item) => {
-    item.onclick = () => {
+  const gridContainer = document.getElementById('gallery-bento-grid') || document.body;
+  gridContainer.onclick = (e) => {
+    const item = e.target.closest('.gallery-item');
+    if (item) {
       const items = getVisibleItems();
       const idx = items.indexOf(item);
       if (idx !== -1) openLightbox(idx);
-    };
-  });
+    }
+  };
 
   if (lightboxClose) lightboxClose.onclick = closeLightbox;
   if (lightboxPrev) lightboxPrev.onclick = () => openLightbox(currentIndex - 1);

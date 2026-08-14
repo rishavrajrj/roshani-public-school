@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    ROSHANI PUBLIC SCHOOL — FORM HANDLING
    Client-side validation and Supabase submission for Contact & Admissions
    ============================================================ */

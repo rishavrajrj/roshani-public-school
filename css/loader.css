@@ -122,11 +122,11 @@ body.rps-loading {
 
 /* Logo Frame */
 .rps-loader__logo-box {
-  width: 76px;
-  height: 76px;
+  width: 86px;
+  height: 86px;
   border-radius: 50%;
   background: #FFFFFF;
-  padding: 10px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
